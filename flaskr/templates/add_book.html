@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+{% block title %}Add a Book | Admin{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="jumbotron mx-auto">
+                <h1 class="text-center">Add a Book</h1>
+                <form id="admin-add-book"
+                      enctype="multipart/form-data"
+                      method="post"
+                      class="text-center">
+                    <div class="form-label-group">
+                        <label for="add-book-title">Title:</label><br />
+                        <input
+                            type="text"
+                            id="add-book-title"
+                            name="add-book-title"
+                            class="form-control" />
+                    </div>
+                    <div class="form-label-group">
+                        <label for="add-book-period">Period:</label><br />
+                        <input
+                            type="text"
+                            id="add-book-period"
+                            name="add-book-period"
+                            class="form-control" />
+                    </div>
+                    <div class="form-label-group">
+                        <label for="add-book-description-md">Description:</label><br />
+                        <textarea
+                            class="form-control lead"
+                            rows="5"
+                            cols="60"
+                            id="add-book-description-md"
+                            name="add-book-description-md"></textarea>
+                    </div>
+                    <div class="form-label-group">
+                        <label for="add-book-access-level">Access Level [0-255]:</label><br />
+                        <input
+                            type="number"
+                            id="add-book-access-level"
+                            name="add-book-access-level"
+                            class="form-control"
+                            min="0"
+                            max="255"
+                            value="0"
+                            required />
+                    </div>
+                    <div class="custom-file">
+                        <label class="custom-file-label" for="add-book-file">Book File</label>
+                        <input
+                            type="file"
+                            id="add-book-file"
+                            name="add-book-file"
+                            placeholder="Book File"
+                            class="custom-file-input"
+                            required />
+                    </div>
+                    <div class="custom-file">
+                        <label class="custom-file-label" for="add-book-thumbnail">Thumbnail File</label>
+                        <input
+                            type="file"
+                            id="add-book-thumbnail"
+                            name="add-book-thumbnail"
+                            placeholder="Thumbnail File"
+                            class="custom-file-input"
+                            required />
+                    </div>
+                    <button
+                        type="submit"
+                        title="Add"
+                        class="btn"><i class="far fa-paper-plane fa-2x"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

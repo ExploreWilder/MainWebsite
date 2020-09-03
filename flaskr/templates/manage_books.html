@@ -1,0 +1,364 @@
+{% extends "layout.html" %}
+{% block title %}Manage Books | Admin{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        <h1>Books</h1>
+        <p>
+            Total: {{ total_books }} book{% if total_books > 1 %}s{% endif %}, including {{ total_public_books }} in public access.<br />
+            <span class="total-frame"><i class="fas fa-book-open"></i> {{ shelf_total[0] }}</span>
+            <span class="total-frame"><i class="fas fa-thumbs-up"></i> {{ shelf_total[2] }}</span>
+        </p>
+        <div class="custom-control custom-switch text-center">
+            <input type="checkbox" class="custom-control-input" id="orderingSwitch" />
+            <label class="custom-control-label" for="orderingSwitch">Enable Book Re-Ordering (Drag &amp; Drop)</label>
+        </div>
+        {% if last_page > 1 %}
+            <form>
+                <div class="form-row">
+                    <div class="col-auto my-1">
+                    <label class="mr-sm-1" for="books-per-page">Books per page</label>
+                    <select class="mr-sm-1" id="books-per-page">
+                        {% for option in options_books_per_page %}
+                            <option{% if books_per_page == option %} selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                    </div>
+                </div>
+            </form>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item{% if current_page == 1 %} disabled{% endif %}">
+                        <a class="page-link"
+                           href="?page=1&amp;books={{ books_per_page }}"
+                           {% if current_page == 1 %} aria-disabled="true"{% endif %}
+                           title="Go to page 1">
+                            <i class="fas fa-backward"></i>
+                        </a>
+                    </li>
+                    <li class="page-item{% if current_page == 1 %} disabled{% endif %}">
+                        <a class="page-link"
+                           href="?page={{ current_page - 1 }}&amp;books={{ books_per_page }}"
+                           {% if current_page == 1 %} aria-disabled="true"{% endif %}
+                           title="Go to page {{ current_page - 1 }}">
+                            <i class="fas fa-step-backward"></i>
+                        </a>
+                    </li>
+                    {% for page in pagination %}
+                        <li class="page-item{% if current_page == page %} active" aria-current="page{% endif %}">
+                            <a class="page-link"
+                               href="?page={{ page }}&amp;books={{ books_per_page }}"
+                               title="Go to page {{ page }}">
+                               {{ page }}{% if current_page == page %} <span class="sr-only">(current)</span>{% endif %}
+                           </a>
+                        </li>
+                    {% endfor %}
+                    <li class="page-item{% if current_page == last_page %} disabled{% endif %}">
+                        <a class="page-link"
+                           href="?page={{ current_page + 1 }}&amp;books={{ books_per_page }}"
+                           {% if current_page == last_page %} aria-disabled="true"{% endif %}
+                           title="Go to page {{ current_page + 1 }}">
+                            <i class="fas fa-step-forward"></i>
+                        </a>
+                    </li>
+                    <li class="page-item{% if current_page == last_page %} disabled{% endif %}">
+                        <a class="page-link"
+                           href="?page={{ last_page }}&amp;books={{ books_per_page }}"
+                           {% if current_page == last_page %} aria-disabled="true"{% endif %}
+                           title="Go to page {{ last_page }}">
+                            <i class="fas fa-forward"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+        <div id="admin-books">
+            {% for book in shelf %}
+                <div class="sortable-item row border rounded bg-light shadow my-3 mx-1 px-3">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="form-group row">
+                            <div class="col-lg-6 col-xl-2">
+                                <div class="my-3 text-center">
+                                    <img class="thumbnail-book"
+                                         src="{{ url_for('book_dir', book_id=book[0], sub_dir=book[1]+'/card.jpg') }}"
+                                         alt=""
+                                         data-book-id="{{ book[0] }}" />
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-6 col-xl-4">
+                                <input type="hidden"
+                                       value="{{ book[0] }}"
+                                       name="input-book-id" />
+                                <input type="hidden"
+                                       value="{{ book[1] }}"
+                                       name="input-book-url" />
+                                <input type="hidden"
+                                       value="{{ book[2] }}"
+                                       name="input-book-filename" />
+                                <div class="form-group row no-gutters">
+                                    <div class="col-sm-4 col-form-label my-2">
+                                        Action:
+                                    </div>
+                                    <div class="col-sm-8 my-2">
+                                        <a href="delete"
+                                           title="Delete"
+                                           data-book-id="{{ book[0] }}"
+                                           data-book-url="{{ book[1] }}"
+                                           class="onclick-admin-delete-book">
+                                            <i class="fas fa-trash-alt fa-2x"></i></a>
+                                        <a href="#"
+                                           title="Edit"
+                                           class="onclick-admin-edit-book-metadata">
+                                            <i class="fas fa-pen-square fa-2x"></i></a>
+                                    </div>
+                                    <div class="col-sm-4 col-form-label">
+                                        <label for="input-title-{{ book[0] }}">Title:</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input type="text"
+                                               value="{{ book[3] }}"
+                                               class="form-control readonly"
+                                               size="23"
+                                               name="input-title"
+                                               id="input-title-{{ book[0] }}"
+                                               required
+                                               disabled />
+                                    </div>
+                                    <div class="col-sm-4 col-form-label">
+                                        <label for="input-period-{{ book[0] }}">Period:</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input type="text"
+                                               value="{% if book[4] %}{{ book[4] }}{% endif %}"
+                                               class="form-control readonly"
+                                               size="23"
+                                               name="input-period"
+                                               id="input-period-{{ book[0] }}"
+                                               disabled />
+                                    </div>
+                                    <div class="col-sm-4 col-form-label">
+                                        <label for="input-status-{{ book[0] }}">Status:</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <select name="input-status"
+                                                id="input-status-{{ book[0] }}"
+                                                class="form-control readonly"
+                                                required
+                                                disabled>
+                                            <option{% if book[15] == "draft" %} selected{% endif %}>Draft</option>
+                                            <option{% if book[15] == "crowdfunding" %} selected{% endif %}>Crowdfunding</option>
+                                            <option{% if book[15] == "released" %} selected{% endif %}>Released</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-4 col-form-label">
+                                        <label for="input-crowdfunding-goal-{{ book[0] }}">Crowdfunding Goal:</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="form-inline">
+                                            <input type="number"
+                                                   placeholder="{{ config.CROWDFUNDING_CURRENCY }}"
+                                                   min="0"
+                                                   size="4"
+                                                   maxlength="4"
+                                                   class="form-control small-input-number readonly"
+                                                   value="{% if book[17] %}{{ book[17] }}{% else %}{% endif %}"
+                                                   name="input-crowdfunding-goal"
+                                                   id="input-crowdfunding-goal-{{ book[0] }}"
+                                                   disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-form-label">
+                                        <label for="input-access-level-{{ book[0] }}">Access Level:</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="form-inline">
+                                            <input type="number"
+                                                   placeholder="Access Level"
+                                                   min="0"
+                                                   max="255"
+                                                   size="3"
+                                                   maxlength="3"
+                                                   class="form-control small-input-number readonly"
+                                                   value="{{ book[14] }}"
+                                                   name="input-access-level"
+                                                   id="input-access-level-{{ book[0] }}"
+                                                   required
+                                                   disabled />
+                                            <span class="text-muted">/ 255</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-form-label">
+                                        <label for="input-book-file-{{ book[0] }}">Book:</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="custom-file">
+                                            <label class="custom-file-label" for="input-book-file-{{ book[0] }}">{{ book[2] }}</label>
+                                            <input
+                                                type="file"
+                                                name="input-book-file"
+                                                id="input-book-file-{{ book[0] }}"
+                                                placeholder="{{ book[2] }}"
+                                                class="custom-file-input readonly"
+                                                disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-form-label">
+                                        <label for="input-thumbnail-{{ book[0] }}">Thumbnail:</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="custom-file">
+                                            <label class="custom-file-label" for="input-thumbnail-{{ book[0] }}">card.jpg</label>
+                                            <input
+                                                type="file"
+                                                name="input-thumbnail"
+                                                id="input-thumbnail-{{ book[0] }}"
+                                                placeholder="card.jpg"
+                                                class="custom-file-input readonly"
+                                                disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-form-label my-1">
+                                        Popularity:
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <span class="total-frame">
+                                            <i class="fas fa-book-open"></i>
+                                            {{ book[7] }}
+                                        </span>
+                                        <span class="total-frame">
+                                            <i class="fas fa-thumbs-up"></i>
+                                            {{ book[9] }}
+                                        </span>
+                                    </div>
+                                    <div class="col-sm-4 col-form-label my-1">
+                                        Date Added:
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="my-2">
+                                            <abbr title="Server Time">{{ book[12] }}</abbr>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-form-label my-1">
+                                        Modified:
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="my-2">
+                                            {% if book[13] %}
+                                                <abbr title="Server Time">{{ book[13] }}</abbr>
+                                            {% else %}
+                                                Never
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-6 col-xl-3">
+                                <div class="form-group">
+                                    <div class="text-center mt-2">
+                                        <label for="input-description-{{ book[0] }}">
+                                            Description:
+                                        </label>
+                                    </div>
+                                    <textarea class="textarea-book form-control readonly"
+                                              name="input-description"
+                                              id="input-description-{{ book[0] }}"
+                                              rows="14"
+                                              required
+                                              disabled>{{ book[5] }}</textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-6 col-xl-3">
+                                <div class="text-center my-2">
+                                    Resources:
+                                </div>
+                                {% if book[18] %}
+                                    <div class="table-resources table-responsive table-borderless bg-white border rounded table-hover py-0 mb-3">
+                                        <table class="table table-sm">
+                                            <tbody>
+                                                {% for file_type, files in book[18].items() %}
+                                                    {% for file_name in files %}
+                                                    <tr>
+                                                        <td>
+                                                            <a href="/books/{{ book[0] }}/{{ book[1] }}/{{ file_name }}" target="_blank">
+                                                                {% if file_type == "image" %}
+                                                                <i class="fas fa-file-image" title="Image"></i>
+                                                                {% elif file_type == "gpx" %}
+                                                                <i class="fas fa-map-marked-alt" title="GPX"></i>
+                                                                {% elif file_type == "movie" %}
+                                                                <i class="fas fa-file-video" title="Movie"></i>
+                                                                {% elif file_type == "pdf" %}
+                                                                <i class="fas fa-file-pdf" title="PDF"></i>
+                                                                {% else %}
+                                                                {{ file_type }}
+                                                                {% endif %}
+                                                            </a>
+                                                        </td>
+                                                        <td><span class="select-text">{{ file_name }}</span></td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-info" role="alert">
+                                        Nothing to list.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+        {% if last_page > 1 %}
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item{% if current_page == 1 %} disabled{% endif %}">
+                    <a class="page-link"
+                       href="?page=1&amp;books={{ books_per_page }}"
+                       {% if current_page == 1 %} aria-disabled="true"{% endif %}
+                       title="Go to page 1">
+                        <i class="fas fa-backward"></i>
+                    </a>
+                </li>
+                <li class="page-item{% if current_page == 1 %} disabled{% endif %}">
+                    <a class="page-link"
+                       href="?page={{ current_page - 1 }}&amp;books={{ books_per_page }}"
+                       {% if current_page == 1 %} aria-disabled="true"{% endif %}
+                       title="Go to page {{ current_page - 1 }}">
+                        <i class="fas fa-step-backward"></i>
+                    </a>
+                </li>
+                {% for page in pagination %}
+                    <li class="page-item{% if current_page == page %} active" aria-current="page{% endif %}">
+                        <a class="page-link"
+                           href="?page={{ page }}&amp;books={{ books_per_page }}"
+                           title="Go to page {{ page }}">
+                           {{ page }}{% if current_page == page %} <span class="sr-only">(current)</span>{% endif %}
+                       </a>
+                    </li>
+                {% endfor %}
+                <li class="page-item{% if current_page == last_page %} disabled{% endif %}">
+                    <a class="page-link"
+                       href="?page={{ current_page + 1 }}&amp;books={{ books_per_page }}"
+                       {% if current_page == last_page %} aria-disabled="true"{% endif %}
+                       title="Go to page {{ current_page + 1 }}">
+                        <i class="fas fa-step-forward"></i>
+                    </a>
+                </li>
+                <li class="page-item{% if current_page == last_page %} disabled{% endif %}">
+                    <a class="page-link"
+                       href="?page={{ last_page }}&amp;books={{ books_per_page }}"
+                       {% if current_page == last_page %} aria-disabled="true"{% endif %}
+                       title="Go to page {{ last_page }}">
+                        <i class="fas fa-forward"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+{% endblock %}

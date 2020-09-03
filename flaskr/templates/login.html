@@ -1,0 +1,163 @@
+{% extends "layout.html" %}
+{% block title %}Login{% endblock %}
+{% block class_html %}h-100{% endblock %}
+{% block class_body %}h-100{% endblock %}
+{% block body %}
+    <div id="outer-bg-body" data-bgsrc="/static/images/backgrounds/login.jpg"><div id="inner-bg-body"></div></div>
+    <form id="login-form" action="/login" method="post" class="h-100" novalidate>
+        <div class="d-flex h-100 flex-column">
+            <header class="mb-auto">
+                <div class="inner">
+                </div>
+            </header>
+            <main role="main">
+            <div class="container">
+            <div class="row my-4">
+                <div class="col-lg-5">
+                    <div id="content-form">
+                        <div class="shadow-sm p-3 bg-light rounded my-4">
+                            <h1 class="mb-3">Sign In</h1>
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
+                            <div class="form-label-group">
+                                <label for="email">Email address:</label><br />
+                                <input
+                                    type="email"
+                                    name="email"
+                                    id="email"
+                                    class="form-control"
+                                    tabindex="1"
+                                    pattern="[^@]+@[^@]+\.[^@]+"
+                                    style="width: 300px;"
+                                    required
+                                    autofocus />
+                                <div class="invalid-feedback">
+                                    Email address required.
+                                </div>
+                            </div>
+                            <div class="form-label-group hidden-for-password-reset">
+                                <label for="password">Password:</label><br />
+                                <input
+                                    type="password"
+                                    name="password"
+                                    id="password"
+                                    class="form-control"
+                                    tabindex="2"
+                                    style="width: 300px;"
+                                    required />
+                                <div class="invalid-feedback">
+                                    Password required.
+                                </div>
+                            </div>
+                            <p class="small hidden-for-password-reset"><a href="#" data-toggle="modal" data-target="#modal-reset-password">Forgot password?</a></p>
+                            <div id="modal-reset-password" class="modal fade" role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Password Reset</h4>
+                                        </div>
+                                        <div class="modal-body text-left">
+                                            No worries,
+                                            <ol>
+                                                <li>Click on the reset button,</li>
+                                                <li>Type your email address,</li>
+                                                <li>Submit!</li>
+                                            </ol>
+                                            I will then send you a link to get back to your account. If you haven't received my email, please wait for a few minutes and check your spam. I will not send a second email if you have not used the first one.
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Cancel</button>
+                                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" id="onclick-password-reset"><i class="fas fa-arrow-right"></i> Reset</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group hidden-for-password-reset">
+                                <div class="form-check text-left">
+                                    <input class="form-check-input"
+                                        type="checkbox"
+                                        id="privacy-policy"
+                                        name="privacyPolicy"
+                                        value="Yes"
+                                        tabindex="3"
+                                        required>
+                                    <label class="form-check-label" for="privacy-policy">
+                                        I have read the <a href="#" class="onclick-open-modal-privacy-policy">Privacy Policy</a>
+                                    </label>
+                                    <div class="invalid-feedback">
+                                        You must read and tick the box.
+                                    </div>
+                                </div>
+                                <div class="form-check text-left">
+                                    <input class="form-check-input"
+                                        type="checkbox"
+                                        id="copyright-notice"
+                                        name="copyrightNotice"
+                                        value="Yes"
+                                        tabindex="4"
+                                        required>
+                                    <label class="form-check-label" for="copyright-notice">
+                                        I have read the <a href="#" class="onclick-open-modal-copyright">Copyright Notice</a>
+                                    </label>
+                                    <div class="invalid-feedback">
+                                        You must read and tick the box.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-label-group">
+                                <label for="captcha">Captcha:</label><br />
+                                <img src="" id="captcha-passcode" class="ml-0" data-autoload="autoload" /><!--
+                                --><a href="#"
+                                    id="onclick-reload-captcha"><i class="fas fa-sync"></i></a>
+                                <input
+                                    type="text"
+                                    id="captcha"
+                                    name="captcha"
+                                    class="form-control"
+                                    autocomplete="off"
+                                    tabindex="5"
+                                    maxlength="3"
+                                    required />
+                                <div class="invalid-feedback">
+                                    Please copy the code into the box!
+                                </div>
+                            </div>
+                            <button
+                                type="submit"
+                                title="Login"
+                                class="btn trigger-bg-colors"
+                                tabindex="6"><i class="fas fa-unlock-alt fa-2x"></i></button>
+                            {% if result %}
+                                <div class="alert {% if status %}alert-success{% else %}alert-danger{% endif %} mb-0" role="alert">
+                                    <strong>{{ result }}</strong>{% if not status %}<br />Wait and try again.{% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="shadow-sm p-3 bg-light rounded my-4">
+                        <h1 class="mb-3">Become a Member</h1>
+                        <p>First and foremost, if you like my content, you could <a href="/about">subscribe</a> to the newsletter. Secondly, your support is highly appreciated and rewarded! Indeed, you could get access to exclusive content such as:</p>
+                        <ul>
+                            <li>Full photo gallery and website content,</li>
+                            <li>Hiking tips and gear list,</li>
+                            <li>My research reports on the wilderness areas,</li>
+                            <li>Raw GPX files,</li>
+                            <li>Some other Patron-only benefits!</li>
+                        </ul>
+                        <a class="hvr-wobble-horizontal d-block my-2 text-center trigger-bg-colors" href="https://www.patreon.com/explorewilder" target="_blank">
+                            <img src="/static/images/become_a_patron_button.png" alt="Become a Patron" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+            </div>
+            </main>
+            <footer class="mt-auto">
+                <div class="inner">
+                </div>
+            </footer>
+        </div>
+    </form>
+    {% include "copyright_notice.html" %}
+{% endblock %}

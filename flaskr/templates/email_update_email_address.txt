@@ -1,0 +1,18 @@
+{{ welcome }}
+
+You can update your old email address <{{ old_email_address }}> to <{{ new_email_address }}> by following this link:
+{{ url_update_email_address }}
+
+If the link does not work, please check that you are logged in.
+Otherwise, sign in with your old email address beforehand:
+{{ request.host_url }}login
+
+Should you need more information or help, Please feel free to contact back.
+
+Cheers,
+{{ config.LEGAL_NAME }}
+{{ request.host_url }}
+P.S.: You can reply to this email.
+
+Privacy: {{ request.host_url }}about
+Login: {{ request.host_url }}login

@@ -1,0 +1,18 @@
+~~~ {{ subject }} ~~~
+
+{% if username %}Hello {{ username }},{% else %}Hello!{% endif %}
+
+{{ news }}
+
+Cheers,
+{{ config.LEGAL_NAME }}
+#KeepExploring and sharing: {{ request.host_url }}
+P.S.: You can reply to this email.
+
+{% for network in config.NETWORKS %}* Follow me on {{ network[0] }}: {{ network[1] }}
+{% endfor %}* One-off donation for eternal gratitude: https://ko-fi.com/explorewilder
+* Get exclusive content: https://www.patreon.com/explorewilder
+
+Unsubscribe: {{ url_unsubscribe }}
+Privacy: {{ request.host_url }}about
+Login: {{ request.host_url }}login

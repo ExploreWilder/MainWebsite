@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block title %}Change My Email Address{% endblock %}
+{% block body %}
+    <form id="login-form" action="/change_email" method="post" novalidate>
+        <div id="content-form" class="text-center">
+            <h1>Change My Email Address</h1>
+            <p>Need help? Just <a href="/about">ask me</a>!</p>
+            {% if show_form %}
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
+                <div class="form-label-group">
+                    <label for="current-password">Current Password:</label><br />
+                    <input
+                        type="password"
+                        name="currentPassword"
+                        id="current-password"
+                        class="form-control mx-auto"
+                        tabindex="1"
+                        style="width: 300px;"
+                        required />
+                    <div class="invalid-feedback">
+                        Password required.
+                    </div>
+                </div>
+                <div class="form-label-group">
+                    <label for="new-email-address">New Email Address:</label><br />
+                    <input
+                        type="email"
+                        name="newEmailAddress"
+                        id="new-email-address"
+                        class="form-control mx-auto"
+                        tabindex="2"
+                        pattern="[^@]+@[^@]+\.[^@]+"
+                        style="width: 300px;"
+                        required />
+                    <div class="invalid-feedback">
+                        Email address required.
+                    </div>
+                </div>
+                <button
+                    type="submit"
+                    title="Change"
+                    class="btn"
+                    tabindex="3"><i class="fas fa-pencil-alt fa-2x"></i></button>
+            {% endif %}
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} mx-4" role="alert">
+                            <strong>{{ message }}</strong>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </form>
+{% endblock %}

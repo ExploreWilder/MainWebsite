@@ -1,0 +1,184 @@
+{% extends "layout.html" %}
+{% block title %}About, Contact, Follow My Adventures{% endblock %}
+{% block body %}
+    <div id="outer-bg-body" data-bgsrc="/static/images/backgrounds/about.jpg"><div id="inner-bg-body"></div></div>
+    <div id="scroll-about-page">
+        <div class="container">
+            <div class="row">
+                <div class="step col-xl-6 p-0 my-4" data-step="about">
+                    <div class="shadow-sm p-3 bg-light rounded mt-4">
+                        <h1 class="text-center mb-3">About</h1>
+                        <p class="text-justify">
+                            Hello, my name is Clement. I take photos of the untouched nature and notes of my adventures. I found myself in the middle of nowhere and learnt a lot out of my comfort zone, fighting the elements and crash testing my resiliency. I hitchhiked more than 40,000 km and spent hundreds days through deserts, roads, rainforests, villages, lifestyles. Photography is my exploration tool in a way to widen our horizon toward remote wilderness. I prove with photos that the most beautiful things are natural. But photos do not keep snow on tops, native forests and wildlife, crystal clear rivers, pure mountain lakes, etc. I am not the example to follow but I do not act to greenwash myself and feel responsible, I just act. It’s up to us to think and act sustainably so that beauty is beyond all and nature perpetual. We all need a purpose in life. Mine is to live my greatest dreams in the simplest possible way, and share them. If my stories and photos inspire you, then your feedback and support motivate me to keep sharing!
+                        </p>
+                    </div>
+                </div>
+                <div class="step col-xl-6 offset-xl-6 p-0 my-4" data-step="contact">
+                    <div class="shadow-sm p-3 bg-light rounded">
+                        <h1 class="text-center mb-3">Contact Me</h1>
+                        <div id="show-after-success"></div>
+                        <form id="contact-form" novalidate>
+                            <div class="container-fluid px-0">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-label-group">
+                                            <label for="name">Name:</label><br />
+                                            <input
+                                                type="text"
+                                                id="name"
+                                                class="form-control"
+                                                tabindex="1"
+                                                value="{{ default_name }}" />
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-label-group">
+                                            <label for="email">Email address:</label><br />
+                                            <input
+                                                type="email"
+                                                id="email"
+                                                class="form-control"
+                                                tabindex="2"
+                                                value="{{ default_email }}"
+                                                pattern="[^@]+@[^@]+\.[^@]+"
+                                                required />
+                                            <div class="invalid-feedback">
+                                                Please type your e-mail address.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% include "dropdown_menu_subject.html" %}
+                            <div class="form-label-group">
+                                <label for="message">Message:</label><br />
+                                <textarea
+                                    class="form-control"
+                                    rows="5"
+                                    id="message"
+                                    tabindex="4"
+                                    required></textarea>
+                                <div class="invalid-feedback">
+                                    Please write something, but not just &#171;something&#187;!
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input class="form-check-input"
+                                        type="checkbox"
+                                        id="newsletter-subscription"
+                                        tabindex="5"
+                                        name="newsletter-subscription">
+                                    <label class="form-check-label" for="newsletter-subscription">
+                                        Subscribe to the newsletter <small class="text-muted">(news once a month)</small>
+                                    </label>
+                                </div>
+                                <div class="alert alert-info p-1 px-2" role="alert">
+                                    Subscription is required for membership!
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input"
+                                        type="checkbox"
+                                        id="privacy-policy"
+                                        tabindex="6"
+                                        name="privacy-policy"
+                                        required>
+                                    <label class="form-check-label" for="privacy-policy">
+                                        I have read the <a href="#" class="onclick-open-modal-privacy-policy">Privacy Policy</a>
+                                    </label>
+                                    <div class="invalid-feedback">
+                                        You must read and tick the box.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-label-group text-center">
+                                <label for="captcha">Captcha:</label><br />
+                                <img src="" id="captcha-passcode" data-autoload="autoload" /><!--
+                                --><a href="#"
+                                    id="onclick-reload-captcha"><i class="fas fa-sync"></i></a>
+                                <input
+                                    type="text"
+                                    id="captcha"
+                                    class="form-control mx-auto"
+                                    autocomplete="off"
+                                    tabindex="7"
+                                    maxlength="3"
+                                    required />
+                                <div class="invalid-feedback">
+                                    Please copy the code into the box!
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button
+                                    type="submit"
+                                    title="Send"
+                                    class="btn"
+                                    tabindex="8"><i class="far fa-paper-plane fa-2x"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="step shadow-sm pt-3 pb-0 px-3 mt-4 bg-light rounded-top row">
+                <div class="col-lg-12">
+                    {% include "networks.html" %}
+                </div>
+                <div class="col-lg-12">
+                    <h1>Copyright</h1>
+                    <div class="shadow-sm p-3 mb-3 bg-white rounded" id="pills-copyright">
+                        <p>
+                            <i class="far fa-copyright fa-2x"></i>
+                            Anything in private access is
+                            <span class="nowrap">
+                                <a href="#"
+                                class="onclick-open-modal-copyright"
+                                title="Read more">© 2015-{{current_year}} by {{ config.LEGAL_NAME }}</a>
+                            </span>
+                            and disclosure is strictly prohibited.
+                        </p>
+                        <p>
+                            <i class="fab fa-creative-commons fa-2x"></i><!--
+                            --><i class="fab fa-creative-commons-by fa-2x"></i><!--
+                            --><i class="fab fa-creative-commons-nc fa-2x"></i><!--
+                            --><i class="fab fa-creative-commons-sa fa-2x"></i>
+                            Photographies in public access are under
+                            <span class="nowrap">
+                                <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+                                   title="Learn more about this licence"
+                                   target="_blank">CC BY-NC-SA 4.0</a>.
+                            </span>
+                        </p>
+                        <p>
+                            <i class="fab fa-creative-commons fa-2x"></i><!--
+                            --><i class="fab fa-creative-commons-by fa-2x"></i><!--
+                            --><i class="fab fa-creative-commons-nc fa-2x"></i><!--
+                            --><i class="fab fa-creative-commons-nd fa-2x"></i>
+                            Text in public access is under
+                            <span class="nowrap">
+                                <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/"
+                                   title="Learn more about this licence"
+                                   target="_blank">CC BY-NC-ND 4.0</a>.
+                            </span>
+                        </p>
+                        <p>
+                            <i class="far fa-copyright fa-2x"></i><!--
+                            --><i class="fab fa-osi fa-2x"></i>
+                            <a href="https://github.com/ExploreWilder/MainWebsite"
+                               title="The underlying source code used to format and display the content"
+                               target="_blank">Source code</a> released under the
+                            <span class="nowrap">
+                                <a href="https://opensource.org/licenses/BSD-3-Clause"
+                                   title="Learn about this licence"
+                                   target="_blank">3-Clause BSD License</a>.
+                            </span>
+                        </p>
+                    </div>
+                    <p><a href="https://explorewilder.statuspage.io/" target="_blank" class="secondary-link small"><span>{{ config.BRAND_NAME }} Status Page</span></a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include "copyright_notice.html" %}
+{% endblock %}

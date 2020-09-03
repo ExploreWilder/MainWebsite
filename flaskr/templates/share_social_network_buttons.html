@@ -1,0 +1,55 @@
+<div class="btn-group dropup dropdown-share-on-social-network">
+    <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuShareSocialMediaButtons{{ id_prepend }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-share-alt"></i>
+        Share
+    </button>
+    <div class="dropdown-menu share-on-social-network" aria-labelledby="dropdownMenuShareSocialMediaButtons{{ id_prepend }}">
+        <a class="dropdown-item text-success"
+           href="{{ share_link(link, 'twitter') }}"
+           target="_blank"
+           data-toggle="tooltip"
+           title="Click to share on Twitter"
+           role="button">
+            <i class="fab fa-twitter"></i> Twitter
+        </a>
+        <a class="dropdown-item text-success"
+           href="{{ share_link(link, 'facebook') }}"
+           target="_blank"
+           data-toggle="tooltip"
+           title="Click to share on Facebook"
+           role="button">
+            <i class="fab fa-facebook-f"></i> Facebook
+        </a>
+        <a class="dropdown-item text-success"
+           href="{{ share_link(link, 'vkontakte') }}"
+           target="_blank"
+           data-toggle="tooltip"
+           title="Click to share on VKontakte"
+           role="button">
+            <i class="fab fa-vk"></i> VKontakte
+        </a>
+        <a class="dropdown-item text-success"
+           href="{{ share_link(link, 'tumblr') }}"
+           target="_blank"
+           data-toggle="tooltip"
+           title="Click to share on Tumblr"
+           role="button">
+            <i class="fab fa-tumblr"></i> Tumblr
+        </a>
+        <a class="dropdown-item text-success"
+           href="{{ share_link(link, 'linkedin') }}"
+           target="_blank"
+           data-toggle="tooltip"
+           title="Click to share on LinkedIn"
+           role="button">
+            <i class="fab fa-linkedin-in"></i> LinkedIn
+        </a>
+        <a class="dropdown-item text-success"
+           href="{{ share_link(link, 'email', subject) }}"
+           data-toggle="tooltip"
+           title="Click to share via email"
+           role="button">
+            <i class="fas fa-envelope"></i> Email
+        </a>
+    </div>
+</div>

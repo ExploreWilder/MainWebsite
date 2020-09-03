@@ -1,0 +1,350 @@
+{% extends "layout.html" %}
+{% block title %}Manage Photos | Admin{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        <h1>Photos</h1>
+        <p>
+            Total: {{ total_photos }} photo{% if total_photos > 1 %}s{% endif %}, including {{ total_public_photos }} in public access.<br />
+            <span class="total-frame"><i class="fas fa-camera-retro fa-lg"></i> {{ gallery_total[0] }}</span>
+            <span class="total-frame"><i class="fas fa-heart"></i> {{ gallery_total[1] }}</span>
+        </p>
+        <form>
+            <div class="form-inline row mb-3">
+                <div class="col-6 col-sm-auto">
+                    <label class="col-form-label" for="order-by">Order By:</label>
+                </div>
+                <div class="col-6 col-sm-auto">
+                    <select id="order-by">
+                        {% for ordering_type in ordering_options %}
+                            <option{% if selected_ordering_type == ordering_type %} selected{% endif %}>{{ ordering_type }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 col-sm-auto">
+                    <label class="col-form-label" for="photos-per-page">Photos Per Page:</label>
+                </div>
+                <div class="col-6 col-sm-3">
+                    <select id="photos-per-page">
+                        {% for option in options_photos_per_page %}
+                            <option{% if photos_per_page == option %} selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </form>
+        <div class="custom-control custom-switch text-center">
+            <input type="checkbox" class="custom-control-input" id="orderingSwitch" />
+            <label class="custom-control-label" for="orderingSwitch">Enable Photo Re-Ordering (Drag &amp; Drop)</label>
+        </div>
+        <br />
+        {% if last_page > 1 %}
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item{% if current_page == 1 %} disabled{% endif %}">
+                        <a class="page-link"
+                           href="?page=1&amp;photos={{ photos_per_page }}&amp;orderby={{ selected_ordering_type }}"
+                           {% if current_page == 1 %} aria-disabled="true"{% endif %}
+                           title="Go to page 1">
+                            <i class="fas fa-backward"></i>
+                        </a>
+                    </li>
+                    <li class="page-item{% if current_page == 1 %} disabled{% endif %}">
+                        <a class="page-link"
+                           href="?page={{ current_page - 1 }}&amp;photos={{ photos_per_page }}&amp;orderby={{ selected_ordering_type }}"
+                           {% if current_page == 1 %} aria-disabled="true"{% endif %}
+                           title="Go to page {{ current_page - 1 }}">
+                            <i class="fas fa-step-backward"></i>
+                        </a>
+                    </li>
+                    {% for page in pagination %}
+                        <li class="page-item{% if current_page == page %} active" aria-current="page{% endif %}">
+                            <a class="page-link"
+                               href="?page={{ page }}&amp;photos={{ photos_per_page }}&amp;orderby={{ selected_ordering_type }}"
+                               title="Go to page {{ page }}">
+                               {{ page }}{% if current_page == page %} <span class="sr-only">(current)</span>{% endif %}
+                           </a>
+                        </li>
+                    {% endfor %}
+                    <li class="page-item{% if current_page == last_page %} disabled{% endif %}">
+                        <a class="page-link"
+                           href="?page={{ current_page + 1 }}&amp;photos={{ photos_per_page }}&amp;orderby={{ selected_ordering_type }}"
+                           {% if current_page == last_page %} aria-disabled="true"{% endif %}
+                           title="Go to page {{ current_page + 1 }}">
+                            <i class="fas fa-step-forward"></i>
+                        </a>
+                    </li>
+                    <li class="page-item{% if current_page == last_page %} disabled{% endif %}">
+                        <a class="page-link"
+                           href="?page={{ last_page }}&amp;photos={{ photos_per_page }}&amp;orderby={{ selected_ordering_type }}"
+                           {% if current_page == last_page %} aria-disabled="true"{% endif %}
+                           title="Go to page {{ last_page }}">
+                            <i class="fas fa-forward"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+        <div class="container-fluid" id="admin-photos">
+            {% for photo in gallery %}
+                <div class="sortable-item row border rounded bg-light shadow my-3 px-3">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="form-group row">
+                            
+                            <div class="col-sm-auto col-xl-2">
+                                <div class="my-3">
+                                    <img class="thumbnail-photo"
+                                         src="{{ url_for('photo_dir', photo_id=photo[0], filename=photo[1]) }}"
+                                         alt=""
+                                         data-id="{{ photo[0] }}" />
+                                </div>
+                            </div>
+                            
+                            <div class="col-sm-4 col-xl-1 mt-3">
+                                <div>
+                                    <span class="total-frame">
+                                        <i class="fas fa-camera-retro fa-lg"></i>
+                                        {{ photo[10] }}
+                                    </span>
+                                    <span class="total-frame">
+                                        <i class="fas fa-heart"></i>
+                                        {{ photo[11] }}
+                                    </span>
+                                </div>
+                                <div>
+                                    <a href="{{ url_for('photo_dir', photo_id=photo[0], filename=photo[1]) }}"
+                                       title="Open thumbnail"
+                                       target="_blank">
+                                        <i class="fas fa-image"></i>
+                                    </a><br />
+                                    <a href="{{ url_for('photo_dir', photo_id=photo[0], filename=photo[3]) }}"
+                                       title="Open medium photo"
+                                       target="_blank">
+                                        <i class="fas fa-image fa-2x"></i>
+                                    </a><br />
+                                    <a href="{{ url_for('photo_dir', photo_id=photo[0], filename=photo[2]) }}"
+                                       title="Open large photo"
+                                       target="_blank">
+                                        <i class="fas fa-image fa-3x"></i>
+                                    </a><br />
+                                    <a href="{{ url_for('photo_dir', photo_id=photo[0], filename=photo[4]) }}"
+                                       title="Open raw photo"
+                                       target="_blank">
+                                        <i class="fas fa-image fa-4x"></i>
+                                    </a>
+                                </div>
+                                <div>
+                                    <a href="delete"
+                                       title="Delete"
+                                       data-photo-id="{{ photo[0] }}"
+                                       class="onclick-admin-delete-photo">
+                                        <i class="fas fa-trash-alt fa-2x"></i></a>
+                                    <a href="#"
+                                       title="Edit"
+                                       data-photo-id="{{ photo[0] }}"
+                                       class="onclick-admin-edit-text">
+                                        <i class="fas fa-pen-square fa-2x"></i></a>
+                                </div>
+                            </div>
+                            
+                            <div class="col-sm-12 col-lg-6 col-xl-5">
+                                <div class="form-group row no-gutters mt-3">
+                                    <div class="col-sm-4 col-form-label">
+                                        <label for="input-title">Title:</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input type="text"
+                                                   value="{{ photo[5]|safe }}"
+                                                   class="form-control readonly"
+                                                   size="23"
+                                                   id="input-title"
+                                                   name="input-title"
+                                                   disabled />
+                                    </div>
+                                    <div class="col-sm-4 col-form-label">
+                                        <label for="input-focal-length">Focal Length:</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="form-inline">
+                                            <input type="number"
+                                                       value="{% if photo[16] != None %}{{ photo[16] }}{% endif %}"
+                                                       min="1"
+                                                       max="2000"
+                                                       class="form-control small-input-number readonly"
+                                                       id="input-focal-length"
+                                                       name="input-focal-length"
+                                                       disabled />
+                                            <span class="text-muted">mm</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-form-label">
+                                        <label for="input-exposure">Exposure:</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="form-inline">
+                                            <input type="number"
+                                                   value="{% if photo[17] != None %}{{ photo[17]|numerator }}{% endif %}"
+                                                   min="1"
+                                                   max="600"
+                                                   class="form-control small-input-number readonly"
+                                                   id="input-exposure"
+                                                   name="input-exposure-numerator"
+                                                   disabled />
+                                            <span class="text-muted">/</span>
+                                            <input type="number"
+                                                   value="{% if photo[17] != None %}{{ photo[17]|denominator }}{% endif %}"
+                                                   min="1"
+                                                   max="8000"
+                                                   class="form-control small-input-number readonly"
+                                                   name="input-exposure-denominator"
+                                                   disabled />
+                                            <span class="text-muted">s</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-form-label">
+                                        <label for="input-f">F:</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input type="number"
+                                               value="{% if photo[18] != None %}{{ photo[18] }}{% endif %}"
+                                               min="1"
+                                               max="100"
+                                               step="0.1"
+                                               class="form-control small-input-number readonly"
+                                               id="input-f"
+                                               name="input-f"
+                                               disabled />
+                                    </div>
+                                    <div class="col-sm-4 col-form-label">
+                                        <label for="input-iso">ISO:</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input type="number"
+                                               value="{% if photo[19] != None %}{{ photo[19] }}{% endif %}"
+                                               min="1"
+                                               max="9000"
+                                               class="form-control small-input-number readonly"
+                                               id="input-iso"
+                                               name="input-iso"
+                                               disabled />
+                                    </div>
+                                    <div class="col-sm-4 col-form-label">
+                                        <label for="input-access-level">Access Level:</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="form-inline">
+                                            <input type="number"
+                                                   placeholder="Access Level"
+                                                   min="0"
+                                                   max="255"
+                                                   size="3"
+                                                   maxlength="3"
+                                                   class="form-control small-input-number readonly"
+                                                   value="{{ photo[9] }}"
+                                                   id="input-access-level"
+                                                   name="input-access-level"
+                                                   required
+                                                   disabled />
+                                            <span class="text-muted">/ 255</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-form-label">
+                                        <label for="input-local-date-taken">Local Date Taken:</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input type="text"
+                                               class="form-control readonly"
+                                               id="input-local-date-taken"
+                                               size="17"
+                                               value="{% if photo[15] != None %}{{ photo[15] }}{% endif %}"
+                                               name="input-local-date-taken"
+                                               disabled />
+                                    </div>
+                                    <div class="col-sm-4 col-form-label mb-1">
+                                        Date Added:
+                                    </div>
+                                    <div class="col-sm-8 my-2">
+                                        <abbr title="Server Time">{{ photo[7] }}</abbr>
+                                    </div>
+                                    <div class="col-sm-4 col-form-label my-1">
+                                        Modified:
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="my-2">
+                                            {% if photo[8] %}
+                                                <abbr title="Server Time">{{ photo[8] }}</abbr>
+                                            {% else %}
+                                                Never
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-6 col-xl-4">
+                                <div class="form-group">
+                                    <div class="text-center mt-2">
+                                        <label for="input-description">
+                                            Description:
+                                        </label>
+                                    </div>
+                                    <textarea class="form-control readonly"
+                                              name="input-description"
+                                              rows="9"
+                                              disabled>{{ photo[6]|safe }}</textarea>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+        {% if last_page > 1 %}
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item{% if current_page == 1 %} disabled{% endif %}">
+                        <a class="page-link"
+                           href="?page=1&amp;photos={{ photos_per_page }}"
+                           {% if current_page == 1 %} aria-disabled="true"{% endif %}
+                           title="Go to page 1">
+                            <i class="fas fa-backward"></i>
+                        </a>
+                    </li>
+                    <li class="page-item{% if current_page == 1 %} disabled{% endif %}">
+                        <a class="page-link"
+                           href="?page={{ current_page - 1 }}&amp;photos={{ photos_per_page }}"
+                           {% if current_page == 1 %} aria-disabled="true"{% endif %}
+                           title="Go to page {{ current_page - 1 }}">
+                            <i class="fas fa-step-backward"></i>
+                        </a>
+                    </li>
+                    {% for page in pagination %}
+                        <li class="page-item{% if current_page == page %} active" aria-current="page{% endif %}">
+                            <a class="page-link"
+                               href="?page={{ page }}&amp;photos={{ photos_per_page }}"
+                               title="Go to page {{ page }}">
+                               {{ page }}{% if current_page == page %} <span class="sr-only">(current)</span>{% endif %}
+                           </a>
+                        </li>
+                    {% endfor %}
+                    <li class="page-item{% if current_page == last_page %} disabled{% endif %}">
+                        <a class="page-link"
+                           href="?page={{ current_page + 1 }}&amp;photos={{ photos_per_page }}"
+                           {% if current_page == last_page %} aria-disabled="true"{% endif %}
+                           title="Go to page {{ current_page + 1 }}">
+                            <i class="fas fa-step-forward"></i>
+                        </a>
+                    </li>
+                    <li class="page-item{% if current_page == last_page %} disabled{% endif %}">
+                        <a class="page-link"
+                           href="?page={{ last_page }}&amp;photos={{ photos_per_page }}"
+                           {% if current_page == last_page %} aria-disabled="true"{% endif %}
+                           title="Go to page {{ last_page }}">
+                            <i class="fas fa-forward"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,186 @@
+Setup
+=====
+
+Offline
+-------
+
+This section details how to install the application offline (i.e. localhost) for development, debug and test purposes.
+
+On Debian-based Operating Systems
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Install the required deb packages**
+
+Run as root:
+
+.. code-block:: none
+
+    apt-get update -y
+    apt-get install -y python3-pip python3-dev python3-pytest cloc \
+    git wget default-mysql-client default-mysql-server
+
+**Install Node.js**
+
+Run as root:
+
+.. code-block:: none
+
+    VERSION=v12.16.1
+    DISTRO=linux-x64
+    mkdir -p /usr/local/lib/nodejs
+    wget https://nodejs.org/dist/$VERSION/node-$VERSION-$DISTRO.tar.xz
+    tar -xJvf node-$VERSION-$DISTRO.tar.xz -C /usr/local/lib/nodejs
+    export PATH=/usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin:$PATH
+    . ~/.profile
+    rm -f node-$VERSION-$DISTRO.tar.xz
+    npm -g config set ignore-scripts true
+    npm install -g jsdoc
+    npm install -g @mapbox/togeojson
+
+**Install the Python virtual environment (venv)**
+
+Run as user:
+
+.. code-block:: none
+
+    cd ~/Public
+    pip3 install --user virtualenv
+    virtualenv -p /usr/bin/python3.7 venv
+
+More information about venv: `virtual environment <https://docs.python-guide.org/dev/virtualenvs/>`_.
+
+**Install the Python dependencies inside the venv**
+
+Run as user:
+
+.. code-block:: none
+
+    source venv/bin/activate
+    pip3 install -U setuptools
+    
+    git clone https://github.com/pallets/secure-cookie.git
+    cd secure-cookie
+    python3 setup.py install
+    cd -
+    rm -rf secure-cookie
+    
+    git clone https://github.com/mattupstate/flask-mail.git
+    cd flask-mail
+    python3 setup.py install
+    cd -
+    rm -rf flask-mail
+    
+    git clone https://github.com/tkrajina/gpxpy.git
+    cd gpxpy
+    python3 setup.py install
+    cd -
+    rm -rf gpxpy
+    
+    git clone -b EarthDataLogin --single-branch https://github.com/ExploreWilder/srtm.py
+    cd srtm.py
+    python3 setup.py install
+    cd -
+    rm -rf srtm.py
+
+    git clone https://github.com/gkovacs/lz-string-python.git
+    cd lz-string-python
+    python3 setup.py install
+    cd -
+    rm -rf lz-string-python
+    
+    mkdir dkimpy
+    cd dkimpy
+    wget https://launchpad.net/dkimpy/1.0/1.0.4/+download/dkimpy-1.0.4.tar.gz
+    tar -zxvf dkimpy-1.0.4.tar.gz
+    cd dkimpy-1.0.4
+    python3 setup.py install --single-version-externally-managed --record=/dev/null
+    cd ../..
+    rm -rf dkimpy
+    
+    python -m pip install git+https://github.com/maxcountryman/flask-seasurf.git
+    python -m pip install git+https://github.com/ExploreWilder/mdx_sections.git
+    
+    pip3 install -r requirements.txt
+    rm -f requirements.txt
+    pip3 install sphinx sphinxcontrib-napoleon sphinx-js sphinx_bootstrap_theme
+
+**Configure MySQL**
+
+Run as root:
+
+.. code-block:: none
+
+    mysql -u root -p
+    mysql> USE mysql;
+    mysql> UPDATE user SET plugin='mysql_native_password' WHERE User='root';
+    mysql> FLUSH PRIVILEGES;
+    mysql> exit;
+    systemctl restart mysql
+    mysqladmin -u root password 'root'
+
+On Fedora
+^^^^^^^^^
+
+The Python stuff is installed as detailed above. The difference of the system setup is detailed below.
+
+**Install the required dnf packages**
+
+Run as root:
+
+.. code-block:: none
+
+    dnf install git python3-pytest cloc
+
+**Install Gulp**
+
+Run as root:
+
+.. code-block:: none
+
+    npm install --global gulp-cli
+
+Run as user:
+
+.. code-block:: none
+
+    cd flaskr/static/
+    npm init
+    npm install --save-dev gulp gulp-less gulp-sourcemaps gulp-cssnano gulp-autoprefix jquery popper.js gulp-uglify gulp-babel @babel/core @babel/preset-env @babel/plugin-proposal-class-properties event-stream gulp-notify gulp-remove-use-strict
+    npm install --save @fortawesome/fontawesome-free bootstrap
+
+**Configure MySQL**
+
+More details `here <https://dev.mysql.com/doc/mysql-repo-excerpt/8.0/en/linux-installation-yum-repo.html>`_.
+
+#. download the rpm
+#. download the `GPG pubkey <https://dev.mysql.com/doc/refman/8.0/en/checking-gpg-signature.html>`_
+#. import the key into rpm: ``sudo rpm --import mysql_pubkey.asc``
+#. check the rpm GPG signature: ``rpm --checksig mysql80-community-release-fc31-1.noarch.rpm``
+#. install the downloaded package: ``sudo dnf localinstall mysql80-community-release-fc31-1.noarch.rpm``
+#. upgrade MySQL: ``sudo dnf upgrade``
+#. start MySQL: ``sudo service mysqld start``
+#. find out the temporary root password: ``sudo grep 'temporary password' /var/log/mysqld.log``
+#. login: ``mysql -u root -p``
+#. change the password: ``mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY 'your local password';``
+
+Online
+------
+
+Go to your cPanel and click on "Setup Python App" in the "Software" tab:
+
+.. image:: _images/cpanel_start_setup_python_app.png
+
+Then create a new app:
+
+.. image:: _images/cpanel_create_python_app.png
+
+Then choose the latest Python version (I'm using 3.7.3) and the application root directory.
+
+Finally, enter the created venv, install the Python dependencies as detailed above, copy the app and data, setup your MySQL database and that's it!
+
+Here you have a list of things to think about when putting the application online (i.e. production):
+
+* Change your passwords
+* Configure your MySQL user and database
+* Check the *robots.txt* and *.htaccess* files
+* Restart the app to apply changes with something like ``touch tmp/restart.txt`` or do it through the cPanel

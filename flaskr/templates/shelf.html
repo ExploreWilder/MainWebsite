@@ -1,0 +1,156 @@
+{% extends "layout.html" %}
+{% block title %}Adventure Stories &amp; Personal Diaries{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        {% if shelf == () %}
+            <div class="alert alert-info" role="alert">
+                The shelf is empty!
+            </div>
+        {% else %}
+            <div class="row card-columns-shelf mx-1 my-3">
+                {% for book in shelf %}
+                    <div class="col-md-4 px-3">
+                        <div class="card my-3 animate-shadow">
+                            <div class="card-img-top">
+                                <img src="{{ book[9] }}" class="preview-card" alt="">
+                                <img src="" data-src="/books/{{ book[7] }}/{{ book[0] }}/card.jpg" class="hidden-card" alt="">
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    {% if book[6] == "draft" %}
+                                        <span class="text-muted float-right">[Draft]</span>
+                                    {% endif %}
+                                    {{ book[3] }}
+                                </h5>
+                                {% if book[4] %}
+                                    <p class="card-text">
+                                        <small class="text-muted" title="Period">
+                                            <i class="far fa-calendar-alt"></i>
+                                            {{ book[4] }}
+                                        </small>
+                                    </p>
+                                {% endif %}
+                                <div class="card-text">
+                                    {{ book[5]|safe }}
+                                </div>
+                                <div class="card-text">
+                                    {% if book[6] == "draft" %}
+                                        {% if is_logged %}
+                                            <a href="/stories/{{ book[7] }}/{{ book[0] }}"
+                                            data-book-id="{{ book[7] }}"
+                                            class="btn btn-success onclick-open-this-book"
+                                            role="button">
+                                                <i class="fas fa-book-open"></i>
+                                                Read draft
+                                            </a>
+                                            <span class="text-danger">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                                <a href="#" class="onclick-open-modal-copyright text-danger">
+                                                    <strong>Disclosure prohibited</strong>
+                                                </a>
+                                            </span>
+                                        {% else %}
+                                            <a href="#" class="btn btn-success disabled" role="button">
+                                                <i class="fas fa-book"></i>
+                                                Coming soon!
+                                            </a>
+                                            <a href="/login"
+                                            class="btn btn-success"
+                                            role="button">
+                                                <i class="fas fa-sign-in-alt"></i>
+                                                Login to preview
+                                            </a>
+                                        {% endif %}
+                                    {% elif book[6] == "crowdfunding" %}
+                                        <a href="https://ko-fi.com/explorewilder"
+                                        class="btn btn-success"
+                                        target="_blank"
+                                        role="button">
+                                            <i class="fas fa-hand-holding-heart"></i>
+                                            Crowdfunding!
+                                        </a>
+                                        <div class="crowdfunding-progress" title="<span class='crowdfunding-percent'>{{ book[8]|int }}% <i class='far fa-laugh'></i></span>" data-toggle="tooltip">
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ book[8]|int }}%" aria-valuenow="{{ book[8]|int }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        </div>
+                                    {% else %}
+                                        {% if book[2] == "md" or book[2] == "json" %}
+                                            <a href="/stories/{{ book[7] }}/{{ book[0] }}"
+                                            class="btn btn-success onclick-open-this-book"
+                                            data-book-id="{{ book[7] }}"
+                                            role="button">
+                                                <i class="fas fa-book-open"></i>
+                                                Read
+                                            </a>
+                                        {% else %}
+                                            <a href="/books/{{ book[7] }}/{{ book[0] }}/{{ book[1] }}"
+                                            class="btn btn-success onclick-open-this-book"
+                                            data-book-id="{{ book[7] }}"
+                                            role="button">
+                                                <i class="fas fa-file-pdf"></i>
+                                                Download
+                                            </a>
+                                        {% endif %}
+                                        <a href="#"
+                                        class="btn btn-success onclick-like-this-book"
+                                        data-book-id="{{ book[7] }}"
+                                        role="button"
+                                        title="Just like! You don't need to sign in."
+                                        data-toggle="tooltip">
+                                            <i class="fas fa-thumbs-up"></i>
+                                            Like
+                                        </a>
+                                        {% with id_prepend = book[7]|string, link = 'stories/' + (book[7]|string) + '/' + book[0], subject = 'Read "' + book[3] + '" from ' + config.BRAND_NAME %}
+                                            {% include "share_social_network_buttons.html" %}
+                                        {% endwith %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                {% if not is_logged %}
+                    <div class="col-md-4 px-3">
+                        <div class="card my-3 animate-shadow">
+                            <div class="card-img-top">
+                                <img src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%0A%20%20%20%20%20xmlns%3Axlink%3D%22http%3A//www.w3.org/1999/xlink%22%0A%20%20%20%20%20width%3D%22900%22%20height%3D%22600%22%0A%20%20%20%20%20viewBox%3D%220%200%20900%20600%22%3E%0A%20%20%20%20%3Cfilter%20id%3D%22blur%22%20filterUnits%3D%22userSpaceOnUse%22%20color-interpolation-filters%3D%22sRGB%22%3E%0A%20%20%20%20%20%20%20%20%3CfeGaussianBlur%20stdDeviation%3D%2220%2020%22%20edgeMode%3D%22duplicate%22%20/%3E%0A%20%20%20%20%20%20%20%20%3CfeComponentTransfer%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CfeFuncA%20type%3D%22discrete%22%20tableValues%3D%221%201%22%20/%3E%0A%20%20%20%20%20%20%20%20%3C/feComponentTransfer%3E%0A%20%20%20%20%3C/filter%3E%0A%20%20%20%20%3Cimage%20filter%3D%22url%28%23blur%29%22%0A%20%20%20%20%20%20%20%20%20%20%20xlink%3Ahref%3D%22data%3Aimage/jpeg%3Bbase64%2C/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYIx8lJCIfIiEmKzcvJik0KSEiMEExNDk7Pj4%2BJS5ESUM8SDc9Pjv/wAALCAAcACoBAREA/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4%2BTl5ufo6erx8vP09fb3%2BPn6/9oACAEBAAA/AOnVwB1o81c4zVS51GGFyjvhsZx6iq8epQ3DlY3yQM4NK04PemebU/nFumTQpfazMcHsPSuf1CKa4vYxC3ntj5iDwtTrYSW9ud7xqG%2BUvJlSPoaiit57BygJkjZdxOB19uaf9sH91x/wA1PFqcSRGV5V2DgBeT%2BVSwPcampVUaGBuDvU72Hf8KvR2ZjCRW%2ByNQPmI7fT3qUW21dk7%2Bdk5G4DimSxKVbKAoVxtHpWaLGIjIQgHp97/Gpbezt4rry0iVUAzgDua0/LVCFXKrjGB3qKCZhLJhVGJSnA7c1PLwD79ahkJM6LngD86Xbmv//Z%22%0A%20%20%20%20%20%20%20%20%20%20%20x%3D%220%22%20y%3D%220%22%0A%20%20%20%20%20%20%20%20%20%20%20height%3D%22100%25%22%20width%3D%22100%25%22/%3E%0A%3C/svg%3E" class="preview-card" alt="">
+                                <img src="" data-src="/books/locked.jpg" class="hidden-card" alt="">
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">Heaven's Door</h5>
+                                <div class="card-text">
+                                    <div class="alert alert-info" role="alert">
+                                        Become a member to access exclusive content! Please <a href="/login" class="alert-link">sign in</a>.
+                                    </div>
+                                </div>
+                                <div class="card-text">
+                                    <a href="/login"
+                                    class="btn btn-success"
+                                    role="button">
+                                        <i class="fas fa-sign-in-alt"></i>
+                                        Login
+                                    </a>
+                                    <a href="/about"
+                                    class="btn btn-success"
+                                    role="button">
+                                        <i class="far fa-envelope"></i>
+                                        Contact me
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+    {% include "feedback.html" %}
+    {% if not "subscribed" in session %}
+        {% include "subscribe_newsletter.html" %}
+    {% endif %}
+    {% include "cookie_policy_consent.html" %}
+    {% if is_logged %}
+        {% include "copyright_notice.html" %}
+    {% endif %}
+{% endblock %}

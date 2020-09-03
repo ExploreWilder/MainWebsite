@@ -1,0 +1,100 @@
+<div id="modal-privacy-policy" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Privacy Policy</h4>
+            </div>
+            <div class="modal-body text-justify">
+{% filter markdown %}
+**I Collect The Following Types of Information About You:**
+
+* Your [IP address](https://en.wikipedia.org/wiki/IP_address):
+    * Masked/anonymised IP: when you open a photo or a book;
+    * Full IP: when you contact me or log in;
+* Your name or nickname: if you contact me (optional input field);
+* Your e-mail address: if you contact me or subscribe to the newsletter;
+* Your [user agent](https://en.wikipedia.org/wiki/User_agent): only if you contact me.
+
+**My Web Hosting Service Collects:**
+
+* Your full IP address
+* Your user agent
+
+<div class="alert alert-success" role="alert">
+    <i class="fas fa-check-circle"></i> To sum up: <strong> I collect the bare minimum.</strong>
+</div>
+
+---------------------------------------
+
+**About Cookies:** Not a single *third party* cookie is used but this website uses cookies to store *pseudonymous* data (session cookies and security tokens) and a tracker (aka cookie ID). The extended cookie lifetime is only permitted by your consent.
+
+<div class="alert alert-success" role="alert">
+    <i class="fas fa-check-circle"></i> To sum up: <strong>0 third party cookie, 1 tracker disabled by default.</strong>
+</div>
+
+---------------------------------------
+
+**What The Information Are Used For?** The cookie ID is used to distinguish visitors to build up stats. The IP address is used for security and traffic analysis purposes. Your user agent are used for debug, stats, and security purposes. Any data *processing* is anonymised. It is possible, however, to uniquely identify a visitor activity with some efforts of data analysis and software engineering.
+
+<div class="alert alert-success" role="alert">
+    <i class="fas fa-check-circle"></i> To sum up: <strong> there is no profiling.</strong>
+</div>
+
+---------------------------------------
+
+**Data Retention & Your Rights:** The web hosting service keeps logs (IP addresses and user agents) for no longer than a month. Otherwise, most of the collected data maybe stored for an extended period of time. Nevertheless, you have the fundamental *right to access*, rectification and erasure of your *personal data*. I'll respond to every request for information and the *right of erasure*. If you've subscribed to the newsletter and don't want to receive news anymore, you can unsubscribe thanks to the link at the bottom of the email. Then, your name and email will be automatically deleted. If you were a member, your account would be deleted!
+
+<div class="alert alert-success" role="alert">
+    <i class="fas fa-check-circle"></i> To sum up: <strong> deleting your data is easy peasy.</strong>
+</div>
+
+---------------------------------------
+
+**Privacy & Security:** Any *personal data breach* or unlawful use of your personal data is considered critical. If detected, my [status page](https://explorewilder.statuspage.io/) would be updated consequently. Your privacy is important to me. That is why 100% of the collected data as well as my website (content and interface) are stored in the GDPR-compliant [A2Hosting](https://www.a2hosting.com/about/policies) data centers located in Amsterdam, Netherlands. Backups are stored encrypted in GDPR-compliant and ISO 27001 certified data centers. Your collected data are not processed by any *third party*. A strict [CSP](https://en.wikipedia.org/wiki/Content_Security_Policy "Content Security Policy") is used ([rated A](https://securityheaders.com/?q=https%3A%2F%2Fexplorewilder.com) by securityheaders.com). Members' passwords are stored in hashed form. All requests and data to/from my website are encrypted before being transmitted over the Internet with the TLS protocol ([rated A+](https://www.ssllabs.com/ssltest/analyze.html?d=explorewilder.com&hideResults=on) by the Qualys' SSL Labs, with HSTS and PFS among other security features). Emails are transmitted over SMTP (with SPF, DKIM, DMARC among other security features) and do not contain any tracking solutions (no images, no tracking pixels, no tracking links).
+
+<div class="alert alert-success" role="alert">
+    <i class="fas fa-check-circle"></i> To sum up: <strong> your privacy and security are my priorities.</strong>
+</div>
+
+---------------------------------------
+
+Notice that your visit may trigger third-party HTTPS connections with those domains:
+
+{% for connection in allowed_external_connections(config.CSP_CONFIG) %}
+* {{ connection }}{% endfor %}
+
+---------------------------------------
+
+**Some Definitions:**
+
+Third party
+:   Article 4(10) of the [GDPR](https://eur-lex.europa.eu/eli/reg/2016/679/oj)
+
+Pseudonymised
+:   Article 4(5)
+
+Personal data
+:   Article 4(1)
+
+Personal data breach
+:   Article 4(12)
+
+Processing
+:   Article 4(2)
+
+Profiling
+:   Article 4(4)
+
+Right to access
+:   Article 15
+
+Right of erasure
+:   Article 17
+{% endfilter %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"><i class="fas fa-check"></i> Okay</button>
+            </div>
+        </div>
+    </div>
+</div>

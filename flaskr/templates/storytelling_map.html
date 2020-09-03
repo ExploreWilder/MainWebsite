@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+{% block title %}{{ book.title }}{% endblock %}
+{% block class_body %}loading-storytelling-map{% endblock %}
+{% block extra_tags %}
+    <link href="https://api.mapbox.com/" rel="preconnect" crossorigin>
+    <link href="https://api.mapbox.com/" rel="dns-prefetch" />
+    <link href="/static/mapbox-gl-1.12.0.min.css" rel="stylesheet" />
+    <link href="/static/dist-{{ config.STATIC_PROJECT_VERSION }}/css/storytelling_map.css" rel="stylesheet" />
+{% endblock %}
+{% block body %}
+    <div id="storytelling-map">
+        <div id="storytelling-map-map"></div>
+        <div id="storytelling-map-context"></div>
+        {% if not is_prod %}
+            <div id="storytelling-location-helper" class="bg-white p-2">
+                <div id="storytelling-location-helper-info">
+                    "center": [?, ?],<br>
+                    "zoom": ?,<br>
+                    "pitch": ?,<br>
+                    "bearing": ?<br>
+                </div>
+                <div class="input-group mt-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <input type="checkbox" id="map-on-top" />
+                        </div>
+                    </div>
+                    <div class="input-group-append">
+                        <label class="input-group-text" for="map-on-top">Map on top</label>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <div id="storytelling-map-story">
+            <div id="storytelling-map-header" class="light">
+                <h1>
+                    {% if book.status == 'draft' %}
+                        <span class="text-muted">[Draft]</span>
+                    {% endif %}
+                    {{ book.title }}
+                </h1>
+                {{ book.description.html|safe }}
+            </div>
+            <div id="wait-before-visible"><i class="far fa-compass fa-2x fa-spin"></i> <span id="loading-progress-info">Loading...</span></div>
+            <div id="storytelling-map-footer" class="px-4">
+                {% include "networks.html" %}
+                <p class="text-center">
+                    Please read my copyright notice in the <a href="/about">about page</a>.<br />
+                    Map API and tiles: <a href="https://www.mapbox.com/about/maps/">© Mapbox</a>,
+                    <a href="http://www.openstreetmap.org/about/">© OpenStreetMap</a>,
+                    <a href="https://www.mapbox.com/map-feedback/#/-74.5/40/10">Improve this map</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    {% include "popup_story.html" %}
+{% endblock %}
+{% block extra_scripts %}
+    <script nonce="{{ csp_nonce() }}" src="/static/mapbox-gl-1.12.0.min.js"></script>
+    <script nonce="{{ csp_nonce() }}">
+        BOOK_ID={{ book.id }};
+        BOOK_DIR="{{ book.url }}";
+        BOOK_FILENAME="{{ book.filename }}";
+        DEBUG_MODE={% if is_prod %}false{% else %}true{% endif %};
+    </script>
+    <script nonce="{{ csp_nonce() }}" src="/static/dist-{{ config.STATIC_PROJECT_VERSION }}/js/storytelling_map.app.bundle.js"></script>
+{% endblock %}

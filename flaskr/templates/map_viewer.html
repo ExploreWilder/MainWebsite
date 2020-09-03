@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta charset="utf-8" />
+        <meta name="robots" content="noindex,nofollow" />
+        <meta name="author" content="{{ config.LEGAL_NAME }}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="csrf-token" content="{{ csrf_token() }}" />
+        <meta name="twitter:site" content="@{{ config.TWITTER_ACCOUNT.username }}" />
+        <link href="https://opentopomap.org/" rel="dns-prefetch" />
+        <link href="https://api.mapbox.com/" rel="dns-prefetch" />
+        <link rel="preload" href="/static/dist-{{ config.STATIC_PROJECT_VERSION }}/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+        <link rel="icon" href="/static/favicons/favicon.ico" sizes="16x16 32x32 48x48 64x64" type="image/vnd.microsoft.icon" />
+        <link rel="stylesheet" href="/static/dist-{{ config.STATIC_PROJECT_VERSION }}/css/map_viewer.css" type="text/css" />
+        <title>Map Viewer, {{ country }} version | {{ config.BRAND_NAME }}</title>
+    </head>
+    <body>
+        <div id="map"></div>
+
+        <div id="menu" title="Menu">
+            <p>
+                Basemap:
+                <label
+                    for="country-specific-layers"
+                    title="Official government data">Country Specific</label>
+                <input type="radio" name="layer" id="country-specific-layers" />
+                <label
+                    for="worldwide-layers"
+                    title="Worldwide harmonised data">Worldwide</label>
+                <input type="radio" name="layer" id="worldwide-layers" />
+            </p>
+            <p>
+                Aerial Imagery Basemap Opacity (<span id="opacity-slider-value">50</span>%):
+            </p>
+            <div id="opacity-slider"></div>
+            <p>Zoom:
+                <button id="zoom-in">Zoom in</button>
+                <button id="zoom-out">Zoom out</button>
+            </p>
+            <p class="attribution">
+                Application (c) <a href="/about" target="_blank" title="Read the copyright notice">{{ config.LEGAL_NAME }}</a><br />
+                Country specific tiles (c)
+                {% if country == "NZ" %}
+                    <a href="http://data.linz.govt.nz" target="_blank" title="Find out more">LINZ</a>
+                    (<a href="https://creativecommons.org/licenses/by/3.0/"
+                       target="_blank"
+                       title="Read the copyright notice">CC-BY 3.0</a>)
+                {% elif country == "FR" %}
+                    IGN
+                {% elif country == "CA" %}
+                    <a href="https://open.canada.ca/en/open-government-licence-canada" title="Find out more">Open Government Licence - Canada</a> (topo),
+                    <a href="https://www.mapbox.com/about/maps/" title="Find out more">Mapbox</a> (satellite)
+                {% elif country == "NO" %}
+                    <a href="http://www.kartverket.no/" title="Find out more">Kartverket</a> (topo),
+                    <a href="https://www.mapbox.com/about/maps/" title="Find out more">Mapbox</a> (satellite)
+                {% endif %}<br />
+                Worldwide tiles (c)
+                <a href="https://opentopomap.org" title="Find out more">OpenTopoMap</a>
+                (<a href="https://creativecommons.org/licenses/by-sa/3.0/" title="Read the copyright notice">CC-BY-SA 3.0</a>),
+                <a href="https://www.mapbox.com/about/maps/" title="Find out more">Mapbox</a> (satellite)
+            </p>
+        </div>
+
+        <div id="gpx-info" title="Track Info">
+            <ul id="gpx-info-list"></ul>
+            <!-- https://www.chartjs.org/docs/latest/general/responsive.html -->
+            <div id="elevation-chart-container" style="position: relative; width: calc(600px - 2em); min-height: 300px;">
+                <canvas id="elevation-chart"></canvas>
+            </div>
+        </div>
+
+        <div id="download-gpx" title="Download GPX">
+            {% if gpx_download_path %}
+                <p>
+                    The GPX file is just for you and <a href="/about" target="_blank" title="Read the copyright notice">copyright {{ config.LEGAL_NAME }}</a>.
+                </p>
+                <p>
+                    <a class="ui-button ui-widget ui-corner-all" href="{{ gpx_download_path }}">Download Raw GPX File</a>
+                </p>
+            {% else %}
+                <p>
+                    Only members can download GPX files.
+                </p>
+                <p>
+                    <a class="ui-button ui-widget ui-corner-all" href="/login" target="_blank">Sign in</a>
+                </p>
+            {% endif %}
+        </div>
+
+        <button id="goto-gpx-info" title="Open Track Info">Track Info</button>
+        <button id="goto-menu" title="Open Settings &amp; Attributions">Menu</button>
+        <button id="goto-download-gpx" title="Download Raw GPX File">Download GPX</button>
+
+        <div id="tooltip-waypoint" title=""></div>
+
+        {% if is_prod %}
+            <script nonce="{{ csp_nonce() }}" src="/static/sentry-5.21.4.min.js"></script>
+            <script nonce="{{ csp_nonce() }}" type="text/javascript">
+                Sentry.init({dsn: "{{ config.SENTRY_DSN }}"});
+                {% if sentry_event_id %}
+                    setTimeout(function() {
+                        Sentry.showReportDialog({
+                            eventId: '{{ sentry_event_id }}',
+                            user: {
+                                email: '{% if "email" in session %}{{ session.email }}{% endif %}',
+                                name: '{% if "username" in session %}{{ session.username }}{% endif %}'
+                            }
+                        });
+                    }, 3000);
+                {% endif %}
+            </script>
+        {% endif %}
+        <script nonce="{{ csp_nonce() }}" src="/static/dist-{{ config.STATIC_PROJECT_VERSION }}/js/map_viewer.vendor.bundle.js"></script>
+        <script nonce="{{ csp_nonce() }}">
+            MAPBOX_PUB_KEY="{{ config.MAPBOX_PUB_KEY }}";
+        </script>
+        <script nonce="{{ csp_nonce() }}" src="/static/dist-{{ config.STATIC_PROJECT_VERSION }}/js/map_viewer.app.bundle.js"></script>
+    </body>
+</html>

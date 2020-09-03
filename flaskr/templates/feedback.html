@@ -1,0 +1,148 @@
+<div class="container">
+    <div class="modal fade" id="modal-feedback" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Thank you!</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Your feedback motivates me to keep sharing more photos, stories, and e-books you like!
+                    </p>
+                    <div id="show-after-success"></div>
+                    <div id="hide-after-success">
+                        <p>
+                            Would you like to tell me more?
+                        </p>
+                        <form id="feedback-form" novalidate>
+                            {% include "dropdown_menu_subject.html" %}
+                            <div class="form-label-group">
+                                <label for="message">Message:</label><br />
+                                <textarea
+                                    class="form-control"
+                                    rows="5"
+                                    id="message"
+                                    tabindex="1"
+                                    required></textarea>
+                                <div class="invalid-feedback">
+                                    Please write something, but not just &#171;something&#187;!
+                                </div>
+                            </div>
+                            <div id="hiden-form-group">
+                                <div class="form-group">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               id="engage-more-decision"
+                                               tabindex="2"
+                                               name="engage-more-decision">
+                                        <label class="form-check-label" for="engage-more-decision">
+                                            Would you like me to reply to your message?
+                                        </label>
+                                    </div>
+                                </div>
+                                <div id="engage-more-group">
+                                    
+                                    <div class="container-fluid px-0">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="form-label-group">
+                                                    <label for="name">Name:</label><br />
+                                                    <input
+                                                        type="text"
+                                                        id="name"
+                                                        class="form-control"
+                                                        tabindex="3"
+                                                        value="{{ default_name }}" />
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="form-label-group">
+                                                    <label for="email">Email address:</label><br />
+                                                    <input
+                                                        type="email"
+                                                        id="email"
+                                                        class="form-control"
+                                                        tabindex="4"
+                                                        value="{{ default_email }}"
+                                                        pattern="[^@]+@[^@]+\.[^@]+" />
+                                                    <div class="invalid-feedback">
+                                                        Please double-check your e-mail address.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group" id="ask-subscription">
+                                        <div class="form-check">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   tabindex="5"
+                                                   id="newsletter-subscription"
+                                                   name="newsletter-subscription">
+                                            <label class="form-check-label" for="newsletter-subscription">
+                                                Subscribe to the newsletter <small class="text-muted">(news once a month)</small>
+                                            </label>
+                                        </div>
+                                        <div class="alert alert-info p-1 px-2" role="alert">
+                                            Subscription is required for membership!
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               id="privacy-policy"
+                                               name="privacy-policy"
+                                               tabindex="6"
+                                               required>
+                                        <label class="form-check-label" for="privacy-policy">
+                                            I have read the <a href="#" class="onclick-open-modal-privacy-policy">Privacy Policy</a>
+                                        </label>
+                                        <div class="invalid-feedback">
+                                            You must read and tick the box.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-label-group text-center">
+                                    <label for="captcha">Captcha:</label><br />
+                                    <img src="" id="captcha-passcode" /><!--
+                                    --><a href="#"
+                                          id="onclick-reload-captcha"><i class="fas fa-sync"></i></a>
+                                    <input
+                                        type="text"
+                                        id="captcha"
+                                        class="form-control mx-auto"
+                                        autocomplete="off"
+                                        tabindex="7"
+                                        maxlength="3"
+                                        required />
+                                    <div class="invalid-feedback">
+                                        Please copy the code into the box!
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <button
+                                        type="submit"
+                                        title="Send"
+                                        class="btn"
+                                        tabindex="8"><i class="far fa-paper-plane fa-2x"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <p>
+                        Thank you again,<br />
+                        Clement
+                    </p>
+                    {% include "networks.html" %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

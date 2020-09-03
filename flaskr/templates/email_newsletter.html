@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <head></head>
+    <body>
+        <h1>{{ subject }}</h1>
+        <p>
+            {% if username %}
+                Hello {{ username }},
+            {% else %}
+                Hello!
+            {% endif %}
+        </p>
+        {{ news|safe }}
+        <p>
+            Cheers,<br />
+            {{ config.LEGAL_NAME }}<br />
+            #KeepExploring and sharing: <a href="{{ request.host_url }}" title="Visit {{ config.BRAND_NAME }}">{{ config.BRAND_NAME }}</a><br />
+            P.S.: You can reply to this email.
+        </p>
+        
+        <h3>Follow my adventure:</h3>
+        <ul>
+            {% for network in config.NETWORKS %}
+                <li>
+                    <a href="{{ network[1] }}" title="Follow me on {{ network[0] }}">
+                        Follow me on {{ network[0] }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        
+        <h3>Support me:</h3>
+        <ul>
+            <li>One-off donation for eternal gratitude: <a href="https://ko-fi.com/explorewilder" title="Buy me a coffee">buy me a coffee!</a></li>
+            <li>Get exclusive content: <a href="https://www.patreon.com/explorewilder" title="Become a Patron">become a Patron!</a></li>
+        </ul>
+        
+        <p style="text-align: center; color: gray; font-size: 0.8em;">
+            <a href="{{ url_unsubscribe }}" style="color: gray;" title="Unsubscribe from this newsletter / Delete my account">Unsubscribe</a> &#183;
+            <a href="{{ request.host_url }}about" style="color: gray;" title="Privacy Policy">Privacy</a> &#183;
+            <a href="{{ request.host_url }}login" style="color: gray;" title="Login">Login</a>
+        </p>
+    </body>
+</html>

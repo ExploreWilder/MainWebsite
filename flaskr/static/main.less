@@ -1,0 +1,1100 @@
+@import (inline) "node_modules/bootstrap/dist/css/bootstrap.min.css";
+@import "node_modules/@fortawesome/fontawesome-free/less/fontawesome";
+@import "node_modules/@fortawesome/fontawesome-free/less/brands";
+@import "node_modules/@fortawesome/fontawesome-free/less/regular";
+@import "node_modules/@fortawesome/fontawesome-free/less/solid";
+@import "node_modules/@fortawesome/fontawesome-free/less/v4-shims";
+@import "defines";
+
+/*!
+ * Copyright 2018-2020 Clement
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*
+ * FONTS
+ */
+
+@font-face {
+	font-family: 'MainFont';
+	src: url('@{my-regular-font}.eot');
+	src: url('@{my-regular-font}.eot?iefix') format('eot'),
+	     url('@{my-regular-font}.woff') format('woff'),
+	     url('@{my-regular-font}.ttf') format('truetype'),
+	     url('@{my-regular-font}.svg#webfont') format('svg');
+}
+
+@font-face {
+	font-family: 'TitleFont';
+	src: url('@{my-title-font}.eot');
+	src: url('@{my-title-font}.eot?iefix') format('eot'),
+	     url('@{my-title-font}.woff') format('woff'),
+	     url('@{my-title-font}.ttf') format('truetype'),
+	     url('@{my-title-font}.svg#webfont') format('svg');
+}
+
+/*
+ * NAVBAR
+ */
+
+#header .nav-item > a {
+    -webkit-transition: color 0.3s ease-out;
+    -moz-transition: color 0.3s ease-out;
+    -o-transition: color 0.3s ease-out;
+    transition: color 0.3s ease-out;
+    &:hover {
+        color: white !important;
+    }
+}
+
+#header .dropdown-menu > a.dropdown-item:hover {
+    -webkit-transition: all 0.3s ease-out;
+    -moz-transition: all 0.3s ease-out;
+    -o-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+    &:hover {
+        color: white !important;
+        background-color: var(--blue) !important;
+    }
+}
+
+.nav-item, .navbar-brand {
+    line-height: 1em;
+}
+
+.nav-item {
+    font-family: 'TitleFont';
+    font-size: 1.3em;
+    font-variant: small-caps !important;
+}
+
+.navbar-brand {
+    font-family: 'TitleFont' !important;
+    font-size: 2em;
+    margin-top: -2px;
+    img {
+        opacity: 0.5;
+    }
+    .tld {
+        color: rgba(255,255,255,.5); /* same as nav-link */
+    }
+}
+
+.navbar-text {
+    color: @super-dark-green !important;
+}
+
+.tooltip-inner {
+    max-width: 100%;
+}
+
+/*
+ * COMMON STYLE
+ */
+
+.tooltip {
+    z-index: 10000;
+}
+
+.bg-dark {
+    background: #8bad39 !important;
+}
+
+.pixelfed-logo {
+    vertical-align: top;
+    width: 1em;
+}
+
+p:not(.powered-by) a:not([class^='footnote-']):not(.btn), .tab-pane a:not(.btn), label a, dd a,
+#content-book li a:not([class^='footnote-']),
+.modal-content li a:not([class^='footnote-']):not([class^='flag-']):not([class^='tooltip-networks']),
+#content-book td a:not([class^='footnote-']) {
+    box-shadow: inset 0 -3px 0 -1px @light-green;
+    transition: box-shadow .15s ease-in-out;
+    color: black !important;
+    &:hover {
+        box-shadow:inset 0 -23px 0 -1px #7dda69;
+    }
+}
+
+/* Wobble Horizontal */
+@-webkit-keyframes hvr-wobble-horizontal {
+    16.65% {
+        -webkit-transform: translateX(8px);
+        transform: translateX(8px);
+    }
+    33.3% {
+        -webkit-transform: translateX(-6px);
+        transform: translateX(-6px);
+    }
+    49.95% {
+        -webkit-transform: translateX(4px);
+        transform: translateX(4px);
+    }
+    66.6% {
+        -webkit-transform: translateX(-2px);
+        transform: translateX(-2px);
+    }
+    83.25% {
+        -webkit-transform: translateX(1px);
+        transform: translateX(1px);
+    }
+    100% {
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+    }
+}
+@keyframes hvr-wobble-horizontal {
+    16.65% {
+        -webkit-transform: translateX(8px);
+        transform: translateX(8px);
+    }
+    33.3% {
+        -webkit-transform: translateX(-6px);
+        transform: translateX(-6px);
+    }
+    49.95% {
+        -webkit-transform: translateX(4px);
+        transform: translateX(4px);
+    }
+    66.6% {
+        -webkit-transform: translateX(-2px);
+        transform: translateX(-2px);
+    }
+    83.25% {
+        -webkit-transform: translateX(1px);
+        transform: translateX(1px);
+    }
+    100% {
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+    }
+}
+.hvr-wobble-horizontal {
+    display: inline-block;
+    vertical-align: middle;
+    -webkit-transform: perspective(1px) translateZ(0);
+    transform: perspective(1px) translateZ(0);
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+    &:hover, &:focus, &:active {
+        -webkit-animation-name: hvr-wobble-horizontal;
+        animation-name: hvr-wobble-horizontal;
+        -webkit-animation-duration: 1s;
+        animation-duration: 1s;
+        -webkit-animation-timing-function: ease-in-out;
+        animation-timing-function: ease-in-out;
+        -webkit-animation-iteration-count: 1;
+        animation-iteration-count: 1;
+    }
+}
+
+#compress-button {
+    display: none;
+}
+
+.my-tools {
+    margin-bottom: 10px;
+    img {
+        max-height: 3em;
+        max-width: 13em;
+    }
+}
+
+ul.ticks {
+    list-style-type: none;
+    li:before {
+        content: "\2713";
+        margin-right: 0.5em;
+    }
+}
+
+.share-on-social-network {
+    min-width: 0 !important;
+    a {
+        font-size: 1em;
+        i {
+            width: 1.2em;
+            display: inline-block;
+            text-align: center;
+        }
+    }
+}
+
+.dropdown-share-on-social-network {
+    display: inline-block;
+}
+
+textarea {
+    min-height: 6em;
+}
+
+button[type="submit"] {
+    background: white;
+}
+
+input {
+    max-width: 300px;
+    &[id^='captcha'] {
+        width: 6em;
+    }
+}
+
+.form-label-group {
+    margin-bottom: 15px;
+    label {
+        font-size: 85%;
+        color: gray;
+        margin-bottom: 2px;
+    }
+}
+
+.dropdown-item {
+    font-size: 1.2em;
+}
+
+body {
+    padding-top: @nav-bar-height; /* the fixed navbar will not overlay the gallery */
+    background: @body-background;
+    font-family: 'MainFont';
+}
+
+.tooltip-inner {
+    font-family: 'MainFont';
+}
+
+h1 {
+    color: @title-light-color;
+    font-family: 'TitleFont';
+    font-size: 2.2em;
+    margin-top: 10px;
+}
+
+h4 {
+    color: @title-light-color;
+    font-family: 'TitleFont';
+    font-size: 1.6em;
+}
+
+h5 {
+    font-family: 'TitleFont';
+    font-size: 1.6em;
+}
+
+a {
+    &, &:hover {
+        color: @light-green;
+        text-decoration: none;
+    }
+    &:active, &:focus {
+        outline: none; /* remove the dashed border on links */
+    }
+    &.disabled {
+        pointer-events: auto !important;
+        cursor: not-allowed !important;
+    }
+}
+
+input[type^='checkbox'] {
+    &:active, &:focus {
+        outline: none;
+    }
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    /* same colour on sides than the background */
+    background-image: -webkit-linear-gradient(left, @body-background, #8c8b8b, @body-background);
+    background-image: -moz-linear-gradient(left, @body-background, #8c8b8b, @body-background);
+    background-image: -ms-linear-gradient(left, @body-background, #8c8b8b, @body-background);
+    background-image: -o-linear-gradient(left, @body-background, #8c8b8b, @body-background);
+    background-image: linear-gradient(to left, @body-background, #8c8b8b, @body-background);
+}
+
+#button- {
+    &close, &prev, &next, &love, &auto {
+        color: @button-color;
+        position: fixed; /* positioned relative to the window */
+        &:hover {
+            color: @button-color-hover;
+        }
+    }
+    &love {
+        animation-name: animate-heart;
+        animation-duration: 2s;
+        animation-iteration-count: infinite;
+        animation-timing-function: ease;
+    }
+    &auto .fa-pause-circle {
+        animation-name: animate-autoplay;
+        animation-duration: 5s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+    }
+}
+
+@-webkit-keyframes animate-autoplay {
+    0% {transform: rotate(0);}
+    100% {transform: rotate(360deg);}
+}
+
+/* do not merge with the similar block just above */
+@keyframes animate-autoplay {
+    0% {transform: rotate(0);}
+    100% {transform: rotate(360deg);}
+}
+
+@-webkit-keyframes animate-heart {
+    0% {font-size: 2rem;padding: 0;}
+    10% {font-size: 0.5rem;padding: 0.75rem;}
+    20% {font-size: 2rem;padding: 0;}
+    100% {font-size: 2rem;}
+}
+
+/* do not merge with the similar block just above */
+@keyframes animate-heart {
+    0% {font-size: 2rem;padding: 0;}
+    10% {font-size: 0.5rem;padding: 0.75rem;}
+    20% {font-size: 2rem;padding: 0;}
+    100% {font-size: 2rem;}
+}
+
+#animated-download
+{
+    position: fixed;
+    color: black;
+}
+
+#captcha-passcode {
+    margin: 5px;
+    margin-top: 0px;
+}
+
+#onclick-reload-captcha i:hover {
+    animation-name: animate-reload;
+    animation-duration: 0.5s;
+    animation-iteration-count: 1;
+    animation-timing-function: ease;
+}
+
+@-webkit-keyframes animate-reload {
+    0% {transform: rotate(0);}
+    100% {transform: rotate(180deg);}
+}
+
+/* do not merge with the similar block just above */
+@keyframes animate-reload {
+    0% {transform: rotate(0);}
+    100% {transform: rotate(180deg);}
+}
+
+.desc-field-conf::first-line {
+    color: gray;
+    font-size: 90%;
+}
+
+.desc-field-time {
+    margin-top: 6px;
+    font-size: 90%;
+}
+
+.pipe {
+    color: gray;
+}
+
+/* https://stackoverflow.com/questions/25016848/bootstrap-putting-checkbox-in-a-dropdown */
+.checkbox-menu-subject {
+    margin-left: 10px;
+    margin-top: -10px;
+    li {
+        label {
+            display: block;
+            padding: 3px 10px;
+            clear: both;
+            font-weight: normal;
+            line-height: 1.42857143;
+            white-space: nowrap;
+            margin:0;
+            color: black;
+            transition: background-color .4s ease;
+            &:hover, &:focus {
+                background-color: #f0f0f0;
+            }
+        }
+        input {
+            margin: 0px 5px;
+            top: 2px;
+            position: relative;
+        }
+        &.active label {
+            background-color: var(--blue);
+            color: white;
+            &:hover, &:focus {
+                background-color: var(--blue);
+            }
+        }
+    }
+}
+
+.tooltip-networks {
+    display: inline-block;
+}
+
+#inner-bg-body {
+    background: white;
+}
+
+#outer-bg-body {
+    background-size: cover;
+}
+
+#inner-bg-body, #outer-bg-body {
+    position:fixed;
+    left:0;
+    right:0;
+    top:0;
+    bottom:0;
+    z-index:-500;
+}
+
+/*
+ * MARKDOWN TWEETABLE
+ */
+
+blockquote.tweetable {
+    border-left:6px solid #ccc;
+    padding: 0.5em 0em 0.5em 0.5em;
+    quotes:"\201C";
+    text-justify: none;
+    &::before {
+        color: #ccc;
+        content: "“";
+        font-family: cambria, Georgia;
+        font-size: 4em;
+        line-height: 0.1em;
+        margin-right: 0.1em;
+        vertical-align: -0.4em;
+    }
+    p {
+        display:inline;
+    }
+    .tweetable-buttons {
+        float: right;
+        margin-top: -0.2em;
+    }
+}
+
+/*
+ * PRIVACY POLICY
+ */
+
+#modal-privacy-policy {
+    z-index: 3000;
+    hr {
+        width: 40%;
+    }
+
+    dl {
+        dt {
+            font-weight: normal;
+            font-style: italic;
+            &:after {
+                content: ":";
+            }
+        }
+    }
+    @media (min-width:992px) {
+        dl {
+            width: 100%;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+            dt {
+                float: left;
+                width: 25%; /* make sure the total of both is 100% */
+                padding: 0;
+                margin: 0;
+            }
+            dd {
+                float: left;
+                width: 75%; /* make sure the total of both is 100% */
+                padding: 0;
+                margin: 0;
+            }
+        }
+    }
+}
+
+#cookie-policy-consent {
+    position: fixed;
+    display: none;
+    bottom: 10px;
+    left: 10px;
+    z-index: 2000;
+}
+
+/*
+ * SUBSCRIBE NEWSLETTER
+ */
+#subscribe-newsletter {
+    position: fixed;
+    display: none;
+    bottom: 10px;
+    left: 10px;
+    z-index: 1900;
+    .toast {
+        background-color: white !important; /* remove transparency */
+    }
+}
+
+/*
+ * COPYRIGHT NOTICE
+ */
+
+#modal-copyright {
+    text-align: justify;
+    hr {
+        width: 40%;
+    }
+}
+
+/*
+ * INDEX
+ */
+
+#main {
+    .alert {
+        margin-bottom: -10px;
+    }
+}
+
+#gallery {
+    position: relative;
+    z-index: 2;
+    .centered-box();
+    -webkit-flex-direction: row wrap;
+    -ms-flex-direction: row wrap;
+    flex-flow: row wrap;
+    margin: 1rem 0;
+    @media (max-width: 768px) {
+        margin: 0.5rem 0;
+    }
+    a {
+        /* No margin/padding on links to avoid side effect on transition.
+         * Indeed, DOM is ready before the thumbnail is displayed.
+         */
+        position: relative;
+        img {
+            width: 300px;
+            margin: 1rem;
+            @media (max-width: 768px) {
+                /* smaller thumbnail to force the smartphone user to click (for accurate statistics) */
+                width: 150px;
+                margin: 0.5rem;
+            }
+            border-radius: 5px;
+        }
+    }
+}
+
+.animate-shadow {
+    box-shadow: 0 0 4px rgba(0,0,0,0.3);
+    transition: box-shadow 0.2s ease-in-out;
+    &:hover {
+        box-shadow: 0 0 9px rgba(0,0,0,0.7);
+    }
+}
+
+#onclick-scroll-down
+{
+    color: @button-color;
+    position: fixed;
+    z-index: 1000; /* above the thumbnails */
+    bottom: 10px;
+    right: 10px;
+    border-radius: 50%;
+    padding: 0.3em;
+    background-color: @body-background;
+    &:hover {
+        color: @button-color-hover;
+    }
+}
+
+#modal-feedback {
+    h1 {
+        font-size: 1.6em;
+    }
+    .tooltip-networks i {
+        font-size: 2em;
+    }
+}
+
+#full-screen {
+    display: none;
+    position: fixed;
+}
+
+#full-screen-photo {
+    border-radius: 5px;
+}
+
+#animated-description {
+    overflow-x: auto;
+    .tooltip-inner {
+        min-width: 100px;
+        max-width: 100%; 
+    }
+    @media (max-width: 320px) {
+        .tooltip-inner {
+            min-width: initial;
+            width: 320px;
+        }
+    }
+}
+
+@-webkit-keyframes fade-in {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+/* do not merge with the similar block just above */
+@keyframes fade-in {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+.around-spin {
+    animation-name: fade-in;
+    animation-iteration-count: 1;
+}
+
+.thumbnail-spin {
+    position: absolute;
+    left: calc(150px + 1rem); /* #gallery->a->img->width + #gallery->a->img->margin */
+    top: calc(150px + 1rem); /* #gallery->a->img->width + #gallery->a->img->margin */
+    @media (max-width: 768px) {
+        left: calc(150px/2 + 1rem/2);
+        top: calc(150px/2 + 1rem/2);
+    }
+    margin-left: -0.5em;
+    margin-top: -0.5em;
+    z-index: 4; /* above #gallery */
+    color: @super-dark-green;
+}
+
+@-webkit-keyframes animate-download {
+    0% {right: 46%;}
+    50% {right: 54%;}
+    100% {right: 46%;}
+}
+
+/* do not merge with the similar block just above */
+@keyframes animate-download {
+    0% {right: 46%;}
+    50% {right: 54%;}
+    100% {right: 46%;}
+}
+
+.download-in-progress {
+    display: none;
+    top: -1.1em;
+    margin-right: -0.5em;
+    animation-name: animate-download;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease;
+}
+
+#animated-full-screen {
+    display: none;
+}
+
+#photo-description {
+    position: absolute;
+    visibility: hidden;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border-radius: 5px;
+    background: white;
+    overflow-y: auto;
+    padding: 10px;
+    margin: auto;
+    text-align: center;
+    h1 {
+        text-align: center;
+        font-size: 1.5em !important;
+    }
+    .collapsing {
+        -webkit-transition: none;
+        transition: none;
+        display: none;
+    }
+    .alert {
+        text-align: left;
+    }
+}
+
+#why-undisclosed {
+    display: none;
+}
+
+/*
+ * ABOUT
+ */
+
+#pills-copyright p {
+    margin: 3px;
+    i {
+        margin-right: 3px;
+        vertical-align: middle;
+    }
+}
+
+.secondary-link {
+    box-shadow: none !important;
+    span {
+        color: var(--secondary);
+        text-shadow: white 1px 1px 0;
+        transition: color 0.2s ease-in-out;
+        &:hover {
+            color: black;
+        }
+    }
+}
+
+.nowrap {
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.networks {
+    list-style-type: none;
+    margin: 10px 0;
+    padding: 0;
+    li {
+        display: inline-block;
+        margin: 0 5px;
+    }
+    a i:hover {
+        animation-name: animate-networks;
+        animation-duration: 0.6s;
+        animation-iteration-count: 1;
+        animation-timing-function: ease;
+    }
+}
+
+@-webkit-keyframes animate-networks {
+    0% {transform: rotate(0);}
+    25% {transform: rotate(-20deg);}
+    75% {transform: rotate(20deg);}
+    100% {transform: rotate(0);}
+}
+
+/* do not merge with the similar block just above */
+@keyframes animate-networks {
+    0% {transform: rotate(0);}
+    25% {transform: rotate(-20deg);}
+    75% {transform: rotate(20deg);}
+    100% {transform: rotate(0);}
+}
+
+.alert {
+    margin-top: 10px;
+}
+
+#contact-form {
+    margin-bottom: 15px;
+}
+
+/*
+ * FEEDBACK
+ */
+
+#engage-more-group, #hiden-form-group, #ask-subscription {
+    display: none;
+}
+
+/*
+ * ERROR
+ */
+
+.jumbotron.vertical-center {
+    margin-bottom: 0;
+    background: @body-background !important;
+}
+
+.vertical-center {
+    min-height: 100%;
+    min-height: 100vh;
+    width: 100%;
+    margin-top: -@nav-bar-height;
+    .centered-box();
+}
+
+/*
+ * STORIES
+ */
+
+#title-book {
+    text-align: center;
+    font-variant: small-caps;
+    font-size: 2.7em;
+}
+
+.crowdfunding-progress {
+    display: inline-block;
+    width: 4em;
+    vertical-align: middle;
+    .progress {
+        height: 2em;
+    }
+}
+
+.crowdfunding-percent {
+    font-size: 1.5em;
+}
+
+.card-columns-shelf {
+    overflow-x: hidden;
+    .card {
+        margin-bottom: 18px;
+        border: none;
+        h5.card-title {
+            font-size: 1.8em;
+        }
+        .card-img-top {
+            width: 100%;
+            img {
+                width: 100%;
+                opacity: 1;
+                transition: opacity 0.5s linear;
+                -webkit-transition: opacity 0.5s ease-out;
+                -moz-transition: opacity 0.5s ease-out;
+                -ms-transition: opacity 0.5s ease-out;
+                -o-transition: opacity 0.5s ease-out;
+                border: none; /* just rounding */
+                border-radius: 0.25rem 0.25rem 0 0; /* card border */
+                &.hidden-card {
+                    opacity: 0; /* hidden */
+                    position: absolute; /* overlap */
+                    z-index: 5; /* above */
+                }
+            }
+        }
+    }
+}
+
+#wait-before-visible {
+    color: black;
+    text-align: center;
+    margin-top: 100px;
+    cursor: wait;
+    i {
+        color: @super-dark-green;
+        vertical-align: middle;
+    }
+}
+
+#visible-when-loaded {
+    display: none;
+    hr {
+        /* same colour on sides than the background */
+        background-image: -webkit-linear-gradient(left, white, #8c8b8b, white);
+        background-image: -moz-linear-gradient(left, white, #8c8b8b, white);
+        background-image: -ms-linear-gradient(left, white, #8c8b8b, white);
+        background-image: -o-linear-gradient(left, white, #8c8b8b, white);
+        background-image: linear-gradient(to left, white, #8c8b8b, white);
+    }
+}
+
+#popup-like-book {
+    position: fixed;
+    display: none;
+    bottom: 10px;
+    right: 10px;
+    z-index: 2000;
+    div {
+        overflow: inherit !important;
+    }
+    .toast {
+        background-color: white !important; /* remove transparency */
+    }
+}
+
+#content-book {
+    text-align: justify;
+    margin-bottom: 1rem;
+    hr {
+        width: 40%;
+    }
+    h1 {
+        color: black;
+        font-size: 2em !important;
+        margin-bottom: 15px;
+    }
+    h2 {
+        font-family: 'TitleFont' !important;
+        font-size: 1.7em !important;
+        color: grey;
+    }
+    h3 {
+        font-size: 1.1em !important;
+        color: grey;
+    }
+    ul {
+        text-align: left;
+    }
+    .admonition { /* actually used for citations */
+        text-align: right;
+        margin: 20px;
+        p:not(.admonition-title) { /* citation from */
+            font-size: 0.8em;
+        }
+    }
+    .admonition-title { /* citation quote */
+        font-style: italic;
+        font-weight: bold;
+        font-size: 1em;
+        &:before {
+            content: "“";
+        }
+        &:after {
+            content: "”";
+        }
+    }
+    img {
+        max-width: 100%;
+        display: block;
+        margin: auto;
+    }
+    .tooltip {
+        z-index: 500 !important; /* under the navbar which is 1030 */
+    }
+    .tooltip-inner {
+        max-width: 450px; /* less than half the min width of a large screen */
+        text-align: justify;
+    }
+    sup {
+        display: inline-block;
+        position: relative;
+        top: -@nav-bar-height - 15em;
+        a.footnote-ref {
+            display: inline-block;
+            position: relative;
+            top: @nav-bar-height + 10rem;
+        }
+    }
+    #footnote a.footnote-backref:hover {
+        color: black;
+        text-decoration: none;
+    }
+    table {
+        margin: auto;
+    }
+    > .section {
+        background-color: white;
+        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+        border-radius: .25rem;
+        margin-top: 1rem;
+        padding: 1rem;
+    }
+    
+    /* Anchor offset due to the fixed menu: */
+    /* https://stackoverflow.com/questions/10732690/offsetting-an-html-anchor-to-adjust-for-fixed-header */
+    div.title-anchor {
+        padding-top: 65px;
+        margin-top: -65px;
+    }
+
+    .can-zoom-in {
+        border-radius: .25rem;
+    }
+}
+
+.static-map {
+    .above-static-map {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/*
+ * AMAZON AFFILIATE
+ */
+
+#modal-amazon-affiliate-links {
+    .tooltip-inner {
+        max-width: 100% !important;
+        width: 100%;
+    }
+    h3 {
+        font-size: 1.5rem !important;
+    }
+}
+
+ul#list-amazon-affiliate-links {
+    list-style-type: none;
+    text-align: center;
+    padding: 0;
+    li {
+        display: inline;
+    }
+}
+
+each(range(0, 9), {
+    .flag-@{value} {
+        background-image: url('/static/images/all_flags.png');
+        background-repeat: no-repeat;
+        background-position: 0 -(@value * 76px);
+        height: 76px;
+        width: 130px;
+        display: inline-block;
+        margin: 0.5em;
+    }
+});
+
+/*
+ * SENTRY
+ */
+
+/* https://docs.sentry.io/enriching-error-data/user-feedback/ */
+.sentry-error-embed {
+        margin-top: @nav-bar-height !important;
+    * {
+        font-family: 'MainFont' !important;
+    }
+    h2 {
+        font-family: 'TitleFont' !important;
+    }
+    .form-submit .close {
+        padding: 15px 0 !important;
+    }
+}

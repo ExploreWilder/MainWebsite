@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block title %}Audit Log{% endblock %}
+{% block body %}
+    <div class="container">
+        <h1>Audit Log</h1>
+        <p>Here is your account activity (password change or reset, login, etc.)</p>
+        {% if full_audit_log %}
+            <table class="table table-sm table-hover">
+                <thead class="thead-light">
+                    <th scope="col">Date</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">IP address</th>
+                </thead>
+                <tbody>
+                    {% for entry in full_audit_log %}
+                        <tr class="{% if entry[2] != 'logged_in' %}table-warning{% endif %}">
+                            <td>{{ entry[0] }}</td>
+                            <td>
+                                {% if entry[2] == 'logged_in' %}
+                                    Logged in
+                                {% elif entry[2] == 'password_changed' %}
+                                    Password changed
+                                {% elif entry[2] == 'password_reset' %}
+                                    Password reset
+                                {% elif entry[2] == 'email_changed' %}
+                                    Email changed
+                                {% elif entry[2] == '2fa_enabled' %}
+                                    <abbr title="2-Factor Authentication">2FA</abbr> enabled
+                                {% elif entry[2] == '2fa_disabled' %}
+                                    <abbr title="2-Factor Authentication">2FA</abbr> disabled
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if entry[1] %}
+                                    {{ entry[1] }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="alert alert-info" role="alert">
+                No activity.
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block title %}Statistics | Admin{% endblock %}
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <h1 class="text-center">Statistics on The Gallery</h1>
+                <p class="text-center"><strong>Viewed photos on a monthly base:</strong></p>
+                <canvas class="chart-monthly-visits" data-stats="{{ gallery_monthly_visits }}" width="600px" height="400px"></canvas>
+            </div>
+            <div class="col-lg-6">
+                <h1 class="text-center">Statistics on The Shelf</h1>
+                <p class="text-center"><strong>Viewed books on a monthly base:</strong></p>
+                <canvas class="chart-monthly-visits" data-stats="{{ shelf_monthly_visits }}" width="600px" height="400px"></canvas>
+            </div>
+        </div>
+    </div>
+{% endblock %}

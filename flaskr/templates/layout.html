@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en" class="{% block class_html %}{% endblock %}">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta charset="utf-8" />
+        <meta name="robots" content="{% if request.path == "/login" or request.path == "/error" %}none{% else %}noarchive,noimageindex{% endif %}" />
+        <meta name="author" content="{{ config.LEGAL_NAME }}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="csrf-token" content="{{ csrf_token() }}" />
+        <!-- https://developer.twitter.com/en/docs/tweets/optimize-with-cards/overview/abouts-cards -->
+        {% if "description" in book %}
+            <meta name="twitter:card" property="og:type" content="summary_large_image" />
+            <meta name="description" property="og:description" content="{{ book.description.md }}" />
+            <meta name="twitter:description" content="{{ book.description.md }}" />
+        {% else %}
+            <meta name="twitter:card" property="og:type" content="summary" />
+            <meta name="description" property="og:description" content="Nature Photo Gallery &amp; Adventure Stories" />
+            <meta name="twitter:description" content="Nature Photo Gallery &amp; Adventure Stories" />
+        {% endif %}
+        {% if thumbnail_networks %}
+            <meta name="twitter:image" property="og:image" content="{{ thumbnail_networks }}" />
+        {% else %}
+            <meta name="twitter:image" property="og:image" content="{{ request.url_root }}static/favicons/twitter.png" />
+        {% endif %}
+        <meta name="twitter:site" content="@{{ config.TWITTER_ACCOUNT.username }}" />
+        <meta name="twitter:title" property="og:title" content="{% block title %}{% endblock %}">
+        <meta property="og:url" content="{{ request.url }}" />
+        <meta property="og:locale" content="en_GB" />
+        <meta property="og:locale:alternate" content="en_US" />
+        <!-- https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content#Cross-origin_fetches -->
+        <link rel="preload" href="/static/dist-{{ config.STATIC_PROJECT_VERSION }}/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+        <link rel="preload" href="/static/dist-{{ config.STATIC_PROJECT_VERSION }}/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+        <link rel="preload" href="/static/dist-{{ config.STATIC_PROJECT_VERSION }}/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+        <link rel="icon" href="/static/favicons/favicon.ico" sizes="16x16 32x32 48x48 64x64" type="image/vnd.microsoft.icon" />
+        <link rel="stylesheet" href="/static/dist-{{ config.STATIC_PROJECT_VERSION }}/css/main.css" type="text/css" />
+        {% if session.access_level == 255 %}
+            <link rel="stylesheet" href="/static/dist-{{ config.STATIC_PROJECT_VERSION }}/css/admin.css" type="text/css" />
+        {% endif %}
+        {% block extra_tags %}{% endblock %}
+        <!-- SEO advice: the title tag should be under 60 characters long and give every page a unique title -->
+        <title>{{ self.title() }} | {{ config.BRAND_NAME }}</title>
+    </head>
+    <body class="{% block class_body %}{% endblock %}">
+        <noscript>
+            <div class="container-fluid">
+                <div class="alert alert-info" role="alert">
+                    This website requires JavaScript to be enabled. Please, activate it in the settings of your browser.
+                </div>
+            </div>
+        </noscript>
+        <nav id="header"
+             class="navbar fixed-top navbar-expand-md navbar-dark bg-dark navbar-default"
+             role="navigation">
+            <a class="navbar-brand"
+               href="/about"
+               data-toggle="tooltip"
+               title="About Me">
+               <img src="/static/favicons/brand.svg" height="30" class="d-inline-block align-top" alt="" style="opacity: 0.5;" />
+               ExploreWilder<span class="tld">.com</span>
+            </a>
+            <span class="navbar-text">
+            </span>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarNav"
+                    aria-controls="navbarNav"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    {% if request.path == "/index" or request.path == "/" %}
+                        <li class="nav-item active">
+                            <a class="nav-link"
+                               href="/index"
+                               data-toggle="tooltip"
+                               title="Photography Gallery"
+                               id="onclick-close-large-photo">
+                                <i class="fas fa-camera"></i> Gallery
+                                <span class="sr-only">(current)</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="/index"
+                               data-toggle="tooltip"
+                               title="Photography Gallery">
+                                <i class="fas fa-camera"></i> Gallery
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if "/stories" in request.path %}
+                        <li class="nav-item active">
+                            <a class="nav-link"
+                               href="/stories"
+                               data-toggle="tooltip"
+                               title="Stories &amp; e-books">
+                                <i class="fas fa-feather-alt"></i> Stories
+                                <span class="sr-only">(current)</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="/stories"
+                               data-toggle="tooltip"
+                               title="Stories &amp; e-books">
+                                <i class="fas fa-feather-alt"></i> Stories
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if request.path == "/about" %}
+                        <li class="nav-item active">
+                            <a class="nav-link"
+                               href="/about"
+                               data-toggle="tooltip"
+                               title="About Me">
+                                <i class="fas fa-hiking"></i> About
+                                <span class="sr-only">(current)</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="/about"
+                               data-toggle="tooltip"
+                               title="About Me">
+                                <i class="fas fa-hiking"></i> About
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if session.access_level == 255 %}
+                        <li class="nav-item dropdown{% if "/admin" in request.path %} active{% endif %}">
+                            <a class="nav-link dropdown-toggle"
+                               href="#"
+                               id="navbarAdminDropdown"
+                               role="button"
+                               data-toggle="dropdown"
+                               aria-haspopup="true"
+                               aria-expanded="false">
+                               <i class="fas fa-tools"></i>
+                               Admin
+                               {% if "/admin" in request.path %}<span class="sr-only">(current)</span>{% endif %}
+                           </a>
+                           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarAdminDropdown">
+                               <a class="dropdown-item{% if request.path == "/admin/members/list" %} active{% endif %}"
+                                  href="/admin/members/list">
+                                   <i class="fas fa-users-cog"></i> Members &amp; Newsletter
+                                   {% if request.path == "/admin/members/list" %}<span class="sr-only">(current)</span>{% endif %}
+                               </a>
+                               <div class="dropdown-divider"></div>
+                               <a class="dropdown-item{% if request.path == "/admin/photos/add/form" %} active{% endif %}"
+                                  href="/admin/photos/add/form">
+                                   <i class="fas fa-image"></i> Add a Photo
+                                   {% if request.path == "/admin/photos/add/form" %}<span class="sr-only">(current)</span>{% endif %}
+                               </a>
+                               <a class="dropdown-item{% if request.path == "/admin/photos/list" %} active{% endif %}"
+                                  href="/admin/photos/list">
+                                   <i class="fas fa-images"></i> All Photos
+                                   {% if request.path == "/admin/photos/list" %}<span class="sr-only">(current)</span>{% endif %}
+                               </a>
+                               <a class="dropdown-item{% if request.path == "/admin/photos/lost" %} active{% endif %}"
+                                  href="/admin/photos/lost">
+                                   <i class="fas fa-ghost"></i> Lost Photos
+                                   {% if request.path == "/admin/photos/lost" %}<span class="sr-only">(current)</span>{% endif %}
+                               </a>
+                               <div class="dropdown-divider"></div>
+                               <a class="dropdown-item{% if request.path == "/admin/books/add/form" %} active{% endif %}"
+                                  href="/admin/books/add/form">
+                                   <i class="fas fa-book-medical"></i> Add a book
+                                   {% if request.path == "/admin/books/add/form" %}<span class="sr-only">(current)</span>{% endif %}
+                               </a>
+                               <a class="dropdown-item{% if request.path == "/admin/books/list" %} active{% endif %}"
+                                  href="/admin/books/list">
+                                   <i class="fas fa-book"></i> All books
+                                   {% if request.path == "/admin/books/list" %}<span class="sr-only">(current)</span>{% endif %}
+                               </a>
+                               <div class="dropdown-divider"></div>
+                               <a class="dropdown-item{% if request.path == "/admin/statistics" %} active{% endif %}"
+                                  href="/admin/statistics">
+                                   <i class="fas fa-chart-bar"></i> Statistics
+                                   {% if request.path == "/admin/statistics" %}<span class="sr-only">(current)</span>{% endif %}
+                               </a>
+                           </div>
+                        </li>
+                    {% endif %}
+                    {% if session.member_id %}
+                        <li class="nav-item dropdown{% if request.path == "/change_password" or request.path == "/change_email" or request.path == "/audit_log" %} active{% endif %}">
+                            <a class="nav-link dropdown-toggle"
+                               href="#"
+                               id="navbarMyAccountDropdown"
+                               role="button"
+                               data-toggle="dropdown"
+                               aria-haspopup="true"
+                               aria-expanded="false">
+                                <i class="fas fa-user-cog"></i>
+                                Account
+                                {% if "/change_" in request.path %}<span class="sr-only">(current)</span>{% endif %}
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarMyAccountDropdown">
+                                <a class="dropdown-item{% if request.path == "/change_password" %} active{% endif %}"
+                                   href="/change_password">
+                                    <i class="fas fa-key"></i> Change password
+                                    {% if request.path == "/change_password" %}<span class="sr-only">(current)</span>{% endif %}
+                                </a>
+                                <a class="dropdown-item{% if request.path == "/change_email" %} active{% endif %}"
+                                   href="/change_email">
+                                   <i class="fas fa-at"></i> Change email
+                                    {% if request.path == "/change_email" %}<span class="sr-only">(current)</span>{% endif %}
+                                </a>
+                                <a class="dropdown-item{% if request.path == "/audit_log" %} active{% endif %}"
+                                   href="/audit_log">
+                                   <i class="far fa-eye"></i> Audit Log
+                                    {% if request.path == "/audit_log" %}<span class="sr-only">(current)</span>{% endif %}
+                                </a>
+                            </div>
+                        </li>
+                    {% endif %}
+                    {% if request.path == "/login" or request.path == "/reset_password" %}
+                        <li class="nav-item active">
+                            {% if session.access_level %}
+                                <a class="nav-link"
+                                   href="/logout"
+                                   data-toggle="tooltip"
+                                   title="Goodbye">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                    <span class="sr-only">(current)</span>
+                                </a>
+                            {% else %}
+                                <a class="nav-link"
+                                   href="/login"
+                                   data-toggle="tooltip"
+                                   title="Discover More">
+                                    <i class="fas fa-sign-in-alt"></i> Login
+                                    <span class="sr-only">(current)</span>
+                                </a>
+                            {% endif %}
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            {% if "access_level" in session %}
+                                <a class="nav-link"
+                                   href="/logout"
+                                   data-toggle="tooltip"
+                                   title="Goodbye">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            {% else %}
+                                <a class="nav-link"
+                                   href="/login"
+                                   data-toggle="tooltip"
+                                   title="Discover More">
+                                    <i class="fas fa-sign-in-alt"></i> Login
+                                </a>
+                            {% endif %}
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+        {% block body %}{% endblock %}
+        {% cache 60*60*24 %}
+            {% include "privacy_policy.html" %}
+            {% include "support_me.html" %}
+            {% include "amazon_affiliate_links.html" %}
+            {% include "non_https_warning.html" %}
+        {% endcache %}
+        {% if is_prod %}
+            <script nonce="{{ csp_nonce() }}" src="/static/sentry-5.21.4.min.js"></script>
+            <script nonce="{{ csp_nonce() }}" type="text/javascript">
+                Sentry.init({dsn: "{{ config.SENTRY_DSN }}"});
+                {% if sentry_event_id %}
+                    setTimeout(function() {
+                        Sentry.showReportDialog({
+                            eventId: '{{ sentry_event_id }}',
+                            user: {
+                                email: '{% if "email" in session %}{{ session.email }}{% endif %}',
+                                name: '{% if "username" in session %}{{ session.username }}{% endif %}'
+                            }
+                        });
+                    }, 3000);
+                {% endif %}
+            </script>
+        {% endif %}
+        <script nonce="{{ csp_nonce() }}" src="/static/dist-{{ config.STATIC_PROJECT_VERSION }}/js/{% if session.access_level == 255 %}admin{% else %}visitor{% endif %}_space.vendor.bundle.js"></script>
+        <script nonce="{{ csp_nonce() }}" src="/static/dist-{{ config.STATIC_PROJECT_VERSION }}/js/{% if session.access_level == 255 %}admin{% else %}visitor{% endif %}_space.app.bundle.js"></script>
+        {% block extra_scripts %}{% endblock %}
+    </body>
+</html>

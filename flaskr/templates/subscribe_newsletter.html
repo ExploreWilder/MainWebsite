@@ -1,0 +1,39 @@
+<div id="subscribe-newsletter" aria-live="polite" aria-atomic="true">
+    <div class="toast fade in" role="alert" data-autohide="false">
+        <div class="toast-header">
+            <i class="fas fa-envelope"></i>
+            <strong class="mr-auto ml-2">Newsletter</strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">
+            <p>Interested in receiving monthly news?</p>
+            <form novalidate>
+                <div class="form-label-group">
+                    <label for="email">Email address:</label><br />
+                    <input
+                        type="email"
+                        name="email"
+                        id="email-newsletter"
+                        class="form-control"
+                        tabindex="1"
+                        pattern="[^@]+@[^@]+\.[^@]+"
+                        required
+                        autofocus />
+                    <div class="invalid-feedback">
+                        Email address required.
+                    </div>
+                </div>
+                <div class="text-center mt-2">
+                    <button
+                        type="submit"
+                        class="btn"
+                        tabindex="3"><i class="far fa-paper-plane"></i></button>
+                </div>
+            </form>
+            <div class="info-newsletter"></div>
+        </div>
+    </div>
+</div>
+

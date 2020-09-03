@@ -1,0 +1,213 @@
+/*!
+ *
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2019, Mapbox
+ * Copyright (c) 2019-2020, Clement
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+@import "defines";
+
+body.loading-storytelling-map {
+    overflow-y: hidden !important;
+    cursor: wait;
+}
+
+#storytelling-map {
+    #storytelling-map-map {
+        .mapboxgl-ctrl > .mapboxgl-ctrl-compass > .mapboxgl-ctrl-icon {
+            width: 120px !important;
+            height: 120px !important;
+            margin: 0 !important;
+            background-image: url("/static/images/CompassRose.svg") !important;
+            background-size: contain !important;
+        }
+        .mapboxgl-ctrl-compass {
+            width: 120px !important;
+            height: 120px !important;
+        }
+        .mapboxgl-ctrl-group {
+            box-shadow: none !important;
+            -webkit-box-shadow: none !important;
+            -moz-box-shadow: none !important;
+            background: none !important;
+        }
+    }
+    .alert-sm {
+        width: 50%;
+        margin: auto;
+        text-align: center;
+    }
+    #storytelling-map-map {
+        top: 0; 
+        height: 100vh;
+        width:100vw;
+        position: fixed;
+        z-index: -5;
+        opacity: 0.2;
+        .mapboxgl-canvas {
+            cursor: wait;
+        }
+    }
+    #storytelling-map-context {
+        top: calc(@nav-bar-height + 2em);
+        left: 2em;
+        display: none;
+        position: fixed;
+        height: 200px;
+        width: 200px;
+        z-index: 100;
+        border-radius: 5px;
+        box-shadow: 0 0 4px rgba(0,0,0,0.3);
+    }
+    #storytelling-map-header {
+        margin: 3vh auto;
+        width: 50vw;
+        padding: 2vh;
+        text-align: center;
+        border-radius: 5px;
+        box-shadow: 0 0 4px rgba(0,0,0,0.3);
+    }
+    #storytelling-map-hidden-block {
+        opacity: 0; /* move the map without displaying a related block */
+    }
+    #storytelling-map-footer {
+        width: 100%;
+        min-height: 5vh;
+        padding-top: 2vh;
+        padding-bottom: 2vh;
+        line-height: 25px;
+        box-shadow: 0 0 4px rgba(0,0,0,0.3);
+        display: none;
+    }
+    #storytelling-map-features {
+        padding-top: 10vh;
+        padding-bottom: 10vh;
+        z-index: 100;
+        display: none;
+    }
+    #storytelling-location-helper {
+        position: fixed;
+        top: calc(@nav-bar-height + 2em);
+        right: 2em;
+        z-index: 100;
+        border-radius: 5px;
+        box-shadow: 0 0 4px rgba(0,0,0,0.3);
+        #storytelling-location-helper-info {
+            user-select: all;
+        }
+    }
+    @media (max-width: 1100px) {
+        #storytelling-map-features {
+            width: 70vw;
+            margin: 0 auto;
+        }
+    }
+    .centered {
+        width: 50vw;
+        margin: 0 auto;
+    }
+    .lefty {
+        width: 33vw;
+        margin-left: 5vw;
+    }
+    .righty {
+        width: 33vw;
+        margin-left: 62vw;
+    }
+    .light {
+        color: #444;
+        background-color: #fafafa;
+    }
+    .dark {
+        color: #fafafa;
+        background-color: #444;
+    }
+    .step {
+        padding-bottom: 50vh;
+        &:last-child {
+            padding-bottom: 0;
+        }
+        > div {
+            padding:  25px 50px;
+            line-height: 25px;
+            border-radius: 5px;
+            box-shadow: 0 0 4px rgba(0,0,0,0.3);
+            h1 {
+                margin-bottom: 1rem;
+            }
+            .card-progress {
+                float: right;
+                margin-top: 0.9em;
+                font-family: 'TitleFont';
+                font-size: 1.5em;
+                color: #9d9d9d;
+            }
+            .image-inside {
+                margin-bottom: 1em;
+                img {
+                    border-radius: 5px;
+                    margin: auto;
+                    max-width: 100%;
+                    display: block;
+                }
+            }
+            video {
+                border-radius: 5px;
+                outline: none;
+                margin-bottom: 0.5em;
+            }
+            .panorama {
+                width: 96vw;
+                margin-left: calc(-60vw + -50px);
+            }
+            .group-info-track {
+                background-color: @body-background;
+                border-radius: 5px;
+                padding: 1em;
+                margin-bottom: 1em;
+                ul {
+                    margin: 0;
+                }
+                .more-info {
+                    float: right;
+                    padding: 0;
+                    line-height: 1;
+                    margin-top: 0;
+                    a {
+                        color: gray;
+                        &:hover {
+                            color: @light-green;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

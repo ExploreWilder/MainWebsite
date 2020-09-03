@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+{% block title %}Add a Photo | Admin{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="jumbotron mx-auto">
+                <h1 class="text-center">Add a Photo</h1>
+                <form id="admin-add"
+                      enctype="multipart/form-data"
+                      method="post"
+                      action="/add"
+                      class="text-center">
+                    <div class="form-label-group">
+                        <label for="add-photo-title">Title:</label><br />
+                        <input
+                            type="text"
+                            id="add-photo-title"
+                            name="add-photo-title"
+                            class="form-control" />
+                    </div>
+                    <div class="form-label-group">
+                        <label for="add-photo-description">Description:</label><br />
+                        <textarea
+                            class="form-control lead"
+                            rows="5"
+                            cols="60"
+                            id="add-photo-description"
+                            name="add-photo-description"></textarea>
+                    </div>
+                    <div class="form-label-group">
+                        <label for="add-photo-access-level">Access Level [0-255]:</label><br />
+                        <input
+                            type="number"
+                            id="add-photo-access-level"
+                            name="add-photo-access-level"
+                            class="form-control"
+                            min="0"
+                            max="255"
+                            value="0"
+                            required />
+                    </div>
+                    <div class="custom-file">
+                        <label class="custom-file-label" for="add-photo-file">Raw File</label>
+                        <input
+                            type="file"
+                            id="add-photo-file"
+                            name="add-photo-file"
+                            placeholder="Raw File"
+                            class="custom-file-input"
+                            accept="image/*"
+                            required />
+                    </div>
+                    <div id="photo-preview"></div>
+                    <div class="progress" style="height: 2em;">
+                        <div class="progress-bar"
+                             id="photo-progress"
+                             role="progressbar"
+                             aria-valuemin="0"
+                             aria-valuemax="100"></div>
+                    </div>
+                    <button
+                        type="submit"
+                        title="Add"
+                        class="btn"><i class="far fa-paper-plane fa-2x"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

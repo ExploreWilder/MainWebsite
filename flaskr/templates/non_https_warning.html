@@ -1,0 +1,22 @@
+<div class="modal fade" id="nonHttpsWarning" tabindex="-1" role="dialog" aria-labelledby="nonHttpsWarningCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content bg-warning">
+            <div class="modal-header border-dark">
+                <h4 class="modal-title text-dark"><i class="fas fa-skull-crossbones"></i> Non-HTTPS Website!</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                The following website is not HTTPS:<br />
+                <strong><samp><span id="non-https-website"></span></samp></strong><br />
+                Please confirm to visit the non-secure website.
+            </div>
+            <div class="modal-footer border-dark">
+                <a type="button" class="btn btn-primary" href="https://www.eff.org/encrypt-the-web" target="_blank"><i class="fas fa-question"></i> Why I'm seeing this?</a>
+                <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+                <a type="button" id="non-https-website-url" class="btn btn-danger bypass-non-https-warning" target="_blank"><i class="fas fa-external-link-alt"></i> Visit</a>
+            </div>
+        </div>
+    </div>
+</div>

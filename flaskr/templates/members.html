@@ -1,0 +1,192 @@
+{% extends "layout.html" %}
+{% block title %}Manage Members &amp; Send Them a Newsletter | Admin{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        <h1>Members</h1>
+        <table id="members-list" class="table table-hover table-bordered table-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Username</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Access Level</th>
+                    <th scope="col">Log</th>
+                    <th scope="col" colspan="3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in members %}
+                    <tr>
+                        <td class="username">{% if member[1] %}{{ member[1] }}{% endif %}</td>
+                        <td class="email">{% if member[2] %}{{ member[2] }}{% endif %}</td>
+                        <td class="access-level">
+                            {% if member[3] != 255 %}
+                                <a href="#"
+                                   title="Change access level"
+                                   data-member-id="{{ member[0] }}">
+                                    {{ member[3] }}
+                                </a>
+                            {% else %}
+                                {{ member[3] }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if member[6] %}
+                                <select class="custom-select custom-select-sm">
+                                    {% for el in member[6] %}
+                                        <option>{{ el[0] }}{% if el[1] %} from {{ el[1] }}{% endif %}</option>
+                                    {% endfor %}
+                                </select>
+                            {% else %}
+                                <div class="mb-2">Empty</div>
+                            {% endif %}
+                        </td>
+                        <td class="td-action">
+                            {% if member[4] and not member[5] %}
+                                <a href="#"
+                                   data-member-id="{{ member[0] }}"
+                                   class="onclick-admin-send-password-creation"
+                                   title="Send email to create password">
+                                    <i class="fas fa-key"></i>
+                                </a>
+                            {% endif %}
+                        </td>
+                        <td class="td-action">
+                            {% if member[3] != 255 and member[3] != 0 %}
+                                <a href="#"
+                                   data-member-id="{{ member[0] }}"
+                                   class="onclick-admin-revoke-member"
+                                   title="Revoke">
+                                    <i class="fas fa-ban"></i>
+                                </a>
+                            {% endif %}
+                        </td>
+                        <td class="td-action">
+                            {% if member[3] != 255 %}
+                                <a href="#"
+                                   data-member-id="{{ member[0] }}"
+                                   class="onclick-admin-delete-member"
+                                   title="Delete">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="container">
+            <div class="row">
+                <div class="col lg-6">
+                    <div class="jumbotron">
+                        <h1 class="text-center pt-3">Newsletter</h1>
+                        <p class="text-center">
+                            Total members receiving the newsletter: 
+                            <strong>{{ total_newsletter }}</strong>
+                        </p>
+                        <hr class="my-4">
+                        <form id="newsletter-form" novalidate>
+                            <div class="form-label-group">
+                                <label for="subject">Subject:</label><br />
+                                <input
+                                    type="text"
+                                    id="subject"
+                                    class="form-control"
+                                    tabindex="1"
+                                    required />
+                                <div class="invalid-feedback">
+                                    Subject required.
+                                </div>
+                            </div>
+                            <div class="form-label-group">
+                                <label for="news">Message:</label><br />
+                                <p class="text-center">
+                                    <button type="button"
+                                            class="btn btn-secondary btn-sm md-format-button"
+                                            data-md-start="_"
+                                            data-md-end="_"
+                                            data-md-type="short"><i class="fas fa-italic"></i></button>
+                                    <button type="button"
+                                            class="btn btn-secondary btn-sm md-format-button"
+                                            data-md-start="**"
+                                            data-md-end="**"
+                                            data-md-type="short"><i class="fas fa-bold"></i></button>
+                                    <button type="button"
+                                            class="btn btn-secondary btn-sm md-format-button"
+                                            data-md-start="["
+                                            data-md-middle="]("
+                                            data-md-end=")"
+                                            data-md-prompt-value="URL to insert:"
+                                            data-md-prompt-text="Link description:"
+                                            data-md-type="long"><i class="fas fa-link"></i></button>
+                                    <button type="button"
+                                            class="btn btn-secondary btn-sm md-format-button"
+                                            data-md-start="# "
+                                            data-md-end=" #"
+                                            data-md-type="short"><i class="fas fa-heading"></i></button>
+                                </p>
+                                <textarea
+                                    class="form-control"
+                                    rows="5"
+                                    id="news"
+                                    tabindex="2"
+                                    required></textarea>
+                                <div class="invalid-feedback">
+                                    Please write something, but not just &#171;something&#187;!
+                                </div>
+                            </div>
+                            <button
+                                type="submit"
+                                title="Send"
+                                class="btn"
+                                tabindex="3"><i class="far fa-paper-plane fa-2x"></i></button>
+                        </form>
+                        <hr class="my-4">
+                        <div id="preview"><p class="text-center text-secondary">[Preview]</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" role="dialog" id="modal-change-access-level">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Change Access Level</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Member: <strong id="modal-username"></strong><br />
+                            Email: <strong id="modal-email"></strong>
+                        </p>
+                        <input type="hidden" id="modal-member-id" name="modal-member-id" value="0" />
+                        <div class="form-label-group">
+                            <input
+                                type="range"
+                                id="change-member-access-level"
+                                name="access-level"
+                                class="custom-range"
+                                min="0"
+                                max="255"
+                                step="1"
+                                value="0"
+                                required />
+                            <label for="add-member-access-level">Access Level (<span id="current-access-level"></span>)</label>
+                        </div>
+                        <ul id="access">
+                            <li class="granted" data-limit="0">Public access</li>
+                            <li class="denied" data-limit="1">Access more pictures</li>
+                            <li class="denied" data-limit="{{ access_level_read_info }}">Access picture descriptions</li>
+                            <li class="denied" data-limit="255">Administrator</li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="save-changes">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

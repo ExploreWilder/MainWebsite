@@ -1,0 +1,162 @@
+{% extends "layout.html" %}
+{% block title %}Landscape &amp; Wildlife Photo Gallery{% endblock %}
+{% block body %}
+    <div class="container" id="main">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endif %}
+        {% endwith %}
+        <div class="row">
+            <div id="gallery">
+            </div>
+        </div>
+        <div>
+            <a href="#" id="onclick-scroll-down">
+                <i class="fas fa-arrow-down fa-2x"></i>
+            </a>
+        </div>
+    </div>
+    <div id="full-screen">
+        <div id="animated-full-screen">
+            <div id="animated-description">
+                <img id="full-screen-photo" />
+                <div id="photo-description"></div>
+            </div>
+            <a href="#"
+               id="button-next"
+               title=""
+               data-content=""
+               data-original-title="Next awesome photo"
+               data-toggle="tooltip">
+                <i class="far fa-arrow-alt-circle-right fa-2x"></i>
+            </a>
+            <a href="#"><!-- tooltip on the icon for the fancy animation and the tooltip disposal on click -->
+                <i class="fas fa-heart fa-2x"
+                   id="button-love"
+                   title=""
+                   data-content=""
+                   data-original-title="Like (you don't need to sign in)"
+                   data-toggle="tooltip"></i>
+            </a>
+            <a href="#"
+               id="button-prev"
+               title=""
+               data-content=""
+               data-original-title="Previous great photo"
+               data-toggle="tooltip">
+                <i class="far fa-arrow-alt-circle-left fa-2x"></i>
+            </a>
+            <a href="#"
+               id="button-auto"
+               title=""
+               data-content=""
+               data-original-title="Auto play"
+               data-toggle="tooltip"><!-- tooltip on the 'a' tag due to the class removal -->
+                <i class="far fa-play-circle fa-2x"></i>
+            </a>
+        </div>
+        <a href="#" id="onclick-close-photo">
+            <i id="button-close"
+               class="far fa-times-circle fa-2x"
+               title=""
+               data-content=""
+               data-original-title="Back to gallery"
+               data-toggle="tooltip"></i>
+        </a>
+        <i class="fas fa-ellipsis-h download-in-progress" id="animated-download"></i>
+    </div>
+    <div id="why-undisclosed">
+        <p>
+            {% if is_logged %}
+                Please <a href="/about">ask</a> access to read the description!
+            {% else %}
+                Please <a href="/login">login</a> to read the description!
+            {% endif %}
+            <a data-toggle="modal" href="#modal-why">
+                Why <i class="fas fa-question-circle"></i>
+            </a>
+        </p>
+    </div>
+    <div id="modal-why" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                {% if is_logged %}
+                    <div class="modal-header">
+                        <h4 class="modal-title">Why Do I Need Specific Credentials?</h4>
+                    </div>
+                    <div class="modal-body text-justify">
+                        <p>
+                            The description may contain the exact or approximate location where the picture has been taken.
+                            I would prefer to keep that information in restricted access to help reducing harmful commercial or tourist opportunities over such an untouched wilderness.
+                            I think we all have the responsability to do so.
+                            With this picture, I would like you to appreciate and respect nature, whatever its political boundary or its tourism infrastructure.
+                            If pictures are not enough, feel free to read my <a href="/stories">stories</a>.
+                            If you do want access, please <a href="/about">ask me</a> thanks to the <a href="/about">contact form</a>.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/about"
+                           class="btn btn-outline-secondary"
+                           role="button">
+                            <i class="far fa-envelope"></i>
+                            Contact me
+                        </a>
+                        <button type="button"
+                                class="btn btn-outline-secondary"
+                                data-dismiss="modal">
+                            <i class="fas fa-times"></i>
+                            Close
+                        </button>
+                    </div>
+                {% else %}
+                    <div class="modal-header">
+                        <h4 class="modal-title">Why Do I Need to Login?</h4>
+                    </div>
+                    <div class="modal-body text-justify">
+                        <p>
+                            The description may contain the exact or approximate location where the picture has been taken.
+                            I would prefer to keep that information in restricted access to help reducing harmful commercial or tourist opportunities over such an untouched wilderness.
+                            I think we all have the responsability to do so.
+                            With this picture, I would like you to appreciate and respect nature, whatever its political boundary or its tourism infrastructure.
+                            If pictures are not enough, feel free to read my <a href="/stories">stories</a>.
+                            If you do want access, please <a href="/login">login</a>.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/login"
+                           class="btn btn-outline-secondary"
+                           role="button">
+                            <i class="fas fa-lock"></i>
+                            Login
+                        </a>
+                        <a href="/about"
+                           class="btn btn-outline-secondary"
+                           role="button">
+                            <i class="far fa-envelope"></i>
+                            Contact me
+                        </a>
+                        <button type="button"
+                                class="btn btn-outline-secondary"
+                                data-dismiss="modal">
+                            <i class="fas fa-times"></i>
+                            Close
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% include "feedback.html" %}
+    {% if not "subscribed" in session %}
+        {% include "subscribe_newsletter.html" %}
+    {% endif %}
+    {% include "cookie_policy_consent.html" %}
+{% endblock %}

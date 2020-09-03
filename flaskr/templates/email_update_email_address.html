@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <head></head>
+    <body>
+        <h1>Update Your Email Address</h1>
+        <p>
+            {{ welcome }}
+        </p>
+        <p>
+            You can update your old email address <em>{{ old_email_address }}</em> to <em>{{ new_email_address }}</em> by following this link:
+            <a href="{{ url_update_email_address }}"><strong>update my email address</strong></a>.
+            If the link does not work, please check that you are logged in.
+            Otherwise, <a href="{{ request.host_url }}login">sign in</a> with your old email address beforehand.
+        </p>
+        <p>
+            Should you need more information or help, Please feel free to contact back.
+        </p>
+        <p>
+            Cheers,<br />
+            {{ config.LEGAL_NAME }} from <a href="{{ request.host_url }}" title="Visit {{ config.BRAND_NAME }}">{{ config.BRAND_NAME }}</a><br />
+            P.S.: You can reply to this email.
+        </p>
+        <p style="text-align: center; color: gray; font-size: 0.8em;">
+            <a href="{{ request.host_url }}about" style="color: gray; text-decoration: none;" title="Privacy Policy">Privacy</a> &#183;
+            <a href="{{ request.host_url }}login" style="color: gray;" title="Login">Login</a>
+        </p>
+    </body>
+</html>

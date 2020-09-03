@@ -1,0 +1,31 @@
+<div id="popup-like-book" aria-live="polite" aria-atomic="true">
+    <div class="toast fade in" role="alert" data-autohide="false">
+        <div class="toast-header">
+            <i class="far fa-smile"></i>
+            <strong class="mr-auto ml-2">Hi!</strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body text-center">
+            <p>Do you like this story?</p>
+            <div class="mb-3">
+                <a href="#" class="btn btn-success onclick-like-this-book" data-book-id="{{ book.id }}" role="button">
+                        <i class="fas fa-thumbs-up"></i>
+                        Like
+                </a>
+            </div>
+            <p>Don't hesitate to share!</p>
+            <div class="mb-1">
+                {% with link = request.base_url, subject = 'Read "' + book.title + '" from ' + config.BRAND_NAME %}
+                    {% include "share_social_network_buttons.html" %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+</div>
+{% include "feedback.html" %}
+{% if not "subscribed" in session %}
+    {% include "subscribe_newsletter.html" %}
+{% endif %}
+{% include "cookie_policy_consent.html" %}

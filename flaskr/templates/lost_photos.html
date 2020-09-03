@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+{% block title %}Lost Photos | Admin{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="jumbotron mx-auto">
+                <h1 class="text-center">Lost Photos</h1>
+                {% if photos_lost_in_server %}
+                    <p><strong>{{ total_photos_lost_in_server }}
+                        photo{% if total_photos_lost_in_server > 1 %}s{% endif %}
+                        found in the database but not in the server:</strong></p>
+                    <table class="table table-hover table-bordered table-sm">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Id</th>
+                                <th>Type</th>
+                                <th>Filename</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for photo in photos_lost_in_server %}
+                            <tr>
+                                <td>{{ photo[0] }}</td>
+                                <td>{{ photo[1] }}</td>
+                                <td>{{ photo[2] }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p><strong>Photos in the database but not in the server:</strong></p>
+                    <div class="alert alert-info" role="alert">
+                        Nothing found, so all good!
+                    </div>
+                {% endif %}
+
+                {% if photos_lost_in_database %}
+                    <p><strong>{{ total_photos_lost_in_database }}
+                        photo{% if total_photos_lost_in_database > 1 %}s{% endif %}
+                        found in the server but not in the database:</strong></p>
+                    <table id="lost-photos-in-database" class="table table-hover table-bordered table-sm">
+                    {% for filename in photos_lost_in_database %}
+                        <tr>
+                            <td><a href="#"
+                               title="Move to Wastebasket"
+                               data-toggle="tooltip"
+                               data-photo-filename="{{ filename }}"
+                               class="onclick-admin-move-photo-to-wastebasket">
+                                <i class="fas fa-trash-alt"></i></a></td>
+                            <td><a href="/admin/photos/open/{{ filename }}"
+                               title="<img src='/admin/photos/open/{{ filename }}' alt='Open photo' class='preview-lost-photo' />"
+                               data-toggle="tooltip"
+                               class="preview-tooltip"
+                               target="_blank">
+                               {{ filename }}
+                            </a></td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+                {% else %}
+                    <p><strong>Photos in the server but not in the database:</strong></p>
+                    <div class="alert alert-info" role="alert">
+                        Nothing found, so all good!
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

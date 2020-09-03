@@ -1,0 +1,17 @@
+wheel
+Flask
+Pillow
+Flask-Markdown
+Flask-Mail
+PyMySQL
+exifread
+pytest
+coverage
+flask-talisman
+pathlib
+requests
+Werkzeug
+cryptography
+pyproj
+Flask-Caching
+sentry-sdk[flask]==0.16.2
