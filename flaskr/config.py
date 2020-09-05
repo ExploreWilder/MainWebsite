@@ -122,7 +122,14 @@ class Config(object):
     #: Do NOT choose an option multiple of an other one, to drag & drop from one page to an other one.
     OPTIONS_BOOKS_PER_PAGE=[DEFAULT_BOOKS_PER_PAGE, 70, 200]
     #: Twitter account details
-    TWITTER_ACCOUNT={"username": "UNDISCLOSED"}
+    TWITTER_ACCOUNT={
+        "username": "UNDISCLOSED",
+        "app_name": "UNDISCLOSED",
+        "app_id": "UNDISCLOSED",
+        "api_key": "UNDISCLOSED",
+        "api_secret_key": "UNDISCLOSED",
+        "bearer_token": "UNDISCLOSED"
+    }
     #: More Markdown extensions: https://python-markdown.github.io/extensions/
     MD_EXT=verbose_md_ext(["admonition", "footnotes", "attr_list", "abbr", "toc", "def_list", "tables"]) + [
         AmazonAffiliateLinksExtension(),

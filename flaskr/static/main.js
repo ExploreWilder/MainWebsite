@@ -1374,18 +1374,6 @@ function init_dropdown_subject() {
 }
 
 /**
- * Hide the "share" button to show the actual list of networks.
- */
-function extend_tweetable() {
-    $(this).fadeOut(200, function() {
-        $(this).parent("span").next().fadeIn(200, function() {
-            $(this).css("display", "inline");
-        });
-    });
-    return false;
-}
-
-/**
  * Change the login form into a password reset form.
  */
 function login_to_password_reset_form() {
@@ -1415,6 +1403,9 @@ function alert_insecure_website() {
 
 /** Management of the table of content. */
 class toc {
+    /**
+     * Initialiser.
+     */
     constructor() {
         /** Previous title on focus (section where the reader probably was). */
         this.prev_id_on_focus = null;
@@ -1679,7 +1670,6 @@ $(function() {
     $(".onclick-like-this-book").click(like_this_book);
     $(".onclick-open-this-book").click(open_this_book);
     $('#pills-tab li.nav-item a[data-toggle="pill"]').click(url_anchor_to_this_id);
-    $(".onclick-tweetable-extend").click(extend_tweetable);
     $("#onclick-password-reset").click(login_to_password_reset_form);
     $('body').on('click', 'a.amazon-affiliate-link', amazon_affiliate_links_selection); // also apply to dynamically added elements
     cookie_policy_consent();

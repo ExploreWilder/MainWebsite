@@ -33,14 +33,6 @@ flaskr.config module
     :undoc-members:
     :show-inheritance:
 
-flaskr.dependencies module
---------------------------
-
-.. automodule:: flaskr.dependencies
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 flaskr.utils module
 -------------------
 
@@ -89,14 +81,6 @@ flaskr.kofi module
     :undoc-members:
     :show-inheritance:
 
-flaskr.cache module
--------------------
-
-.. automodule:: flaskr.cache
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 flaskr.mdx\_amazon\_affiliate\_links module
 -------------------------------------------
 
@@ -109,6 +93,22 @@ flaskr.mdx\_tweetable module
 ----------------------------
 
 .. automodule:: flaskr.mdx_tweetable
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+flaskr.gpx\_to\_img module
+--------------------------
+
+.. automodule:: flaskr.gpx_to_img
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+flaskr.social\_networks module
+------------------------------
+
+.. automodule:: flaskr.social_networks
     :members:
     :undoc-members:
     :show-inheritance:

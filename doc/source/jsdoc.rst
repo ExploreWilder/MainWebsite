@@ -1,8 +1,8 @@
 JavaScript
 ==========
 
-User Space
-----------
+Main Configuration
+------------------
 
 .. js:autoattribute:: small_devices_height
 .. js:autoattribute:: total_gap_photo
@@ -14,11 +14,7 @@ User Space
 .. js:autoattribute:: opacity_photo_description
 .. js:autoattribute:: max_column_photos
 .. js:autoattribute:: default_total_new_photos
-.. js:autoattribute:: total_new_photos
-.. js:autoattribute:: last_loaded_photo
-.. js:autoattribute:: gallery
 .. js:autoattribute:: url_fetch_photos
-.. js:autoattribute:: no_more_photos
 .. js:autoattribute:: url_contact
 .. js:autoattribute:: url_password_reset
 .. js:autoattribute:: url_detailed_feedback
@@ -38,10 +34,16 @@ User Space
 .. js:autoattribute:: right_click_disabled_image
 .. js:autoattribute:: right_click_disabled_text
 .. js:autoattribute:: predefined_thumbnail_height
-.. js:autoattribute:: is_autoplay
 .. js:autoattribute:: autoplay_interval
-.. js:autoattribute:: photo_is_panorama
-.. js:autoattribute:: timer_autoplay
+
+User Space
+----------
+
+.. js:autoattribute:: total_new_photos
+.. js:autoattribute:: last_loaded_photo
+.. js:autoattribute:: gallery
+.. js:autoattribute:: no_more_photos
+.. js:autoattribute:: is_autoplay
 
 .. js:autofunction:: $.urlParam
 .. js:autofunction:: adapt_amount_thumbnails_to_fetch
@@ -100,12 +102,10 @@ User Space
 .. js:autofunction:: url_anchor_to_this_id
 .. js:autofunction:: open_this_book
 .. js:autofunction:: init_dropdown_subject
-.. js:autofunction:: extend_tweetable
 .. js:autofunction:: login_to_password_reset_form
 .. js:autofunction:: alert_insecure_website
-.. js:autofunction:: init_bg_animation
-.. js:autofunction:: toc#animate_elem
-.. js:autofunction:: toc#animate
+.. js:autoclass:: toc(constructor)
+   :members:
 
 Admin Space
 -----------
@@ -220,3 +220,9 @@ Storytelling Map
 .. js:autofunction:: load_images
 .. js:autofunction:: init_storytelling_contextual_map
 .. js:autofunction:: init_storytelling_map
+
+Background Animation
+--------------------
+
+.. js:autoclass:: BackgroundAnimation(constructor)
+   :members:
