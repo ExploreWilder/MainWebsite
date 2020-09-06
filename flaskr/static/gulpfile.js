@@ -51,6 +51,7 @@ var app_scripts = [
             './config.js',
             './main.js',
             './background_animation.js',
+            './social_timelines.js',
         ]
     },
     {
@@ -60,6 +61,7 @@ var app_scripts = [
             './config.js',
             './main.js',
             './background_animation.js',
+            './social_timelines.js',
             './admin.js',
         ]
     },

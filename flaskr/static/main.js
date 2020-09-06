@@ -198,7 +198,7 @@ function prev_next_buttons_onclick(index) {
 
 /**
  * Update the auto play mode (button and global var).
- * @return {Boolean} Always false (in order to disable the html link.)
+ * @return {Boolean} - Always false (in order to disable the html link.)
  */
 function autoplay_button() {
     is_autoplay = !is_autoplay;
@@ -1255,6 +1255,13 @@ function cookie_policy_consent() {
     else {
         show_subscribe_newsletter_toast();
     }
+}
+
+/**
+ * Capital the first letter of `word`.
+ */
+function cap_first_letter(word) {
+    return word[0].toUpperCase() + word.substr(1);
 }
 
 /**

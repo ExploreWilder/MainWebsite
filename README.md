@@ -19,6 +19,7 @@ You may find technical articles about the website in my [Patreon page](https://w
 * [Python 3](https://www.python.org/)
 * [Flask](https://palletsprojects.com/p/flask/)
 * [MySQL](https://www.mysql.com/)
+* [Twitter API](https://developer.twitter.com/en) and [Mapbox Maps API](https://docs.mapbox.com/api/maps/)
 
 ### Client side:
 

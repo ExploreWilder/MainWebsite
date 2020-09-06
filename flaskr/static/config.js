@@ -215,3 +215,32 @@ const predefined_thumbnail_height = ($(window).width() > 768) ? 300 : 150;
  * Default value is 5000 ms.
  */
 const autoplay_interval = 5000;
+
+/**
+ * URL to which my Twitter timeline will be fetched.
+ * Default value is "/social_networks/twitter/my_timeline" according to `flaskr.social_networks`.
+ */
+const url_my_twitter_timeline = "/social_networks/twitter/my_timeline";
+
+/**
+ * URL to which my downloaded Twitter media will be fetched.
+ * Default value is "/social_networks/twitter/media/" according to `flaskr.social_networks`.
+ */
+const url_twitter_media = "/social_networks/twitter/media/";
+
+/**
+ * URL to which my Mastodon timeline will be fetched.
+ * Default value is "/social_networks/mastodon/my_timeline" according to `flaskr.social_networks`.
+ */
+const url_my_mastodon_timeline = "/social_networks/mastodon/my_timeline";
+
+/**
+ * URL to which my downloaded Mastodon media will be fetched.
+ * Default value is "/social_networks/mastodon/media/" according to `flaskr.social_networks`.
+ */
+const url_mastodon_media = "/social_networks/mastodon/media/";
+
+/**
+ * Mastodon name specified by `flaskr.config.MASTODON_ACCOUNT["name"]`.
+ */
+const mastodon_name = "ExploreWilder"

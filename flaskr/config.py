@@ -123,17 +123,30 @@ class Config(object):
     OPTIONS_BOOKS_PER_PAGE=[DEFAULT_BOOKS_PER_PAGE, 70, 200]
     #: Twitter account details
     TWITTER_ACCOUNT={
-        "username": "UNDISCLOSED",
+        "name": "UNDISCLOSED", # the name displayed in the profile
+        "screen_name": "UNDISCLOSED", # the name in the URL
+        "user_access_token": "UNDISCLOSED",
+        "user_access_token_secret": "UNDISCLOSED",
         "app_name": "UNDISCLOSED",
         "app_id": "UNDISCLOSED",
         "api_key": "UNDISCLOSED",
         "api_secret_key": "UNDISCLOSED",
-        "bearer_token": "UNDISCLOSED"
+        "bearer_token": "UNDISCLOSED",
+        "data_store": absolute_path("UNDISCLOSED"),
+        "max_refresh_period": 60*60 # seconds
+    }
+    #: Mastodon account details
+    MASTODON_ACCOUNT={
+        "name": "UNDISCLOSED", # the name displayed in the profile
+        "screen_name": "UNDISCLOSED", # the name in the URL
+        "community_url": "https://UNDISCLOSED/",
+        "data_store": absolute_path("UNDISCLOSED"),
+        "max_refresh_period": 60*60 # seconds
     }
     #: More Markdown extensions: https://python-markdown.github.io/extensions/
     MD_EXT=verbose_md_ext(["admonition", "footnotes", "attr_list", "abbr", "toc", "def_list", "tables"]) + [
         AmazonAffiliateLinksExtension(),
-        TweetableExtension(twitter_username=TWITTER_ACCOUNT["username"], brand_name=BRAND_NAME)]
+        TweetableExtension(twitter_username=TWITTER_ACCOUNT["screen_name"], brand_name=BRAND_NAME)]
     #: Additional extensions for processing the stories.
     BOOK_MD_EXT=MD_EXT + ["mdx_sections",]
     #: Publicly available country-specific layers accessible by the map viewer app.
@@ -148,8 +161,8 @@ class Config(object):
     NASA_EARTHDATA={"username": "UNDISCLOSED", "password": "UNDISCLOSED"}
     #: Social networks (excluding donation platforms).
     SOCIAL_NETWORKS=[
-        ("Mastodon", "https://photog.social/@UNDISCLOSED"),
-        ("Twitter", "https://twitter.com/" + TWITTER_ACCOUNT["username"]),
+        ("Mastodon", MASTODON_ACCOUNT["community_url"] + "@" + MASTODON_ACCOUNT["screen_name"]),
+        ("Twitter", "https://twitter.com/" + TWITTER_ACCOUNT["screen_name"]),
         ("Pixelfed", "https://pixelfed.social/UNDISCLOSED")]
     #: Mapbox Static Images Configuration (kind of): https://docs.mapbox.com/api/maps/#static-images
     MAPBOX_STATIC_IMAGES={

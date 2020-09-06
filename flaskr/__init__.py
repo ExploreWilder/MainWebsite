@@ -113,7 +113,7 @@ def create_app(is_testing=False):
 
     # apply the blueprints to the app
     cache.init_app(app)
-    app.register_blueprint(social_networks_app)
+    app.register_blueprint(social_networks_app, url_prefix="/social_networks")
     app.register_blueprint(visitor_app)
     app.register_blueprint(admin_app, url_prefix="/admin")
     app.register_blueprint(map_app, url_prefix="/map")

@@ -28,25 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-import pytest, os
+import pytest
 
-@pytest.mark.parametrize("path", (
-    ("/stories"),
-    ("/about"),
-    ("/captcha.png"),
-    ("/books/locked.jpg"),
-    ("/sitemap.xml")
-))
-def test_visitor_links_get(client, path):
-    """ Test pages not fetched otherwise. """
-    rv = client.get(path)
-    assert rv.status_code == 200
-
-@pytest.mark.parametrize("path", (
-    ("/social_networks/twitter/my_timeline"),
-    ("/social_networks/mastodon/my_timeline")
-))
-def test_visitor_links_post(client, path):
-    """ Test pages not fetched otherwise. """
-    rv = client.post(path)
-    assert rv.status_code == 200
+# Timelines are fetched in test_links.py
+# Avoid to update the Twitter timeline too frequently since the API has some restrictions.

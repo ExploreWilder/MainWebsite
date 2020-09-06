@@ -22,7 +22,7 @@
         {% else %}
             <meta name="twitter:image" property="og:image" content="{{ request.url_root }}static/favicons/twitter.png" />
         {% endif %}
-        <meta name="twitter:site" content="@{{ config.TWITTER_ACCOUNT.username }}" />
+        <meta name="twitter:site" content="@{{ config.TWITTER_ACCOUNT.screen_name }}" />
         <meta name="twitter:title" property="og:title" content="{% block title %}{% endblock %}">
         <meta property="og:url" content="{{ request.url }}" />
         <meta property="og:locale" content="en_GB" />

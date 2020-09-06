@@ -6,6 +6,7 @@ Server side:
 * `Python 3 <https://www.python.org/>`_
 * `Flask <https://palletsprojects.com/p/flask/>`_
 * `MySQL <https://www.mysql.com/>`_
+* `Twitter API <https://developer.twitter.com/en>`_ and `Mapbox Maps API <https://docs.mapbox.com/api/maps/>`_
 
 Client side:
 

@@ -257,6 +257,14 @@ button[type="submit"] {
     background: white;
 }
 
+.animate-shadow {
+    box-shadow: 0 0 4px rgba(0,0,0,0.3);
+    transition: box-shadow 0.2s ease-in-out;
+    &:hover {
+        box-shadow: 0 0 9px rgba(0,0,0,0.7);
+    }
+}
+
 input {
     max-width: 300px;
     &[id^='captcha'] {
@@ -622,14 +630,6 @@ blockquote.tweetable {
     }
 }
 
-.animate-shadow {
-    box-shadow: 0 0 4px rgba(0,0,0,0.3);
-    transition: box-shadow 0.2s ease-in-out;
-    &:hover {
-        box-shadow: 0 0 9px rgba(0,0,0,0.7);
-    }
-}
-
 #onclick-scroll-down
 {
     color: @button-color;
@@ -801,12 +801,13 @@ blockquote.tweetable {
         display: inline-block;
         margin: 0 5px;
     }
-    a i:hover {
-        animation-name: animate-networks;
-        animation-duration: 0.6s;
-        animation-iteration-count: 1;
-        animation-timing-function: ease;
-    }
+}
+
+a.tooltip-networks i:hover {
+    animation-name: animate-networks;
+    animation-duration: 0.6s;
+    animation-iteration-count: 1;
+    animation-timing-function: ease;
 }
 
 @-webkit-keyframes animate-networks {
@@ -830,6 +831,39 @@ blockquote.tweetable {
 
 #contact-form {
     margin-bottom: 15px;
+}
+
+#scroll-about-page {
+    .sticky-top {
+        top: @nav-bar-height !important;
+    }
+    #my-twitter-timeline, #my-mastodon-timeline {
+        a.media {
+            margin-top: 1em;
+            background-color: white;
+            img {
+                margin-right: .5rem;
+            }
+            .media-body {
+                h5 {
+                    font-size: 1.3em;
+                    color: var(--dark);
+                }
+                .publication-info {
+                    font-size: 0.9em;
+                }
+            }
+            .images img {
+                width: 100%;
+                object-fit: contain;
+                margin-top: .5rem;
+                display: inline-block;
+            }
+        }
+        .discover-more {
+            display: none;
+        }
+    }
 }
 
 /*
