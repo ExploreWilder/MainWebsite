@@ -18,9 +18,9 @@
             P.S.: You can reply to this email.
         </p>
         
-        <h3>Follow my adventure:</h3>
+        <h3>Follow My Adventure:</h3>
         <ul>
-            {% for network in config.NETWORKS %}
+            {% for network in config.SOCIAL_NETWORKS %}
                 <li>
                     <a href="{{ network[1] }}" title="Follow me on {{ network[0] }}">
                         Follow me on {{ network[0] }}
@@ -29,7 +29,7 @@
             {% endfor %}
         </ul>
         
-        <h3>Support me:</h3>
+        <h3>Support Me:</h3>
         <ul>
             <li>One-off donation for eternal gratitude: <a href="https://ko-fi.com/explorewilder" title="Buy me a coffee">buy me a coffee!</a></li>
             <li>Get exclusive content: <a href="https://www.patreon.com/explorewilder" title="Become a Patron">become a Patron!</a></li>

@@ -145,7 +145,7 @@ Run as user:
 
     cd flaskr/static/
     npm init
-    npm install --save-dev gulp gulp-less gulp-sourcemaps gulp-cssnano gulp-autoprefix jquery popper.js gulp-uglify gulp-babel @babel/core @babel/preset-env @babel/plugin-proposal-class-properties event-stream gulp-notify gulp-remove-use-strict
+    npm install --save-dev gulp gulp-less gulp-sourcemaps gulp-cssnano gulp-autoprefix jquery popper.js gulp-uglify gulp-babel @babel/core @babel/preset-env @babel/plugin-proposal-class-properties event-stream gulp-notify gulp-remove-use-strict gulp-changed
     npm install --save @fortawesome/fontawesome-free bootstrap
 
 **Configure MySQL**

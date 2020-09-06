@@ -269,12 +269,12 @@ def send_newsletter():
             text = render_template('email_newsletter.txt',
                 username=username,
                 news=news_text,
-                subject=subject,
+                subject=short_subject,
                 url_unsubscribe=url_unsubscribe)
             html = render_template('email_newsletter.html',
                 username=username,
                 news=news_html,
-                subject=subject,
+                subject=short_subject,
                 url_unsubscribe=url_unsubscribe)
             secure_email.send(email, subject, text, html)
             total_emails_sent += 1

@@ -1,7 +1,16 @@
 'use strict';
 
-// Same as flaskr.config.STATIC_PROJECT_VERSION
-var version = '0.1';
+/** Same as flaskr.config.STATIC_PROJECT_VERSION */
+const version = '0.1';
+
+/** Directory of the JS files used in prod. */
+const js_dest = `./dist-${version}/js/`;
+
+/** Directory of the fonts used in prod. */
+const fonts_dest = `./dist-${version}/webfonts/`;
+
+/** Directory of the images used in prod by jQuery UI. */
+const jquery_ui_icons_dest = `./dist-${version}/css/images/`;
 
 var vendor_scripts = [
     {
@@ -90,12 +99,8 @@ var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
 var babel = require('gulp-babel');
 var notify = require("gulp-notify");
+var changed = require('gulp-changed');
 const removeUseStrict = require("gulp-remove-use-strict");
-
-gulp.task('alert_js', function() {
-    return gulp.src('.')
-        .pipe(notify("JS tasks done."));
-});
 
 gulp.task('alert_style', function() {
     return gulp.src('.')
@@ -104,12 +109,14 @@ gulp.task('alert_style', function() {
 
 gulp.task('icons', function() {
     return gulp.src('./node_modules/@fortawesome/fontawesome-free/webfonts/*')
-        .pipe(gulp.dest('./dist-' + version + '/webfonts/')); // copy fonts to dist
+        .pipe(changed(fonts_dest))
+        .pipe(gulp.dest(fonts_dest)); // copy fonts to dist
 });
 
 gulp.task('jquery_ui_images', function() {
     return gulp.src('./jquery-ui-1.12.1/images/*')
-        .pipe(gulp.dest('./dist-' + version + '/css/images/')); // copy the jQuery UI icon set
+        .pipe(changed(jquery_ui_icons_dest))
+        .pipe(gulp.dest(jquery_ui_icons_dest)); // copy the jQuery UI icon set
 });
 
 gulp.task('styles', function () {
@@ -119,7 +126,13 @@ gulp.task('styles', function () {
         .pipe(cssnano()) // minify CSS
         .pipe(sourcemaps.write('./')) // source maps in the same directory as the compiled CSS files
         .pipe(gulp.dest('./dist-' + version + '/css/')) // compiled CSS directory
+        .pipe(notify({
+            onLast: true, // only happen on the last file of the stream (skip the map file notification)
+            title: "Style tasks done",
+            message: "CSS bundle files generated"
+        }))
 });
+gulp.watch('./*.less', gulp.series('styles'));
 
 vendor_scripts.forEach(function(element) {
     gulp.task(element.name + '_vendor_scripts', function () {
@@ -128,8 +141,14 @@ vendor_scripts.forEach(function(element) {
             .pipe(concat(element.name + '.vendor.bundle.js'))
             .pipe(uglify())
             .pipe(sourcemaps.write('.'))
-            .pipe(gulp.dest('./dist-' + version + '/js/'));
+            .pipe(gulp.dest(js_dest))
+            .pipe(notify({
+                onLast: true,
+                title: "Updated <%= file.relative %>",
+                message: "JS bundle file generated"
+            }));
     });
+    gulp.watch(element.scripts, gulp.series(element.name + '_vendor_scripts'));
 });
 
 app_scripts.forEach(function(element) {
@@ -146,27 +165,18 @@ app_scripts.forEach(function(element) {
             .pipe(concat(element.name + '.app.bundle.js'))
             .pipe(uglify())
             .pipe(sourcemaps.write('.'))
-            .pipe(gulp.dest('./dist-' + version + '/js/'));
+            .pipe(gulp.dest(js_dest))
+            .pipe(notify({
+                onLast: true,
+                title: "Updated <%= file.relative %>",
+                message: "JS bundle file generated"
+            }));
     });
+    gulp.watch(element.scripts, gulp.series(element.name + '_app_scripts'));
 });
 
-gulp.task('default', function () {
-    gulp.watch('./*.less', {
-        ignoreInitial: false
-    }, gulp.series(gulp.parallel(
-        'icons',
-        'jquery_ui_images',
-        'styles'
-    ), 'alert_style'));
-    gulp.watch('./*.js', {
-        ignoreInitial: false
-    }, gulp.series(gulp.parallel(
-        'visitor_space_app_scripts',
-        'visitor_space_vendor_scripts',
-        'admin_space_app_scripts',
-        'admin_space_vendor_scripts',
-        'storytelling_map_app_scripts',
-        'map_viewer_app_scripts',
-        'map_viewer_vendor_scripts',
-    ), 'alert_js'));
-});
+gulp.task('default', gulp.parallel(
+    'icons',
+    'jquery_ui_images'
+    )
+);
