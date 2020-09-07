@@ -26,8 +26,8 @@ case ${tool} in
         cd - >/dev/null
         ;;
     cloc)
-        ls -1 *.sh *.py flaskr/*.py flaskr/*.sql flaskr/static/*.js \
-            flaskr/static/*.less flaskr/templates/*.html tests/*.py \
+        ls -1 *.sh *.py flaskr/*.py flaskr/*.sql flaskr/static/app/scripts/*.js \
+            flaskr/static/app/styles/*.less flaskr/templates/*.html tests/*.py \
             tests/*.sql > cloc_files.txt
         cloc --list-file=cloc_files.txt
         rm cloc_files.txt

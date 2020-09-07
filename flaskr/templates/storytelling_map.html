@@ -4,7 +4,7 @@
 {% block extra_tags %}
     <link href="https://api.mapbox.com/" rel="preconnect" crossorigin>
     <link href="https://api.mapbox.com/" rel="dns-prefetch" />
-    <link href="/static/mapbox-gl-1.12.0.min.css" rel="stylesheet" />
+    <link href="/static/dist-{{ config.STATIC_PROJECT_VERSION }}/css/mapbox-gl-1.12.0.min.css" rel="stylesheet" />
     <link href="/static/dist-{{ config.STATIC_PROJECT_VERSION }}/css/storytelling_map.css" rel="stylesheet" />
 {% endblock %}
 {% block body %}
@@ -56,7 +56,7 @@
     {% include "popup_story.html" %}
 {% endblock %}
 {% block extra_scripts %}
-    <script nonce="{{ csp_nonce() }}" src="/static/mapbox-gl-1.12.0.min.js"></script>
+    <script nonce="{{ csp_nonce() }}" src="/static/dist-{{ config.STATIC_PROJECT_VERSION }}/js/mapbox-gl-1.12.0.min.js"></script>
     <script nonce="{{ csp_nonce() }}">
         BOOK_ID={{ book.id }};
         BOOK_DIR="{{ book.url }}";

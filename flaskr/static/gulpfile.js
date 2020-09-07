@@ -6,6 +6,9 @@ const version = '0.1';
 /** Directory of the JS files used in prod. */
 const js_dest = `./dist-${version}/js/`;
 
+/** Directory of the CSS files used in prod. */
+const css_dest = `./dist-${version}/css/`;
+
 /** Directory of the fonts used in prod. */
 const fonts_dest = `./dist-${version}/webfonts/`;
 
@@ -16,38 +19,38 @@ var vendor_scripts = [
     {
         name: 'visitor_space',
         scripts: [
-            './jquery-3.5.1.min.js',
-            './popper.min.js',
-            './bootstrap-4.5.2/js/bootstrap.min.js',
-            './zoom-1.7.21/jquery.zoom.min.js',
-            './intersection-observer.js',
-            './scrollama-2.2.0.min.js',
+            './vendor/jquery-3.5.1.min.js',
+            './vendor/popper.min.js',
+            './vendor/bootstrap-4.5.2/js/bootstrap.min.js',
+            './vendor/zoom-1.7.21/jquery.zoom.min.js',
+            './vendor/intersection-observer.js',
+            './vendor/scrollama-2.2.0.min.js',
         ]
     },
     {
         name: 'admin_space',
         scripts: [
-            './jquery-3.5.1.min.js',
-            './jquery-ui-1.12.1/jquery-ui.min.js',
-            './popper.min.js',
-            './bootstrap-4.5.2/js/bootstrap.min.js',
-            './zoom-1.7.21/jquery.zoom.min.js',
-            './intersection-observer.js',
-            './scrollama-2.2.0.min.js',
-            './chart-2.9.3.bundle.min.js',
-            './tiff.min.js',
-            './marked.min.js',
+            './vendor/jquery-3.5.1.min.js',
+            './vendor/jquery-ui-1.12.1/jquery-ui.min.js',
+            './vendor/popper.min.js',
+            './vendor/bootstrap-4.5.2/js/bootstrap.min.js',
+            './vendor/zoom-1.7.21/jquery.zoom.min.js',
+            './vendor/intersection-observer.js',
+            './vendor/scrollama-2.2.0.min.js',
+            './vendor/chart-2.9.3.bundle.min.js',
+            './vendor/tiff.min.js',
+            './vendor/marked.min.js',
         ]
     },
     {
         name: 'map_viewer',
         scripts: [
-            './jquery-3.5.1.min.js',
-            './popper.min.js',
-            './jquery-ui-1.12.1/jquery-ui.min.js',
-            './ol-6.4.3.js',
-            './chart-2.9.3.bundle.min.js',
-            './lz-string/libs/lz-string.min.js',
+            './vendor/jquery-3.5.1.min.js',
+            './vendor/popper.min.js',
+            './vendor/jquery-ui-1.12.1/jquery-ui.min.js',
+            './vendor/ol-6.4.3.js',
+            './vendor/chart-2.9.3.bundle.min.js',
+            './vendor/lz-string/libs/lz-string.min.js',
         ]
     },
 ];
@@ -56,35 +59,35 @@ var app_scripts = [
     {
         name: 'visitor_space',
         scripts: [
-            './sentry_handler.js',
-            './config.js',
-            './main.js',
-            './background_animation.js',
-            './social_timelines.js',
+            './app/scripts/sentry_handler.js',
+            './app/scripts/config.js',
+            './app/scripts/main.js',
+            './app/scripts/background_animation.js',
+            './app/scripts/social_timelines.js',
         ]
     },
     {
         name: 'admin_space',
         scripts: [
-            './sentry_handler.js',
-            './config.js',
-            './main.js',
-            './background_animation.js',
-            './social_timelines.js',
-            './admin.js',
+            './app/scripts/sentry_handler.js',
+            './app/scripts/config.js',
+            './app/scripts/main.js',
+            './app/scripts/background_animation.js',
+            './app/scripts/social_timelines.js',
+            './app/scripts/admin.js',
         ]
     },
     {
         name: 'storytelling_map',
         scripts: [
-            './storytelling_map.js',
+            './app/scripts/storytelling_map.js',
         ]
     },
     {
         name: 'map_viewer',
         scripts: [
-            './sentry_handler.js',
-            './map_viewer.js',
+            './app/scripts/sentry_handler.js',
+            './app/scripts/map_viewer.js',
         ]
     },
 ];
@@ -114,18 +117,18 @@ gulp.task('icons', function() {
 });
 
 gulp.task('jquery_ui_images', function() {
-    return gulp.src('./jquery-ui-1.12.1/images/*')
+    return gulp.src('./vendor/jquery-ui-1.12.1/images/*')
         .pipe(changed(jquery_ui_icons_dest))
         .pipe(gulp.dest(jquery_ui_icons_dest)); // copy the jQuery UI icon set
 });
 
 gulp.task('styles', function () {
-    return gulp.src('./*.less')
+    return gulp.src('./app/styles/*.less')
         .pipe(sourcemaps.init())
         .pipe(less({ plugins: [autoprefix] })) // compile the Less files with the autoprefix plugin
         .pipe(cssnano()) // minify CSS
         .pipe(sourcemaps.write('./')) // source maps in the same directory as the compiled CSS files
-        .pipe(gulp.dest('./dist-' + version + '/css/')) // compiled CSS directory
+        .pipe(gulp.dest(css_dest)) // compiled CSS directory
         .pipe(notify({
             onLast: true, // only happen on the last file of the stream (skip the map file notification)
             title: "Style tasks done",
@@ -133,6 +136,24 @@ gulp.task('styles', function () {
         }))
 });
 gulp.watch('./*.less', gulp.series('styles'));
+
+gulp.task('sentry', function() {
+    return gulp.src('./vendor/sentry-5.21.4.min.js')
+        .pipe(changed(js_dest))
+        .pipe(gulp.dest(js_dest));
+});
+
+gulp.task('mapbox_style', function() {
+    return gulp.src('./vendor/mapbox-gl-1.12.0.min.css')
+        .pipe(changed(css_dest))
+        .pipe(gulp.dest(css_dest));
+});
+
+gulp.task('mapbox_script', function() {
+    return gulp.src('./vendor/mapbox-gl-1.12.0.min.js')
+        .pipe(changed(js_dest))
+        .pipe(gulp.dest(js_dest));
+});
 
 vendor_scripts.forEach(function(element) {
     gulp.task(element.name + '_vendor_scripts', function () {
@@ -177,6 +198,9 @@ app_scripts.forEach(function(element) {
 
 gulp.task('default', gulp.parallel(
     'icons',
-    'jquery_ui_images'
+    'jquery_ui_images',
+    'sentry',
+    'mapbox_style',
+    'mapbox_script'
     )
 );

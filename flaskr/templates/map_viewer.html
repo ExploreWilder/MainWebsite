@@ -95,7 +95,7 @@
         <div id="tooltip-waypoint" title=""></div>
 
         {% if is_prod %}
-            <script nonce="{{ csp_nonce() }}" src="/static/sentry-5.21.4.min.js"></script>
+            <script nonce="{{ csp_nonce() }}" src="/static/dist-{{ config.STATIC_PROJECT_VERSION }}/js/sentry-5.21.4.min.js"></script>
             <script nonce="{{ csp_nonce() }}" type="text/javascript">
                 Sentry.init({dsn: "{{ config.SENTRY_DSN }}"});
                 {% if sentry_event_id %}

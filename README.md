@@ -8,11 +8,7 @@ It is currently hosted in a shared server running a virtual environment of Pytho
 
 ## About
 
-This is just an example of website using top of the edge open source technologies!
-
-This whole project is probably not reusable and is not intended to be so.
-
-You may find technical articles about the website in my [Patreon page](https://www.patreon.com/explorewilder).
+This is just an example of website using top of the edge open source technologies! The project was not created to be a template or theme, but for my own use. Feel free to take whatever inspiration from it that you want.
 
 ### Server side:
 
