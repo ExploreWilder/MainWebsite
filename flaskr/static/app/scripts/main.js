@@ -1682,9 +1682,6 @@ $(function() {
     cookie_policy_consent();
     subscribe_newsletter();
     
-    if($("#storytelling-map").length) {
-        init_storytelling_map();
-    }
     $('body').on('click', 'a[href^="http://"]:not(\'.bypass-non-https-warning\')', alert_insecure_website);
     
     // blur up
