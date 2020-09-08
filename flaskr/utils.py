@@ -34,6 +34,11 @@ class JSONSecureCookie(SecureCookie):
     """ https://werkzeug.palletsprojects.com/en/0.15.x/contrib/securecookie/#security """
     serialization_method = json
 
+def get_static_package_config():
+    """ Read the package.json file in the static directory and returns a dictionary. """
+    with open(absolute_path("static/package.json")) as static_package:
+        return json.loads(static_package.read())
+
 def secure_decode_query_string(s):
     """
     Convert to UTF string and remove the <>% characters that could make

@@ -22,7 +22,7 @@ case ${tool} in
         ;;
     run-gulp)
         cd flaskr/static
-        gulp
+        gulp ${2}
         cd - >/dev/null
         ;;
     cloc)

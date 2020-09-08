@@ -62,31 +62,26 @@ Run as user:
     cd secure-cookie
     python3 setup.py install
     cd -
-    rm -rf secure-cookie
     
     git clone https://github.com/mattupstate/flask-mail.git
     cd flask-mail
     python3 setup.py install
     cd -
-    rm -rf flask-mail
     
     git clone https://github.com/tkrajina/gpxpy.git
     cd gpxpy
     python3 setup.py install
     cd -
-    rm -rf gpxpy
     
     git clone -b EarthDataLogin --single-branch https://github.com/ExploreWilder/srtm.py
     cd srtm.py
     python3 setup.py install
     cd -
-    rm -rf srtm.py
 
     git clone https://github.com/gkovacs/lz-string-python.git
     cd lz-string-python
     python3 setup.py install
     cd -
-    rm -rf lz-string-python
     
     mkdir dkimpy
     cd dkimpy
@@ -95,14 +90,12 @@ Run as user:
     cd dkimpy-1.0.4
     python3 setup.py install --single-version-externally-managed --record=/dev/null
     cd ../..
-    rm -rf dkimpy
     
     python -m pip install git+https://github.com/maxcountryman/flask-seasurf.git
     python -m pip install git+https://github.com/ExploreWilder/mdx_sections.git
     
     pip3 install -r requirements.txt
-    rm -f requirements.txt
-    pip3 install sphinx sphinxcontrib-napoleon sphinx-js sphinx_bootstrap_theme
+    pip3 install -r require_dev.txt # for development only
 
 **Configure MySQL**
 
@@ -144,9 +137,7 @@ Run as user:
 .. code-block:: none
 
     cd flaskr/static/
-    npm init
-    npm install --save-dev gulp gulp-less gulp-sourcemaps gulp-cssnano gulp-autoprefix jquery popper.js gulp-uglify gulp-babel @babel/core @babel/preset-env @babel/plugin-proposal-class-properties event-stream gulp-notify gulp-remove-use-strict gulp-changed
-    npm install --save @fortawesome/fontawesome-free bootstrap
+    npm install # dev + prod dependencies
 
 **Configure MySQL**
 

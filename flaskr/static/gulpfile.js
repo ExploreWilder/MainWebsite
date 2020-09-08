@@ -1,19 +1,25 @@
-'use strict';
+const package_info = require('./package.json');
 
-/** Same as flaskr.config.STATIC_PROJECT_VERSION */
-const version = '0.1';
+console.log(`
+* Project:               ${package_info.name}
+* Description:           ${package_info.description}
+* Static Assets Version: ${package_info.version}
+`.trim());
+
+/** Find out the version from the package configuration. */
+const dist_dir = `./dist-${package_info.version}`;
 
 /** Directory of the JS files used in prod. */
-const js_dest = `./dist-${version}/js/`;
+const js_dest = `${dist_dir}/js/`;
 
 /** Directory of the CSS files used in prod. */
-const css_dest = `./dist-${version}/css/`;
+const css_dest = `${dist_dir}/css/`;
 
 /** Directory of the fonts used in prod. */
-const fonts_dest = `./dist-${version}/webfonts/`;
+const fonts_dest = `${dist_dir}/webfonts/`;
 
 /** Directory of the images used in prod by jQuery UI. */
-const jquery_ui_icons_dest = `./dist-${version}/css/images/`;
+const jquery_ui_icons_dest = `${dist_dir}/css/images/`;
 
 var vendor_scripts = [
     {
@@ -22,9 +28,9 @@ var vendor_scripts = [
             './vendor/jquery-3.5.1.min.js',
             './vendor/popper.min.js',
             './vendor/bootstrap-4.5.2/js/bootstrap.min.js',
-            './vendor/zoom-1.7.21/jquery.zoom.min.js',
-            './vendor/intersection-observer.js',
-            './vendor/scrollama-2.2.0.min.js',
+            './node_modules/jquery-zoom/jquery.zoom.min.js',
+            './node_modules/intersection-observer/intersection-observer.js',
+            './node_modules/scrollama/build/scrollama.min.js',
         ]
     },
     {
@@ -34,12 +40,12 @@ var vendor_scripts = [
             './vendor/jquery-ui-1.12.1/jquery-ui.min.js',
             './vendor/popper.min.js',
             './vendor/bootstrap-4.5.2/js/bootstrap.min.js',
-            './vendor/zoom-1.7.21/jquery.zoom.min.js',
-            './vendor/intersection-observer.js',
-            './vendor/scrollama-2.2.0.min.js',
-            './vendor/chart-2.9.3.bundle.min.js',
-            './vendor/tiff.min.js',
-            './vendor/marked.min.js',
+            './node_modules/jquery-zoom/jquery.zoom.min.js',
+            './node_modules/intersection-observer/intersection-observer.js',
+            './node_modules/scrollama/build/scrollama.min.js',
+            './node_modules/chart.js/dist/Chart.bundle.min.js',
+            './node_modules/tiff.js/tiff.min.js',
+            './node_modules/marked/marked.min.js',
         ]
     },
     {
@@ -49,8 +55,8 @@ var vendor_scripts = [
             './vendor/popper.min.js',
             './vendor/jquery-ui-1.12.1/jquery-ui.min.js',
             './vendor/ol-6.4.3.js',
-            './vendor/chart-2.9.3.bundle.min.js',
-            './vendor/lz-string/libs/lz-string.min.js',
+            './node_modules/chart.js/dist/Chart.bundle.min.js',
+            './node_modules/lz-string/libs/lz-string.min.js',
         ]
     },
 ];
@@ -101,9 +107,12 @@ var autoprefix = new LessAutoprefix({ browsers: ['last 2 versions'] });
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
 var babel = require('gulp-babel');
-var notify = require("gulp-notify");
+var notify = require('gulp-notify');
 var changed = require('gulp-changed');
-const removeUseStrict = require("gulp-remove-use-strict");
+var rename = require('gulp-rename');
+const removeUseStrict = require('gulp-remove-use-strict');
+
+var all_root_tasks = ['default', 'styles'];
 
 gulp.task('alert_style', function() {
     return gulp.src('.')
@@ -138,25 +147,27 @@ gulp.task('styles', function () {
 gulp.watch('./*.less', gulp.series('styles'));
 
 gulp.task('sentry', function() {
-    return gulp.src('./vendor/sentry-5.21.4.min.js')
+    return gulp.src('./node_modules/@sentry/browser/build/bundle.min.js')
+        .pipe(rename("sentry.js"))
         .pipe(changed(js_dest))
         .pipe(gulp.dest(js_dest));
 });
 
 gulp.task('mapbox_style', function() {
-    return gulp.src('./vendor/mapbox-gl-1.12.0.min.css')
+    return gulp.src('./node_modules/mapbox-gl/dist/mapbox-gl.css')
         .pipe(changed(css_dest))
         .pipe(gulp.dest(css_dest));
 });
 
 gulp.task('mapbox_script', function() {
-    return gulp.src('./vendor/mapbox-gl-1.12.0.min.js')
+    return gulp.src('./node_modules/mapbox-gl/dist/mapbox-gl.js')
         .pipe(changed(js_dest))
         .pipe(gulp.dest(js_dest));
 });
 
 vendor_scripts.forEach(function(element) {
-    gulp.task(element.name + '_vendor_scripts', function () {
+    const task_name = element.name + '_vendor_scripts';
+    gulp.task(task_name, function () {
         return gulp.src(element.scripts)
             .pipe(sourcemaps.init())
             .pipe(concat(element.name + '.vendor.bundle.js'))
@@ -169,11 +180,13 @@ vendor_scripts.forEach(function(element) {
                 message: "JS bundle file generated"
             }));
     });
-    gulp.watch(element.scripts, gulp.series(element.name + '_vendor_scripts'));
+    all_root_tasks.push(task_name);
+    gulp.watch(element.scripts, gulp.series(task_name));
 });
 
 app_scripts.forEach(function(element) {
-    gulp.task(element.name + '_app_scripts', function () {
+    const task_name = element.name + '_app_scripts';
+    gulp.task(task_name, function () {
         return gulp.src(element.scripts)
             .pipe(sourcemaps.init())
             .pipe(babel({
@@ -193,7 +206,8 @@ app_scripts.forEach(function(element) {
                 message: "JS bundle file generated"
             }));
     });
-    gulp.watch(element.scripts, gulp.series(element.name + '_app_scripts'));
+    all_root_tasks.push(task_name);
+    gulp.watch(element.scripts, gulp.series(task_name));
 });
 
 gulp.task('default', gulp.parallel(
@@ -204,3 +218,5 @@ gulp.task('default', gulp.parallel(
     'mapbox_script'
     )
 );
+
+gulp.task('run-all', gulp.parallel(all_root_tasks));

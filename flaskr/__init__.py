@@ -61,6 +61,7 @@ def create_app(is_testing=False):
         logging.basicConfig(level=logging.DEBUG)
     if is_testing:
         app.config.from_object(Testing_config)
+    app.config["STATIC_PACKAGE"] = get_static_package_config()
     
     @app.context_processor
     def app_ctx_processor():
@@ -71,11 +72,11 @@ def create_app(is_testing=False):
     if not is_debug and not is_testing:
         sentry_sdk.init(
             dsn=app.config["SENTRY_DSN"],
-            integrations=[FlaskIntegration()]
-        )
+            integrations=[FlaskIntegration()])
 
     app.config["CSP_NONCE"] = csp_nonce()
-    talisman = Talisman(app,
+    talisman = Talisman(
+        app,
         content_security_policy=app.config["CSP_CONFIG"],
         content_security_policy_nonce_in=app.config["CSP_NONCE_IN"])
 

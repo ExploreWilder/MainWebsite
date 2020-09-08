@@ -1,7 +1,8 @@
 {
-  "name": "website",
-  "version": "1.0.0",
-  "description": "",
+  "name": "ExploreWilder.com",
+  "private": true,
+  "version": "0.1.0",
+  "description": "The website for my photos and stories. Focus on simplicity, security, privacy, and a nice user experience!",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -20,6 +21,7 @@
     "gulp-less": "^4.0.1",
     "gulp-notify": "^3.2.0",
     "gulp-remove-use-strict": "^1.0.0",
+    "gulp-rename": "^2.0.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2",
     "jquery": "^3.5.1",
@@ -28,6 +30,15 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.14.0",
-    "bootstrap": "^4.5.2"
+    "@sentry/browser": "^5.22.3",
+    "bootstrap": "^4.5.2",
+    "chart.js": "^2.9.3",
+    "intersection-observer": "^0.11.0",
+    "jquery-zoom": "^1.7.21",
+    "lz-string": "^1.4.4",
+    "mapbox-gl": "^1.12.0",
+    "marked": "^1.1.1",
+    "scrollama": "^2.2.1",
+    "tiff.js": "^1.0.0"
   }
 }

@@ -35,8 +35,6 @@ class Config(object):
 
     #: Interactive debugger for unhandled exceptions and auto-reload on code changes.
     DEBUG=True
-    #: Version in the gulpfile.js.
-    STATIC_PROJECT_VERSION="0.1"
     #: Number of characters/digits in the CAPTCHA.
     CAPTCHA_LENGTH=3
     #: List of characters and digits without the similar ones 0O, LV, 1I, etc.
