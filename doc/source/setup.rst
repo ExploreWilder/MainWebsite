@@ -4,7 +4,7 @@ Setup
 Offline
 -------
 
-This section details how to install the application offline (i.e. localhost) for development, debug and test purposes.
+This section details how to install the application locally (for development, debug and test purposes.)
 
 On Debian-based Operating Systems
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -19,7 +19,7 @@ Run as root:
     apt-get install -y python3-pip python3-dev python3-pytest cloc \
     git wget default-mysql-client default-mysql-server
 
-**Install Node.js**
+**Install Node.js & npm Packages**
 
 Run as root:
 
@@ -34,8 +34,14 @@ Run as root:
     . ~/.profile
     rm -f node-$VERSION-$DISTRO.tar.xz
     npm -g config set ignore-scripts true
-    npm install -g jsdoc
-    npm install -g @mapbox/togeojson
+    npm install -g jsdoc gulp-cli @mapbox/togeojson
+
+Run as user:
+
+.. code-block:: none
+
+    cd flaskr/static/
+    npm install # dev + prod dependencies
 
 **Install the Python virtual environment (venv)**
 
@@ -114,7 +120,7 @@ Run as root:
 On Fedora
 ^^^^^^^^^
 
-The Python stuff is installed as detailed above. The difference of the system setup is detailed below.
+The differences are detailed below.
 
 **Install the required dnf packages**
 
@@ -123,21 +129,6 @@ Run as root:
 .. code-block:: none
 
     dnf install git python3-pytest cloc
-
-**Install Gulp**
-
-Run as root:
-
-.. code-block:: none
-
-    npm install --global gulp-cli
-
-Run as user:
-
-.. code-block:: none
-
-    cd flaskr/static/
-    npm install # dev + prod dependencies
 
 **Configure MySQL**
 
@@ -165,13 +156,4 @@ Then create a new app:
 
 .. image:: _images/cpanel_create_python_app.png
 
-Then choose the latest Python version (I'm using 3.7.3) and the application root directory.
-
-Finally, enter the created venv, install the Python dependencies as detailed above, copy the app and data, setup your MySQL database and that's it!
-
-Here you have a list of things to think about when putting the application online (i.e. production):
-
-* Change your passwords
-* Configure your MySQL user and database
-* Check the *robots.txt* and *.htaccess* files
-* Restart the app to apply changes with something like ``touch tmp/restart.txt`` or do it through the cPanel
+Then choose the latest Python version (I'm using 3.7.3) and the application root directory. Finally, enter the created venv, install the Python dependencies as detailed above, copy the app and data, setup your MySQL database and that's it!

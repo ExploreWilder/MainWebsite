@@ -52,11 +52,13 @@ class Timeline {
      * @param data_store {String} - The media directory path.
      * @param el {Object} - Parent block of the timeline.
      * @param max_entries {Number} - Maximum number of publications to display.
+     * @param media_fadein_time {Number} - Time in ms of the fade-in effect on media load.
      */
-    constructor(social_network, url_stored_timeline, data_store, el, max_entries = 10) {
+    constructor(social_network, url_stored_timeline, data_store, el, max_entries = 10, media_fadein_time = 300) {
         this.social_network = social_network;
         this.data_store = data_store;
         this.max_entries = max_entries;
+        this.media_fadein_time = media_fadein_time;
 
         $.ajax({
             url: url_stored_timeline,
@@ -134,9 +136,9 @@ class Timeline {
             .hide()
             .appendTo(gallery)
             .on("load", function() {
-                $(this).show();
+                $(this).hide().fadeIn(this.media_fadein_time);
             });
-            image.src = this.data_store + image_data.url;
+            image.src = `${this.data_store}${image_data.origin}/${image_data.filename}`;
         }
 
         return gallery;
@@ -152,9 +154,9 @@ class Timeline {
         var profile_image = new Image();
 
         $(profile_image).addClass("rounded-lg").hide().on("load", function() {
-            $(this).show();
+            $(this).hide().fadeIn(this.media_fadein_time);
         });
-        profile_image.src = this.data_store + profile.profile_image_url_https;
+        profile_image.src = `${this.data_store}${profile.profile_image_origin}/${profile.profile_image_filename}`;
 
         return $(profile_image);
     }
@@ -198,7 +200,7 @@ class Timeline {
             "title": "See on " + cap_first_letter(this.social_network)
         });
 
-        if("profile_image_url_https" in profile) {
+        if("profile_image_filename" in profile) {
             publication_a.append(this.create_profile_image(profile));
         }
 

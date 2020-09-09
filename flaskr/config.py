@@ -131,7 +131,8 @@ class Config(object):
         "api_secret_key": "UNDISCLOSED",
         "bearer_token": "UNDISCLOSED",
         "data_store": absolute_path("UNDISCLOSED"),
-        "max_refresh_period": 60*60 # seconds
+        "max_refresh_period": 60*60, # seconds
+        "connection_timeout": 5, # seconds to wait before giving up the timeline download
     }
     #: Mastodon account details
     MASTODON_ACCOUNT={
@@ -139,7 +140,8 @@ class Config(object):
         "screen_name": "UNDISCLOSED", # the name in the URL
         "community_url": "https://UNDISCLOSED/",
         "data_store": absolute_path("UNDISCLOSED"),
-        "max_refresh_period": 60*60 # seconds
+        "max_refresh_period": 60*60, # seconds
+        "connection_timeout": 5, # seconds to wait before giving up the timeline download
     }
     #: More Markdown extensions: https://python-markdown.github.io/extensions/
     MD_EXT=verbose_md_ext(["admonition", "footnotes", "attr_list", "abbr", "toc", "def_list", "tables"]) + [
