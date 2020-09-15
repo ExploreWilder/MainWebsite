@@ -84,4 +84,4 @@ Check version and download:
 * `OpenLayers <https://openlayers.org/>`_
 
 .. note::
-    Updates may break the application so you should test before deploy.
+    Updates may break the application so you should test before deploying.

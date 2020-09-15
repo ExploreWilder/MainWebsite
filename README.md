@@ -8,7 +8,26 @@ It is currently hosted in a shared server running a virtual environment of Pytho
 
 ## About
 
-This is just an example of website using top of the edge open source technologies! The project was not created to be a template or theme, but for my own use. Feel free to take whatever inspiration from it that you want.
+This is just an example of website using awesome open source technologies! The project was not created to be a template or a flexible CMS, but for my own use. Feel free to take whatever inspiration from it that you want. Here is a list of implemented features:
+
+- [x] Asynchronous photo gallery
+- [x] Hi-res photo viewer
+- [x] Configurable map viewer and real 3D map viewer with interactive elevation profile
+- [x] Show stories (markdown file and scrollytelling 2.5D map)
+- [x] Likes without subscription – easy peasy lemon squeezy!
+- [x] Social networks share buttons
+- [x] Twitter and Mastodon timelines displayed without external requests
+- [x] Contact and feedback forms
+- [x] Exclusive access: restricted area and unlocked features
+- [x] Emails (newsletter + account management)
+- [x] Privacy friendly and GDPR compliant
+- [x] Security focused
+- [x] Web responsive and cross browser compatible
+- [x] SEO optimisations
+- [x] Ko-fi.com webhook integration
+- [x] Admin space: manage the gallery, stories, members, see statistics (likes and views)
+
+Here you have a list of frameworks and tools I used, so that you don't have to dive into the code:
 
 ### Server side:
 
@@ -24,8 +43,8 @@ This is just an example of website using top of the edge open source technologie
 * [Fontawesome](https://fontawesome.com/)
 * [JavaScript](https://en.wikipedia.org/wiki/JavaScript) with [JQuery](https://jquery.com/)
 * [Bootstrap](https://getbootstrap.com/)
-* [JQuery UI](https://jqueryui.com/)
-* Dynamic maps with [OpenLayers](https://openlayers.org/) and [Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/overview/)
+* [jQuery UI](https://jqueryui.com/)
+* Dynamic maps with [OpenLayers](https://openlayers.org/), [Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/overview/), and [VTS Browser JS](https://github.com/melowntech/vts-browser-js)
 * Dynamic charts with [Chart.js](https://www.chartjs.org)
 
 ### Developer side:

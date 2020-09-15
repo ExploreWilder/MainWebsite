@@ -52,7 +52,7 @@ class MyGPXTrackSegment(mod_gpxpy.gpx.GPXTrackSegment):
         min_distance = 0
         max_distance = 1000
         for i in range(max_iter):
-            dicho = int((max_distance - min_distance) / 2 + min_distance)
+            dicho = int((max_distance + min_distance) / 2)
             current_segment = self.clone()
             current_segment.simplify(dicho)
             current_points_no = current_segment.get_points_no()

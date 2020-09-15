@@ -11,7 +11,6 @@ Documentation
 
    setup
    usage
-   tools
    test_coverage
    database
    jsdoc

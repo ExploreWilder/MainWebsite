@@ -45,7 +45,7 @@ extensions = [
     'sphinx_js',
 ]
 
-js_source_path = '../flaskr/static'
+js_source_path = '../flaskr/static/app/scripts'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

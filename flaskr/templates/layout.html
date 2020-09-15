@@ -60,6 +60,20 @@
             </a>
             <span class="navbar-text">
             </span>
+            {%if header_breadcrumbs %}
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        {% for item in header_breadcrumbs %}
+                            {% if "url" in item %}
+                                <li class="breadcrumb-item"><a href="{{ item.url }}">{{ item.title }}</a></li>
+                            {% else %}
+                                <li class="breadcrumb-item active" aria-current="page">{{ item.title }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ol>
+                </nav>
+            {% endif %}
+            {% block extra_header_items %}{% endblock %}
             <button class="navbar-toggler"
                     type="button"
                     data-toggle="collapse"

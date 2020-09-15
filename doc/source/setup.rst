@@ -33,14 +33,16 @@ Run as root:
     export PATH=/usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin:$PATH
     . ~/.profile
     rm -f node-$VERSION-$DISTRO.tar.xz
-    npm -g config set ignore-scripts true
+    npm -g config set ignore-scripts true # don't run scripts as sudo
     npm install -g jsdoc gulp-cli @mapbox/togeojson
 
 Run as user:
 
 .. code-block:: none
 
-    cd flaskr/static/
+    git clone https://github.com/ExploreWilder/MainWebsite
+    cd MainWebsite/flaskr/static/
+    npm config set ignore-scripts false
     npm install # dev + prod dependencies
 
 **Install the Python virtual environment (venv)**
@@ -49,9 +51,15 @@ Run as user:
 
 .. code-block:: none
 
-    cd ~/Public
+    cd ../.. # go to MainWebsite
     pip3 install --user virtualenv
     virtualenv -p /usr/bin/python3.7 venv
+
+Run as root:
+
+.. code-block:: none
+
+    `pwd`/venv/python/python3 -m pip3 install --upgrade pip
 
 More information about venv: `virtual environment <https://docs.python-guide.org/dev/virtualenvs/>`_.
 

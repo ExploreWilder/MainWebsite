@@ -83,6 +83,16 @@
     }
 }
 
+#header {
+    .breadcrumb {
+        padding: 0rem 1rem !important;
+        margin-bottom: 0 !important;
+        .breadcrumb-item {
+            line-height: 2;
+        }
+    }
+}
+
 .nav-item, .navbar-brand {
     line-height: 1em;
 }
@@ -130,7 +140,7 @@
     width: 1em;
 }
 
-p:not(.powered-by) a:not([class^='footnote-']):not(.btn), .tab-pane a:not(.btn), label a, dd a,
+p:not(.powered-by) a:not([class^='footnote-']):not(.btn):not(.ui-widget), .tab-pane a:not(.btn), label a, dd a,
 #content-book li a:not([class^='footnote-']),
 .modal-content li a:not([class^='footnote-']):not([class^='flag-']):not([class^='tooltip-networks']),
 #content-book td a:not([class^='footnote-']) {

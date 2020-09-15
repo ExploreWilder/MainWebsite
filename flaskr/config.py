@@ -188,7 +188,8 @@ class Config(object):
             "'self'",
             "https://*.sentry.io", # for error reporting
             "https://*.tiles.mapbox.com", # Mapbox GL JS
-            "https://api.mapbox.com" # Mapbox GL JS
+            "https://api.mapbox.com", # Mapbox GL JS
+            "https://cdn.melown.com" # VTS Browser JS
         ],
         "img-src": [
             "'self'",

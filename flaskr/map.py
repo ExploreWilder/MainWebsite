@@ -36,10 +36,72 @@ import srtm, gpxpy, gpxpy.gpx, pyproj, lzstring
 map_app = Blueprint("map_app", __name__)
 mysql = LocalProxy(get_db)
 
-@map_app.route("/viewer/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>")
-def map_viewer(book_id, book_url, gpx_name, country):
+def track_path_to_header(book_id: int, book_url: str, book_title: str, gpx_name: str) -> List[Dict]:
     """
-    Map viewer.
+    Format the header breadcrumbs - refer to templates/layout.html.
+
+    Args:
+        book_id (int): Book ID based on the 'shelf' database table.
+        book_url (str): Book URL based on the 'shelf' database table.
+        book_title (str): Book title based on the 'shelf' database table.
+        gpx_name (str): Name of the GPX file in the /tracks directory WITHOUT file extension.
+    
+    Returns:
+        List of dicts.
+    """
+    return [
+        {
+            "title": "Stories",
+            "url": "/stories"
+        },
+        {
+            "title": book_title,
+            "url": "/stories/" + str(book_id) + "/" + book_url,
+        },
+        {
+            "title": gpx_name.replace('_', ' ')
+            # no URL because it is the current one
+        }
+    ]
+
+@map_app.route("/player/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>")
+def map_player(book_id: int, book_url: str, gpx_name: str, country: str):
+    """
+    Map viewer with a real 3D map more focused on a fun user experience than a hiker-centric track viewer.
+    A track is always linked to a story and the navbar would display breadcrumbs and a link to the 2D version.
+    The path to the map configuration is in the Jinja template.
+
+    Args:
+        book_id (int): Book ID based on the 'shelf' database table.
+        book_url (str): Book URL based on the 'shelf' database table.
+        gpx_name (str): Name of the GPX file in the /tracks directory WITHOUT file extension. NOT USED.
+
+    Raises:
+        404: in case of denied access.
+    """
+    cursor = mysql.cursor()
+    book_url = escape(book_url)
+    gpx_name = escape(gpx_name)
+    country_code = escape(country)
+    cursor.execute("""SELECT access_level, title
+        FROM shelf
+        WHERE book_id={book_id} AND url='{book_url}'""".format(
+            book_id=book_id,
+            book_url=book_url))
+    data = cursor.fetchone()
+    if cursor.rowcount == 0 or actual_access_level() < data[0]:
+        abort(404)
+    return render_template(
+        "map_player.html",
+        header_breadcrumbs=track_path_to_header(book_id, book_url, data[1], gpx_name),
+        url_topo_map="/map/viewer/" + "/".join([str(book_id), book_url, gpx_name, country_code]),
+        is_prod=not current_app.config["DEBUG"])
+
+@map_app.route("/viewer/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>")
+def map_viewer(book_id: int, book_url: str, gpx_name: str, country: str):
+    """
+    2D map viewer with some basic tools, track and topo information.
+    A track is always linked to a story and the navbar would display breadcrumbs and a link to the 3D version.
 
     Args:
         book_id (int): Book ID based on the 'shelf' database table.
@@ -53,24 +115,31 @@ def map_viewer(book_id, book_url, gpx_name, country):
     cursor = mysql.cursor()
     book_url = escape(book_url)
     gpx_name = escape(gpx_name)
-    cursor.execute("""SELECT access_level
+    cursor.execute("""SELECT access_level, title
         FROM shelf
         WHERE book_id={book_id} AND url='{book_url}'""".format(
             book_id=book_id,
             book_url=book_url))
     data = cursor.fetchone()
-    country_code = escape(country).upper()
+    country_code = escape(country)
+    country_code_up = country_code.upper()
     if cursor.rowcount == 0 \
         or actual_access_level() < data[0] \
-        or not country_code in current_app.config["MAP_LAYERS"]:
+        or not country_code_up in current_app.config["MAP_LAYERS"]:
         abort(404)
+    if actual_access_level() >= current_app.config["ACCESS_LEVEL_DOWNLOAD_GPX"]:
+        gpx_download_path = "/".join(["/books", str(book_id), book_url, gpx_name]) + ".gpx"
+    else:
+        gpx_download_path = ""
     return render_template(
         "map_viewer.html",
-        country=country_code,
-        gpx_download_path="/books/" + str(book_id) + "/" + book_url + "/" + gpx_name + ".gpx" if actual_access_level() >= current_app.config["ACCESS_LEVEL_DOWNLOAD_GPX"] else "",
+        country=country_code_up,
+        header_breadcrumbs=track_path_to_header(book_id, book_url, data[1], gpx_name),
+        url_player_map="/map/player/" + "/".join([str(book_id), book_url, gpx_name, country_code]),
+        gpx_download_path=gpx_download_path,
         is_prod=not current_app.config["DEBUG"])
 
-def create_static_map(gpx_path, static_map_path, static_image_settings):
+def create_static_map(gpx_path: str, static_map_path: str, static_image_settings: Dict) -> None:
     """
     Create a URL based on the ``gpx_path`` GPX file and the ``static_image_settings`` configuration.
     The URL is then fetched to the Mapbox server to retrieve a JPG image.
@@ -90,10 +159,10 @@ def create_static_map(gpx_path, static_map_path, static_image_settings):
     url = gpx_to_src(gpx, static_image_settings)
     r = requests.get(url)
     with open(static_map_path, "wb") as static_image:
-            static_image.write(r.content)
+        static_image.write(r.content)
 
 @map_app.route("/static_map/<int:book_id>/<string:book_url>/<string:gpx_name>.jpg")
-def static_map(book_id, book_url, gpx_name):
+def static_map(book_id: int, book_url: str, gpx_name: str):
     """
     Print a static map and create it if not already existing or not up to date.
 
@@ -135,8 +204,9 @@ def static_map(book_id, book_url, gpx_name):
             return "{}".format(type(e).__name__), 500
     return send_from_directory(gpx_dir, gpx_filename + append_ext)
 
+@map_app.route("/profile/<int:book_id>/<string:book_url>/<string:gpx_name>")
 @map_app.route("/profile/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>")
-def profile_file(book_id, book_url, gpx_name, country):
+def profile_file(book_id: int, book_url: str, gpx_name: str, country: str = None):
     """
     Print a profile file and create it if not already existing or not up to date.
 
@@ -184,7 +254,7 @@ class CustomFileHandler(srtm.data.FileHandler):
     https://github.com/ExploreWilder/srtm.py/blob/EarthDataLogin/srtm/data.py
     """
 
-    def get_srtm_dir(self):
+    def get_srtm_dir(self) -> str:
         """ The default path to store files. """
         # Local cache path:
         result = absolute_path("../srtm_cache")
@@ -194,7 +264,7 @@ class CustomFileHandler(srtm.data.FileHandler):
 
         return result
 
-def elevation_profile(gpx_path, profile_path, credentials):
+def elevation_profile(gpx_path: str, profile_path: str, credentials: Dict[str, str]) -> None:
     """
     Find out the elevation profile of ``gpx_path`` thanks to SRTM data
     version 3.0 with 1-arc-second for the whole world and save the result
@@ -208,27 +278,27 @@ def elevation_profile(gpx_path, profile_path, credentials):
     Use gpxpy: https://github.com/tkrajina/gpxpy
     Use SRTM.py: https://github.com/nawagers/srtm.py/tree/EarthDataLogin
     SRTM data are stored in the folder specified in CustomFileHandler().get_srtm_dir()
+    Elements of the elevation profile are:
+
+    * Height (aka elevation) in m,
+    * Distance from the beginning in km rounded with 2 digits,
+    * X coordinate in the Web Mercator projection (EPSG:3857),
+    * Y coordinate in the Web Mercator projection (EPSG:3857).
+
+    Also, do some statistics:
+
+    * Total length in km,
+    * Minimum altitude in m,
+    * Maximum altitude in m,
+    * Total elevation gain in m,
+    * Total elevation loss in m (negative).
     
     Args:
         gpx_path (str): Secured path to the input file.
         profile_path (str): Secured path to the overwritten output file.
     
     Returns:
-        dict:
-        Elements of the elevation profile are:
-
-        * Height (aka elevation) in m,
-        * Distance from the beginning in km rounded with 2 digits,
-        * X coordinate in the Web Mercator projection (EPSG:3857),
-        * Y coordinate in the Web Mercator projection (EPSG:3857).
-
-        Also, do some statistics:
-
-        * Total length in km,
-        * Minimum altitude in m,
-        * Maximum altitude in m,
-        * Total elevation gain in m,
-        * Total elevation loss in m (negative).
+        The result is saved into a file, nothing is returned.
     """
     elevation_data = srtm.data.GeoElevationData(
         version='v3.1a',
@@ -297,7 +367,7 @@ def elevation_profile(gpx_path, profile_path, credentials):
             profile_file.write(compressed_data + (b"=" if (len(compressed_data) % 2) else b""))
 
 @map_app.route("/middleware/lds/<string:layer>/<string:a_d>/<int:z>/<int:x>/<int:y>", methods=("GET",))
-def middleware_lds(layer, a_d, z, x, y):
+def middleware_lds(layer: str, a_d: str, z: int, x: int, y: int):
     """
     Tunneling map requests to the LDS servers in order to hide the API key.
     Help using LDS with OpenLayers:
@@ -345,7 +415,7 @@ def middleware_ign():
     return r.content
 
 @map_app.route("/middleware/topografisk/<int:z>/<int:x>/<int:y>", methods=("GET",))
-def middleware_topografisk(z, x, y):
+def middleware_topografisk(z: int, x: int, y: int):
     """
     Tunneling map requests to the Kartverket servers (Norway) in order to respect users' privacy.
     Howto available here: https://kartverket.no/en/data/lage-kart-pa-nett/

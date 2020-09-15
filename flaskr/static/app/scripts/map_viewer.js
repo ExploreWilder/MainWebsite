@@ -29,73 +29,10 @@
  */
 
 /**
- * Default opacity of the Aerial Imagery basemap in percent.
- * Default value is 50.
- * 0 for total transparency (no aerial view, just the topo map).
- * 100 for full opacity (only the aerial view, the topo map is hidden).
- */
-var default_opacity = 50;
-
-/**
- * Duration of the zoom in/out animation in ms.
- * Default value is 300.
- */
-var duration_zoom_animation = 300;
-
-/**
- * URL to the LDS middleware. It can be an external link if a private key is not required.
- * Example: "/map/middleware/lds/" or "https://..."
- */
-var middleware_url = {
-    "nz": "/map/middleware/lds/",
-    "fr": "/map/middleware/ign",
-    "topo": "/map/middleware/topo/",
-    "satellite": "/map/middleware/satellite/",
-    "ca": "/map/middleware/canvec",
-    "no": "/map/middleware/topografisk/"
-};
-
-/**
- * Minimum padding (in pixels) to be cleared inside the view, around the GPX track.
- * Padding may be excessive due to discret zoom.
- */
-var track_padding = 5;
-
-/**
- * Default position when the map is displayed.
- * The position is updated once the track is downloaded.
- */
-var default_gps_position = [0, 0];
-
-/**
- * Default zoom when the map is displayed.
- * The zoom is updated once the track is downloaded.
- */
-var default_zoom = 7;
-
-/**
- * Minimum zoom of the map.
- * It does not make sense to allow the user to zoom more than the map resolution.
- */
-var min_zoom = 1;
-
-/**
- * Maximum zoom of the map.
- * It does not make sense to allow the user to zoom out of the available range.
- */
-var max_zoom = 19;
-
-/**
- * Fontawesome icon size.
- * Default is 1em.
- */
-var icon_size = "1em";
-
-/**
  * Available resolutions for the IGN tiles.
  * Read the IGN documentation for further information.
  */
-var resolutions = [
+const resolutions = [
     156543.03392804103,
     78271.5169640205,
     39135.75848201024,
@@ -124,64 +61,14 @@ var resolutions = [
  * Matrix IDs.
  * Read the IGN documentation for further information.
  */
-var matrix_ids = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"];
-
-/**
- * Declared but always set'ed before get'ed.
- */
-var book_id = null;
-
-/**
- * Declared but always set'ed before get'ed.
- */
-var book_url = null;
-
-/**
- * Declared but always set'ed before get'ed.
- */
-var gpx_name = null;
-
-/**
- * Declared but always set'ed before get'ed.
- */
-var country_code = null;
-
-/**
- * Declared but always set'ed before get'ed.
- */
-var dialog = null;
-
-/**
- * Declared but always set'ed before get'ed.
- */
-var gpx_info = null;
-
-/**
- * Declared but always set'ed before get'ed.
- */
-var download_gpx = null;
-
-/**
- * Declared but always set'ed before get'ed.
- */
-var map = null;
-
-/**
- * Declared but always set'ed before get'ed.
- */
-var overlay = null;
-
-/**
- * Declared but always set'ed before get'ed.
- */
-var tooltip = null;
+const matrix_ids = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"];
 
 /**
  * Returns a formatted link to the tiles.
  */
-var get_tiles_link = function(layer) {
+function get_tiles_link(layer) {
     return middleware_url["nz"] + layer + "/{a-d}/{z}/{x}/{y}";
-};
+}
 
 /**
  * Aerial Imagery tiles with a dynamic opacity. Those tiles are in the foreground.
@@ -413,7 +300,7 @@ var track_vector = new ol.layer.Vector({
 /**
  * Refresh the opacity of the aerial view according to the slider.
  */
-var refresh_opacity = function() {
+function refresh_opacity() {
     var opacity = Number($("#opacity-slider").slider("value"));
 
     if(opacity > 100) {
@@ -426,12 +313,12 @@ var refresh_opacity = function() {
     $("#opacity-slider-value").html(opacity);
     raster[country_code].setOpacity(opacity / 100.);
     raster["satellite"].setOpacity(opacity / 100.);
-};
+}
 
 /**
  * If the cursor is over a waypoint, its description is displayed on a tooltip.
  */
-var display_tooltip = function(evt) {
+function display_tooltip(evt) {
     var pixel = evt.pixel;
     tooltip = $("#tooltip-waypoint").tooltip();
     var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
@@ -445,24 +332,24 @@ var display_tooltip = function(evt) {
     else {
         tooltip.tooltip("close");
     }
-};
+}
 
 /**
  * Zoom in or out and animate the transition.
  * Maximum and minimum zooms are defined by the map (maxZoom and minZoom).
  */
-var zoom = function(zoom_increment) {
+function zoom(zoom_increment) {
     map.getView().animate({
         zoom: map.getView().getZoom() + zoom_increment,
         duration: duration_zoom_animation
     });
-};
+}
 
 /**
  * Returns the content of the tooltip used in the elevation chart.
  * @see profile_to_source()
  */
-var label_elevation = function(tooltip_item, data) {
+function label_elevation(tooltip_item, data) {
     var label = "Elevation: " + tooltip_item.yLabel + " m | ";
     label += "Distance: " + (Math.round(tooltip_item.xLabel * 100) / 100) + " km";
     var el = data.datasets[tooltip_item.datasetIndex].data[tooltip_item.index];
@@ -473,12 +360,12 @@ var label_elevation = function(tooltip_item, data) {
         hiker_on_map = true;
     }
     return label;
-};
+}
 
 /**
  * Create the elevation chart based on the elevation profile of the track.
  */
-var create_elevation_chart = function(profile) {
+function create_elevation_chart(profile) {
     var ctx = $("#elevation-chart");
     var data = [];
     for(var i = 0; i < profile.length; i++) {
@@ -535,20 +422,20 @@ var create_elevation_chart = function(profile) {
             maintainAspectRatio: false
         }
     });
-};
+}
 
 /**
  * Returns a string of the number x with commas on thousands.
  * NOTICE: identical to main.js
  */
-var number_with_commas = function(x) {
+function number_with_commas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-};
+}
 
 /**
  * Update statistics displayed in the track info.
  */
-var track_info = function(source) {
+function track_info(source) {
     var stats = source["statistics"];
     var ul = $("#gpx-info-list");
     var lis = [
@@ -563,15 +450,15 @@ var track_info = function(source) {
     
     ul.append(lis);
     create_elevation_chart(source["profile"]);
-};
+}
 
 /**
  * Read the XHR `data` and save the features into `source`.
  * @see label_elevation()
- * @param {Array} data XHR data, see map.fetch_data().
+ * @param {Array} data XHR data, see map_viewer.fetch_data().
  * @param {SourceType} source The OpenLayers source.
  */
-var profile_to_source = function(data, source) {
+function profile_to_source(data, source) {
     var trk = data["profile"];
     var coords = [];
     var features = [];
@@ -605,12 +492,12 @@ var profile_to_source = function(data, source) {
         }));
     }
     source.addFeatures(features);
-};
+}
 
 /**
  * Download the data and update the interface.
  */
-var fetch_data = function() {
+function fetch_data() {
     var oReq = new XMLHttpRequest();
     oReq.open("GET", "/map/profile/" + book_id + "/" + book_url + "/" + gpx_name + "/" + country_code, true);
     // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data
@@ -653,20 +540,20 @@ var fetch_data = function() {
         });
     };
     oReq.send();
-};
+}
 
 /**
  * Blur the close button tooltip when the window is open.
  */
-var unfocus_menu = function() {
+function unfocus_menu() {
     $(this).parents(".ui-dialog").attr("tabindex", -1)[0].focus();
-};
+}
 
 /**
  * Set layers visibility based on the basemap selection.
  * @see init_basemap_selection()
  */
-var select_basemap = function() {
+function select_basemap() {
     var is_country_specific = $("#country-specific-layers").is(":checked");
     raster_topo50[country_code].setVisible(is_country_specific);
     raster_topo50["topo"].setVisible(!is_country_specific);
@@ -674,20 +561,20 @@ var select_basemap = function() {
     raster["satellite"].setVisible(!is_country_specific);
     console.log("Layer selection: " + ((is_country_specific) ? "Country specific" : "Worldwide"));
     refresh_opacity();
-};
+}
 
 /**
  * Initialise the basemap selection: two radio buttons. The Country Specific
  * basemap is selected by default.
  */
-var init_basemap_selection = function() {
+function init_basemap_selection() {
     $("input[type=radio]").checkboxradio({
         icon: false
     }).change(select_basemap);
     $("#country-specific-layers").prop("checked", true);
     select_basemap();
     $("input[type=radio]").checkboxradio("refresh");
-};
+}
 
 /**
  * When the DOM is loaded and ready to be manipulated:
@@ -708,12 +595,13 @@ $(function() {
     book_url = url[2].toLowerCase();
     gpx_name = url[3];
     country_code = url[4].toLowerCase();
+    offset_top = parseInt($("#goto-menu").offset().top);
 
     dialog = $("#menu").dialog({
         autoOpen: false,
         width: 600,
         minWidth: 500,
-        position: { my: "right top", at: "right-10 top+10"},
+        position: { my: "right top", at: "right-10 top+" + offset_top},
         open: unfocus_menu,
         close: function() {
             $("#goto-menu").show();
@@ -724,7 +612,7 @@ $(function() {
         autoOpen: false,
         width: 600,
         minWidth: 500,
-        position: { my: "left top", at: "left+10 top+10"},
+        position: { my: "left top", at: "left+10 top+" + offset_top},
         open: unfocus_menu,
         resize: function(event, ui) {
             $("#elevation-chart-container").height($("#gpx-info").height() - $("#gpx-info-list").height());

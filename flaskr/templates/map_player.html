@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block title %}Map Player{% endblock %}
+{% block extra_header_items %}<a href="{{ url_topo_map }}" class="ml-3 btn btn-success btn-sm" role="button">Switch to topo view</a>{% endblock %}
+{% block extra_tags %}
+    <link href="https://cdn.melown.com/" rel="preconnect" crossorigin>
+    <link href="https://cdn.melown.com/" rel="dns-prefetch" />
+    <link href="/static/dist-{{ config.STATIC_PACKAGE.version }}/css/vts-browser.min.css" rel="stylesheet" />
+    <link href="/static/dist-{{ config.STATIC_PACKAGE.version }}/css/map_player.css" rel="stylesheet" />
+{% endblock %}
+{% block body %}
+    <div id="map-player"></div>
+    {% if not "subscribed" in session %}
+        {% include "subscribe_newsletter.html" %}
+    {% endif %}
+{% endblock %}
+{% block extra_scripts %}
+    <script nonce="{{ csp_nonce() }}" src="/static/dist-{{ config.STATIC_PACKAGE.version }}/js/map_player.vendor.bundle.js"></script>
+    <script nonce="{{ csp_nonce() }}" type="text/javascript">
+        VTS_BROWSER_CONFIG="/static/dist-{{ config.STATIC_PACKAGE.version }}/js/map_player.config.json";
+    </script>
+    <script nonce="{{ csp_nonce() }}" src="/static/dist-{{ config.STATIC_PACKAGE.version }}/js/map_player.app.bundle.js"></script>
+{% endblock %}

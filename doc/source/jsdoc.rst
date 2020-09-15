@@ -161,8 +161,8 @@ Admin Space
 .. js:autofunction:: init_admin_statistics
 .. js:autofunction:: refresh_access
 
-Map Viewer
-----------
+Map Viewer Configuration
+------------------------
 
 .. js:autoattribute:: default_opacity
 .. js:autoattribute:: duration_zoom_animation
@@ -173,18 +173,12 @@ Map Viewer
 .. js:autoattribute:: min_zoom
 .. js:autoattribute:: max_zoom
 .. js:autoattribute:: icon_size
+
+Map Viewer
+----------
+
 .. js:autoattribute:: resolutions
 .. js:autoattribute:: matrix_ids
-.. js:autoattribute:: book_id
-.. js:autoattribute:: book_url
-.. js:autoattribute:: gpx_name
-.. js:autoattribute:: country_code
-.. js:autoattribute:: dialog
-.. js:autoattribute:: gpx_info
-.. js:autoattribute:: download_gpx
-.. js:autoattribute:: map
-.. js:autoattribute:: overlay
-.. js:autoattribute:: tooltip
 .. js:autoattribute:: raster
 .. js:autoattribute:: raster_topo50
 .. js:autoattribute:: track_style
@@ -209,17 +203,8 @@ Map Viewer
 Storytelling Map
 ----------------
 
-.. js:autoattribute:: BOOK_ID
-.. js:autoattribute:: BOOK_DIR
-.. js:autoattribute:: book_path
-.. js:autoattribute:: contextual_map
-.. js:autoattribute:: contextual_marker
-
-.. js:autofunction:: update_location_helper
-.. js:autofunction:: track_path
-.. js:autofunction:: load_images
-.. js:autofunction:: init_storytelling_contextual_map
-.. js:autofunction:: init_storytelling_map
+.. js:autoclass:: StorytellingMap(constructor)
+   :members:
 
 Background Animation
 --------------------
@@ -238,3 +223,22 @@ Social Timelines
 
 .. js:autoclass:: MastodonTimeline(constructor)
    :members:
+
+Map Player
+----------
+
+.. js:autofunction:: loadTexture
+.. js:autofunction:: onMapLoaded
+.. js:autofunction:: loadTrack
+.. js:autofunction:: profile_to_geodata
+.. js:autofunction:: onHeightProcessed
+.. js:autofunction:: centerPositonToGeometry
+.. js:autofunction:: setProfilePointer
+.. js:autofunction:: onResize
+.. js:autofunction:: refereshCanvasDimensions
+.. js:autofunction:: drawPathProfile
+.. js:autofunction:: onMouseMove
+.. js:autofunction:: onMouseLeave
+.. js:autofunction:: onFeatureHover
+.. js:autofunction:: onCanvasHover
+.. js:autofunction:: onCustomRender

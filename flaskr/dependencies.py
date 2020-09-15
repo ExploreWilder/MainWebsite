@@ -58,3 +58,4 @@ except ImportError:
 
 from .mdx_amazon_affiliate_links import AmazonAffiliateLinksExtension
 from .mdx_tweetable import TweetableExtension
+from typing import List, Dict

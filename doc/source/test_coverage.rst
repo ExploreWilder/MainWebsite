@@ -5,8 +5,9 @@ On the server side, the coverage report of pytest is available `here <../../html
 
 On the client side, the website has been tested on:
 
-* Firefox
-* Edge
-* Opera
-* Chromium
 * Android
+* Chromium
+* Edge
+* Edge Chromium
+* Firefox
+* Opera

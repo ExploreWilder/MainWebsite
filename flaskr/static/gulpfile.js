@@ -51,14 +51,20 @@ var vendor_scripts = [
     {
         name: 'map_viewer',
         scripts: [
-            './vendor/jquery-3.5.1.min.js',
-            './vendor/popper.min.js',
             './vendor/jquery-ui-1.12.1/jquery-ui.min.js',
             './vendor/ol-6.4.3.js',
             './node_modules/chart.js/dist/Chart.bundle.min.js',
             './node_modules/lz-string/libs/lz-string.min.js',
         ]
     },
+    {
+        name: 'map_player',
+        scripts: [
+            // use a custom vts-browser.min.js: '//cdn.melown.com' changed to 'https://cdn.melown.com' to enforce a secure connection
+            './vendor/vts-browser.min.js',
+            './node_modules/lz-string/libs/lz-string.min.js',
+        ]
+    }
 ];
 
 var app_scripts = [
@@ -92,10 +98,16 @@ var app_scripts = [
     {
         name: 'map_viewer',
         scripts: [
-            './app/scripts/sentry_handler.js',
+            './app/scripts/map_viewer.config.js',
             './app/scripts/map_viewer.js',
         ]
     },
+    {
+        name: 'map_player',
+        scripts: [
+            './app/scripts/map_player.js',
+        ]
+    }
 ];
 
 var gulp = require('gulp');
@@ -134,8 +146,12 @@ gulp.task('jquery_ui_images', function() {
 gulp.task('styles', function () {
     return gulp.src('./app/styles/*.less')
         .pipe(sourcemaps.init())
-        .pipe(less({ plugins: [autoprefix] })) // compile the Less files with the autoprefix plugin
-        .pipe(cssnano()) // minify CSS
+        .pipe(less({
+            plugins: [autoprefix]
+        })) // compile the Less files with the autoprefix plugin
+        .pipe(cssnano({
+            zindex: false // don't change my z-index values
+        })) // minify CSS
         .pipe(sourcemaps.write('./')) // source maps in the same directory as the compiled CSS files
         .pipe(gulp.dest(css_dest)) // compiled CSS directory
         .pipe(notify({
@@ -144,7 +160,7 @@ gulp.task('styles', function () {
             message: "CSS bundle files generated"
         }))
 });
-gulp.watch('./*.less', gulp.series('styles'));
+gulp.watch('./app/styles/*.less', gulp.series('styles'));
 
 gulp.task('sentry', function() {
     return gulp.src('./node_modules/@sentry/browser/build/bundle.min.js')
@@ -153,8 +169,20 @@ gulp.task('sentry', function() {
         .pipe(gulp.dest(js_dest));
 });
 
+gulp.task('vts_config', function() {
+    return gulp.src('./app/scripts/map_player.config.json')
+        .pipe(changed(js_dest))
+        .pipe(gulp.dest(js_dest));
+});
+
 gulp.task('mapbox_style', function() {
     return gulp.src('./node_modules/mapbox-gl/dist/mapbox-gl.css')
+        .pipe(changed(css_dest))
+        .pipe(gulp.dest(css_dest));
+});
+
+gulp.task('vts_style', function() {
+    return gulp.src('./vendor/vts-browser.min.css')
         .pipe(changed(css_dest))
         .pipe(gulp.dest(css_dest));
 });
@@ -190,7 +218,7 @@ app_scripts.forEach(function(element) {
         return gulp.src(element.scripts)
             .pipe(sourcemaps.init())
             .pipe(babel({
-                presets: ['@babel/env'],
+                presets: ['@babel/preset-env'],
                 plugins: ['@babel/plugin-proposal-class-properties'],
             }))
             .pipe(removeUseStrict({
@@ -214,8 +242,10 @@ gulp.task('default', gulp.parallel(
     'icons',
     'jquery_ui_images',
     'sentry',
+    'vts_config',
     'mapbox_style',
-    'mapbox_script'
+    'vts_style',
+    'mapbox_script',
     )
 );
 
