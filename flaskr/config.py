@@ -65,6 +65,8 @@ class Config(object):
     SECRET_KEY=b"UNDISCLOSED"
     #: Salt used to hash the captcha code.
     CAPTCHA_SALT=b"UNDISCLOSED"
+    #: Directory where CAPTCHAs are saved.
+    CAPTCHA_FOLDER=absolute_path("captchas")
     #: Salt used to hash some user exposed data.
     RANDOM_SALT=b"UNDISCLOSED"
     #: Path where all the photographies are located.

@@ -35,7 +35,7 @@ kofi_app = Blueprint("kofi_app", __name__)
 mysql = LocalProxy(get_db)
 
 @kofi_app.route("/webhook", methods=("POST",))
-def kofi_webhook():
+def kofi_webhook() -> FlaskResponse:
     """
     Webhook for Ko-fi.com, the idea is to receive data (f.i. on donation
     success) and save it to offer commissioned content in the website.

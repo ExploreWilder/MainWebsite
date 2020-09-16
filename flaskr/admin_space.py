@@ -36,7 +36,7 @@ from .visitor_space import fetch_audit_log
 admin_app = Blueprint("admin_app", __name__)
 mysql = LocalProxy(get_db)
 
-def restricted_admin(view):
+def restricted_admin(view: Any) -> Any:
     """
     View decorator that redirects anonymous users to the 404-error page.
     This must be before any precodure in this file even if ``is_admin()`` is used.
@@ -52,7 +52,7 @@ def restricted_admin(view):
 
 @admin_app.route("/members/revoke", methods=("POST",))
 @restricted_admin
-def revoke_member():
+def revoke_member() -> FlaskResponse:
     """
     XHR request. Set to 0 the access level of the chosen user, he could still log in.
 
@@ -77,7 +77,7 @@ def revoke_member():
 
 @admin_app.route("/members/delete", methods=("POST",))
 @restricted_admin
-def delete_member():
+def delete_member() -> FlaskResponse:
     """
     XHR request. Delete a user from the database.
 
@@ -102,7 +102,7 @@ def delete_member():
 
 @admin_app.route("/members/change_access_level", methods=("POST",))
 @restricted_admin
-def change_access_level():
+def change_access_level() -> FlaskResponse:
     """
     XHR request. Change the access level of a member.
 
@@ -136,7 +136,7 @@ def change_access_level():
 
 @admin_app.route("/members/list")
 @restricted_admin
-def members():
+def members() -> Any:
     """
     List all members with information about the last successfull connection.
 
@@ -163,7 +163,7 @@ def members():
 
 @admin_app.route("/members/send_password_creation", methods=("POST",))
 @restricted_admin
-def send_password_creation():
+def send_password_creation() -> FlaskResponse:
     """
     Send an e-mail to the member to create a password.
 
@@ -224,7 +224,7 @@ def send_password_creation():
 
 @admin_app.route("/members/send_newsletter", methods=("POST",))
 @restricted_admin
-def send_newsletter():
+def send_newsletter() -> FlaskResponse:
     """
     Send an e-mail to the newsletter subscribers.
 
@@ -282,7 +282,7 @@ def send_newsletter():
 
 @admin_app.route("/photos/add/form")
 @restricted_admin
-def add_photo():
+def add_photo() -> Any:
     """
     Form to submit a photo.
 
@@ -297,7 +297,7 @@ def add_photo():
 
 @admin_app.route("/books/add/form")
 @restricted_admin
-def add_book():
+def add_book() -> Any:
     """
     Form to submit a book.
 
@@ -312,7 +312,7 @@ def add_book():
 
 @admin_app.route("/photos/add/request", methods=("POST",))
 @restricted_admin
-def xhr_add_photo():
+def xhr_add_photo() -> FlaskResponse:
     """
     XHR procedure to add a new photo into the server.
     New files are created and saved. A new row into the `gallery` table is added.
@@ -434,7 +434,7 @@ def xhr_add_photo():
 
 @admin_app.route("/books/add/request", methods=("POST",))
 @restricted_admin
-def xhr_add_book():
+def xhr_add_book() -> FlaskResponse:
     """
     XHR procedure to add a new book into the server.
     In case of success, the book is saved in the created directory and a new row
@@ -510,7 +510,7 @@ def xhr_add_book():
 
 @admin_app.route("/photos/list")
 @restricted_admin
-def manage_photos():
+def manage_photos() -> Any:
     """
     List some photos to manage them. Find out global information about the gallery.
 
@@ -593,7 +593,7 @@ def manage_photos():
 
 @admin_app.route("/books/list")
 @restricted_admin
-def manage_books():
+def manage_books() -> Any:
     """
     List some books to manage them. Find out global information about the shelf.
 
@@ -620,12 +620,12 @@ def manage_books():
         current_page = last_page
     pagination = range(1, last_page + 1)
     is_not_admin = "(m.access_level<255 OR (m.access_level IS NULL AND v.visitor_id IS NOT NULL))"
-    def sum_emotions(emotion):
+    def sum_emotions(emotion: str) -> str:
         return """SUM(CASE WHEN v.emotion='{emotion}'
             AND v.element_type='shelf'
             AND {is_not_admin} THEN 1 ELSE 0 END)
             AS {emotion}s""".format(emotion=emotion, is_not_admin=is_not_admin)
-    def all_sums():
+    def all_sums() -> str:
         return """SUM(CASE WHEN {is_not_admin} AND v.element_type='shelf' THEN 1 ELSE 0 END) AS views,
             {loves}, {likes}, {dislikes}, {hates}""".format(
                 is_not_admin=is_not_admin,
@@ -649,7 +649,7 @@ def manage_books():
     
     # add the directory listing to each book
     shelf_as_list = list(shelf)
-    def get_files(pathname, ext):
+    def get_files(pathname: str, ext: str) -> List:
         return [path.split("/")[-1] for path in glob.glob(pathname + "/*." + ext)]
     for i, book in enumerate(shelf_as_list):
         pathname = os.path.join(current_app.config["SHELF_FOLDER"], book[1])
@@ -696,7 +696,7 @@ def manage_books():
 
 @admin_app.route("/photos/metadata", methods=("POST",))
 @restricted_admin
-def save_photo_metadata():
+def save_photo_metadata() -> FlaskResponse:
     """
     XHR request. Update the information about a photo.
 
@@ -719,6 +719,12 @@ def save_photo_metadata():
         return basic_json(False, "Bad request, missing data!")
     photo_id = int(request.form["photo_id"])
     title = escape(request.form["title"].strip())
+    focal_length: Union[int, None]
+    exposure_numerator: Union[int, None]
+    exposure_denominator: Union[int, None]
+    exposure_time: Union[str, None]
+    f_number: Union[float, None]
+    iso: Union[int, None]
     
     try:
         focal_length = int(request.form["focal_length"])
@@ -771,7 +777,7 @@ def save_photo_metadata():
 
 @admin_app.route("/books/metadata", methods=("POST",))
 @restricted_admin
-def save_book_metadata():
+def save_book_metadata() -> FlaskResponse:
     """
     XHR request. Update the information about a book.
 
@@ -864,7 +870,7 @@ def save_book_metadata():
 
 @admin_app.route("/photos/move", methods=("POST",))
 @restricted_admin
-def move_photo():
+def move_photo() -> FlaskResponse:
     """
     XHR request. Re-order a photo. Listing should be ordered by `position` DESC.
 
@@ -881,7 +887,7 @@ def move_photo():
     cursor = mysql.cursor()
 
     # NOTICE: the photo on top has the highest 'position'.
-    def get_position_from_id(id):
+    def get_position_from_id(id: int) -> int:
         cursor.execute("""SELECT position
             FROM gallery
             WHERE photo_id={id}""".format(id=id))
@@ -947,7 +953,7 @@ def move_photo():
 
 @admin_app.route("/books/move", methods=("POST",))
 @restricted_admin
-def move_book():
+def move_book() -> FlaskResponse:
     """
     XHR request. Re-order a book. Listing should be ordered by `position` DESC.
 
@@ -964,7 +970,7 @@ def move_book():
     cursor = mysql.cursor()
 
     # NOTICE: the book on top has the highest 'position'.
-    def get_position_from_id(id):
+    def get_position_from_id(id: int) -> int:
         cursor.execute("""SELECT position
             FROM shelf
             WHERE book_id={id}""".format(id=id))
@@ -1030,7 +1036,7 @@ def move_book():
 
 @admin_app.route("/photos/delete", methods=("POST",))
 @restricted_admin
-def delete_photo():
+def delete_photo() -> FlaskResponse:
     """
     XHR request. Remove a photo from the files and the database as well.
 
@@ -1064,7 +1070,7 @@ def delete_photo():
 
 @admin_app.route("/photos/move_into_wastebasket", methods=("POST",))
 @restricted_admin
-def move_into_wastebasket():
+def move_into_wastebasket() -> FlaskResponse:
     """
     XHR request. Move a photo into the wastebasket. The database is unchanged.
 
@@ -1083,7 +1089,7 @@ def move_into_wastebasket():
 
 @admin_app.route("/books/delete", methods=("POST",))
 @restricted_admin
-def delete_book():
+def delete_book() -> FlaskResponse:
     """
     XHR request. Remove a book from the files and the database as well.
 
@@ -1120,7 +1126,7 @@ def delete_book():
 
 @admin_app.route("/photos/lost")
 @restricted_admin
-def lost_photos():
+def lost_photos() -> Any:
     """
     Look for lost photos.
 
@@ -1164,7 +1170,7 @@ def lost_photos():
 
 @admin_app.route("/photos/open/<string:filename>")
 @restricted_admin
-def photo_admin_dir(filename):
+def photo_admin_dir(filename: str) -> FlaskResponse:
     """
     Make photo files reachable by the admin even if not existing in the database.
     That bypasses photo_dir()
@@ -1182,7 +1188,7 @@ def photo_admin_dir(filename):
 
 @admin_app.route("/statistics")
 @restricted_admin
-def statistics():
+def statistics() -> Any:
     """
     Do some statistics on photos and books.
 

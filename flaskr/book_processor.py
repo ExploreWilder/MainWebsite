@@ -38,7 +38,7 @@ class BookProcessor:
         The Markdown file and the processed Markdown (HTML files) are TRUSTED.
         Do NOT allow changes on those files by anyone but the webmaster.
     """
-    def __init__(self, app, book_id, book_url, book_filename):
+    def __init__(self, app: Flask, book_id: int, book_url: str, book_filename: str) -> None:
         """
         Args:
             app: The Flask app.
@@ -57,12 +57,16 @@ class BookProcessor:
         self.static_map_height = 100 * app.config["MAPBOX_STATIC_IMAGES"]["height"] / app.config["MAPBOX_STATIC_IMAGES"]["width"]
         self.current_app = app
     
-    def is_outdated(self):
+    def get_empty_book(self) -> Dict[str, str]:
+        """ Returns an empty book dictionary. Static member. """
+        return {"html": "", "toc": ""}
+    
+    def is_outdated(self) -> bool:
         return not(self.p_html_content.is_file() \
             and self.p_html_toc.is_file() \
             and self.p_html_content.stat().st_mtime > self.p_md_book.stat().st_mtime)
     
-    def print_book(self):
+    def print_book(self) -> Dict[str, str]:
         """
         Returns:
             A dictionary looking like { "html": ..., "toc": ... }
@@ -74,7 +78,7 @@ class BookProcessor:
             self.toc = self.p_html_toc.open("r", encoding="utf-8").read()
         return { "html": Markup(self.html), "toc": Markup(self.toc) }
     
-    def convert(self):
+    def convert(self) -> None:
         with self.p_md_book.open("r", encoding="utf-8") as fd:
             content = re.sub(re.compile(r'!\[([^\]]*)]\(([^\)]*)\)'), self.img, fd.read())
         self.html = self.md.convert(content)
@@ -85,10 +89,10 @@ class BookProcessor:
         self.toc = self.md.toc
         self.p_html_toc.open("w", encoding="utf-8").write(self.toc)
     
-    def remove_hr(self):
+    def remove_hr(self) -> str:
         return self.html.replace('<hr />', '')
     
-    def img(self, match_obj):
+    def img(self, match_obj: re.Match) -> str:
         """ Prepend the absolute path to images. """
         text = match_obj.group(1)
         image_tag_content = match_obj.group(2).split(' ', 1)
@@ -103,7 +107,7 @@ class BookProcessor:
                 image_legend=image_legend,
                 image_height=100 * im.size[1] / im.size[0])
     
-    def custom_link(self, match_obj):
+    def custom_link(self, match_obj: re.Match) -> str:
         """ Create button to something (map or video). """
         type = match_obj.group(1)
         text = match_obj.group(2)
@@ -147,7 +151,7 @@ class BookProcessor:
                 title=title,
                 icon=icon)
     
-    def custom_footnote(self, match_obj):
+    def custom_footnote(self, match_obj: re.Match) -> str:
         """ Add a title to the footnote link (so that the reader doesn't have to click). """
         ref = match_obj.group(1)
         footnote_content = re.search(re.compile(r'id="fn:' + re.escape(ref) + r'">\n<p>(.+)&#160;'), self.html)

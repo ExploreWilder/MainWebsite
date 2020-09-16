@@ -34,25 +34,25 @@ class JSONSecureCookie(SecureCookie):
     """ https://werkzeug.palletsprojects.com/en/0.15.x/contrib/securecookie/#security """
     serialization_method = json
 
-def get_static_package_config():
+def get_static_package_config() -> Dict:
     """ Read the package.json file in the static directory and returns a dictionary. """
     with open(absolute_path("static/package.json")) as static_package:
         return json.loads(static_package.read())
 
-def secure_decode_query_string(s):
+def secure_decode_query_string(s: bytes) -> str:
     """
     Convert to UTF string and remove the <>% characters that could make
     a Cross Site Scripting attack.
     
     Args:
-        s (str): Basically request.query_string
+        s (ByteString): Basically request.query_string, which is the URL parameters as raw bytestring.
     
     Returns:
         str: Should be the same string utf-8 decoded if there is no attack.
     """
     return s.decode("utf-8").translate({ord(c): None for c in '<>'}).replace('%3C', '')
 
-def current_year():
+def current_year() -> str:
     """
     Returns the current year in a 2-digit format.
 
@@ -61,7 +61,7 @@ def current_year():
     """
     return str(datetime.datetime.now().year)[2:]
 
-def anonymize_ip(real_ip):
+def anonymize_ip(real_ip: str) -> str:
     """
     Sets the last byte of the IP address ``real_ip``.
 
@@ -87,7 +87,7 @@ def anonymize_ip(real_ip):
     anonymized_ip[3] = "0"
     return ".".join(anonymized_ip)
 
-def absolute_path(secured_filename, curr_file=__file__):
+def absolute_path(secured_filename: str, curr_file:str = __file__) -> str:
     """
     Prepend ``secured_filename`` with the current path.
 
@@ -100,7 +100,7 @@ def absolute_path(secured_filename, curr_file=__file__):
     """
     return os.path.join(os.path.dirname(os.path.realpath(curr_file)), secured_filename)
 
-def new_line_to_br(text):
+def new_line_to_br(text: str) -> str:
     """
     Transform new lines to HTML tags.
 
@@ -112,7 +112,7 @@ def new_line_to_br(text):
     """
     return re.sub(r"\n", "<br />", text, flags=re.UNICODE)
 
-def remove_whitespaces(text):
+def remove_whitespaces(text: str) -> str:
     """
     Remove all whitespaces (space, tab, new line) in ``text``.
 
@@ -124,7 +124,7 @@ def remove_whitespaces(text):
     """
     return re.sub(r"\s+", "", text, flags=re.UNICODE) # Python 2 AND 3 compatible
 
-def email_is_valid(email_addr):
+def email_is_valid(email_addr: str) -> bool:
     """
     Check if the email address is ___@___.___
 
@@ -134,9 +134,9 @@ def email_is_valid(email_addr):
     Returns:
         bool: True if valid, otherwise False.
     """
-    return email_addr != "" and re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email_addr)
+    return email_addr != "" and re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email_addr) != None
 
-def check_access_level_range(access_level):
+def check_access_level_range(access_level: int) -> bool:
     """
     Check if ``access_level`` is in the range [0, 255]. The actual level is not check.
 
@@ -148,7 +148,7 @@ def check_access_level_range(access_level):
     """
     return access_level >= 0 and access_level <= 255
 
-def is_same_site():
+def is_same_site() -> bool:
     """
     Check if the page loaded comes from the same website.
 
@@ -157,7 +157,7 @@ def is_same_site():
     """
     return request.referrer != None and request.url_root in request.referrer
 
-def is_admin():
+def is_admin() -> bool:
     """
     Check user credentials.
 
@@ -166,7 +166,7 @@ def is_admin():
     """
     return "access_level" in session and session["access_level"] == 255
 
-def file_is_pdf(filename):
+def file_is_pdf(filename: str) -> bool:
     """
     Check if ``filename`` has the .pdf extension.
 
@@ -176,9 +176,9 @@ def file_is_pdf(filename):
     Returns:
         True if ``filename`` ends with .pdf, false otherwise.
     """
-    return filename[-4:] == ".pdf"
+    return filename.endswith(".pdf")
 
-def book_title_to_url(title):
+def book_title_to_url(title: str) -> str:
     """
     Transform a book title into its URL-friendly equivalent.
 
@@ -190,7 +190,7 @@ def book_title_to_url(title):
     """
     return re.sub(r"[^a-zA-Z0-9_-]", "", re.sub(r" ", "_", title)).lower()
 
-def file_extension(filename, file_type="photo"):
+def file_extension(filename: str, file_type: str = "photo") -> str:
     """
     Get the file extension of ``filename``.
 
@@ -209,13 +209,13 @@ def file_extension(filename, file_type="photo"):
             return ext
         if file_type == "any":
             return ext
-    return False
+    return ""
 
-def csp_dict_to_str(csp):
+def csp_dict_to_str(csp: Dict) -> str:
     """ Convert the ``csp`` to string for the HTML meta tag. """
     return Markup("; ".join(k + " " + (csp[k] if isinstance(csp[k], str) else " ".join(csp[k])) for k in csp) + ";")
 
-def csp_nonce():
+def csp_nonce() -> str:
     """
     Generate a Base64 random string of 24 characters for the cryptographic nonce.
 
@@ -224,7 +224,7 @@ def csp_nonce():
     """
     return base64.b64encode(secrets.token_bytes(18)).decode("utf-8")
 
-def generate_newsletter_id():
+def generate_newsletter_id() -> str:
     """
     Generate a random string of characters which include any lower/upper cases and digits.
 
@@ -233,7 +233,7 @@ def generate_newsletter_id():
     """
     return "".join(secrets.choice(string.ascii_letters + string.digits) for _ in range(64))
 
-def random_text(size):
+def random_text(size: int) -> str:
     """
     Generate a random string of characters which include any lower cases and digits.
 
@@ -245,7 +245,7 @@ def random_text(size):
     """
     return "".join(secrets.choice(string.ascii_lowercase + string.digits) for _ in range(size))
 
-def random_filename(size, file_extension="jpg"):
+def random_filename(size: int, file_extension: str = "jpg") -> str:
     """
     Generate a random file name with the extension ``file_extension``.
 
@@ -258,7 +258,7 @@ def random_filename(size, file_extension="jpg"):
     """
     return random_text(size) + "." + file_extension
 
-def actual_access_level():
+def actual_access_level() -> int:
     """
     Get the access level of the current session or the lowest one.
 
@@ -267,7 +267,7 @@ def actual_access_level():
     """
     return session["access_level"] if "access_level" in session else 0
 
-def escape(text):
+def escape(text: str) -> str:
     """
     Escape '"<> from ``text`` so that SQL injection and similar attacks are avoided.
 
@@ -279,7 +279,7 @@ def escape(text):
     """
     return str(Markup.escape(text))
 
-def basic_json(success, info, args={}):
+def basic_json(success: bool, info: str, args: Dict = {}) -> FlaskResponse:
     """
     Simplify JSON format by returning a preformated JSON.
 
@@ -296,7 +296,13 @@ def basic_json(success, info, args={}):
     r.update(args)
     return jsonify(r)
 
-def create_and_save(raw_path, max_size, filename_size, image_quality, upload_path):
+def create_and_save(
+        raw_path: str,
+        max_size: Tuple[int, int],
+        filename_size: int,
+        image_quality: int,
+        upload_path: str
+    ) -> str:
     """
     Create a smaller picture of ``raw_path`` which fit in ``max_size``. The file
     name is random with ``filename_size`` character, extension excluded.
@@ -309,7 +315,7 @@ def create_and_save(raw_path, max_size, filename_size, image_quality, upload_pat
         upload_path (str): Directory where the new picture would be saved.
 
     Returns:
-        str: File path to the created and saved picture.
+        str: File path to the newly created and saved picture.
     """
     image = Image.open(raw_path)
     image = image.convert("RGB")
@@ -322,23 +328,23 @@ def create_and_save(raw_path, max_size, filename_size, image_quality, upload_pat
     image.close()
     return photo_filename
 
-def match_absolute_path(path):
+def match_absolute_path(path: str) -> bool:
     """
-    Return an object or None if the path does not start with 'http(s)://'.
+    Return true if the path starts with 'http(s)://', false otherwise.
 
     Args:
         path (str): URL
 
     Returns:
-        An object or None.
+        bool: True for absolute URL, false for relative URL.
     """
-    return re.match(r"http(s)*://*", path, re.IGNORECASE)
+    return re.match(r"http(s)*://*", path, re.IGNORECASE) != None
 
-def verbose_md_ext(extensions):
+def verbose_md_ext(extensions: List[str]) -> List[str]:
     """ Prepend `markdown.extensions.` to each element of the list ``extensions``. """
     return ["markdown.extensions.{0}".format(ext) for ext in extensions]
 
-def get_access_level_from_id(id, cursor):
+def get_access_level_from_id(id: int, cursor: MySQLCursor) -> int:
     """
     Get the access level from the member ``id``.
 
@@ -351,13 +357,13 @@ def get_access_level_from_id(id, cursor):
     """
     cursor.execute("""SELECT access_level
         FROM members
-        WHERE member_id={id}""".format(id=id))
+        WHERE member_id={id}""".format(id=str(id)))
     data = cursor.fetchone()
     if cursor.rowcount == 0:
         raise ValueError("Invalid member identifier!")
     return data[0]
 
-def get_image_size(path):
+def get_image_size(path: str) -> Tuple[int, int]:
     """
     Get the image size.
 
@@ -372,7 +378,7 @@ def get_image_size(path):
     image.close()
     return size
 
-def get_image_exif(path):
+def get_image_exif(path: str) -> Tuple:
     """
     Get some EXIF data with the exifread module.
 
@@ -387,6 +393,12 @@ def get_image_exif(path):
     """
     with open(path, "rb") as raw_file:
         tags = exifread.process_file(raw_file)
+        date_taken: Union[datetime.datetime, None]
+        focal_length_35mm: Union[int, None]
+        exposure_time_s: Union[str, None]
+        f_number: Union[float, None]
+        iso: Union[int, None]
+
         if "EXIF DateTimeOriginal" in tags:
             date_taken = datetime.datetime.strptime(str(tags["EXIF DateTimeOriginal"]), "%Y:%m:%d %H:%M:%S")
         else:
@@ -409,7 +421,7 @@ def get_image_exif(path):
             iso = None
         return (date_taken, focal_length_35mm, exposure_time_s, f_number, iso)
 
-def friendly_datetime(ugly_datetime):
+def friendly_datetime(ugly_datetime: str) -> str:
     """
     Format ``ugly_datetime`` in a more logical way.
 
@@ -440,7 +452,7 @@ def friendly_datetime(ugly_datetime):
     month_year = datetime.datetime.strftime(formated_datetime, "%B %Y")
     return time + ", " + month_year
 
-def preview_image(image_path):
+def preview_image(image_path: str) -> bytes:
     """
     Create a tiny data:image/jpeg;base64-type image of ``image_path``.
     The tiny image is 42px wide and keeps the ratio of the original image.
@@ -467,15 +479,15 @@ def preview_image(image_path):
     except:
         return b''
 
-def fracstr_to_numerator(text):
+def fracstr_to_numerator(text: str) -> int:
     """ Returns the numerator of ``text``. """
     return Fraction(text).limit_denominator().numerator
 
-def fracstr_to_denominator(text):
+def fracstr_to_denominator(text: str) -> int:
     """ Returns the denominator of ``text``. """
     return Fraction(text).limit_denominator().denominator
 
-def allowed_external_connections(csp_config):
+def allowed_external_connections(csp_config: Dict) -> List[str]:
     """ Returns a list of 'https://' sources from ``csp_config``. """
     connections = []
     for directive, sources in csp_config.items():

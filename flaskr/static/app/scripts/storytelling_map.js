@@ -38,7 +38,6 @@
  * I used mapbox Studio-generated layers including hillshading
  * made available by the USGS 3D Elevation Program.
  * It is integrated in the website (core design and scripts required.)
- * A message error is displayed if Mapbox GL is not supported.
  * The interface loads once the JSON-formated story has been successfully fetched.
  */
 class StorytellingMap {

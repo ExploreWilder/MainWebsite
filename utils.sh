@@ -66,15 +66,22 @@ case ${tool} in
         cd - >/dev/null
         deactivate
         ;;
+    mypy)
+        source venv/bin/activate
+        mypy --no-implicit-optional flaskr/
+        cd - >/dev/null
+        deactivate
+        ;;
     *)
         echo "`basename ${0}`:usage: [init-db-localhost]" \
-            " | [backup-db-prod]" \
-            " | [run-gulp]" \
-            " | [cloc]" \
-            " | [doc-localhost]" \
-            " | [run-app-localhost]" \
-            " | [test-coverage-localhost]" \
-            " | [test-localhost]"
+            "| [backup-db-prod]" \
+            "| [run-gulp]" \
+            "| [cloc]" \
+            "| [doc-localhost]" \
+            "| [run-app-localhost]" \
+            "| [test-coverage-localhost]" \
+            "| [test-localhost]" \
+            "| [mypy]"
         exit 1
         ;;
 esac

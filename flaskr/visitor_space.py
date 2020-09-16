@@ -38,7 +38,7 @@ from .cache import cache
 visitor_app = Blueprint("visitor_app", __name__)
 mysql = LocalProxy(get_db)
 
-def subscribe_newsletter(cursor, session, email, name=None):
+def subscribe_newsletter(cursor: MySQLCursor, session: Dict, email: str, name: str = "") -> bool:
     """
     Subscribe `email` to the newsletter.
     
@@ -75,7 +75,7 @@ def subscribe_newsletter(cursor, session, email, name=None):
     session["subscribed"] = True
     return new_subscription
 
-def add_audit_log(member_id, ip, event_description="logged_in"):
+def add_audit_log(member_id: int, ip: str, event_description: str = "logged_in") -> None:
     """
     Add an entry to the audit log.
 
@@ -98,7 +98,7 @@ def add_audit_log(member_id, ip, event_description="logged_in"):
             ip=ip))
     mysql.commit()
 
-def fetch_audit_log(member_id, event_description=None):
+def fetch_audit_log(member_id: int, event_description: str = "") -> Union[Tuple, None]:
     """
     Get the full list of (time, IP address) tuple from last to first.
 
@@ -119,7 +119,7 @@ def fetch_audit_log(member_id, event_description=None):
     return cursor.fetchall() or None
 
 @visitor_app.route("/photos/<int:photo_id>/<string:filename>")
-def photo_dir(photo_id, filename):
+def photo_dir(photo_id: int, filename: str) -> FlaskResponse:
     """
     Make photo files reachable by the user.
     Check a few things before to send the picture:
@@ -146,7 +146,7 @@ def photo_dir(photo_id, filename):
     return send_from_directory(current_app.config["GALLERY_FOLDER"], filename)
 
 @visitor_app.route("/books/locked.jpg")
-def image_of_locked_books():
+def image_of_locked_books() -> FlaskResponse:
     """
     Image of the locked book(s).
     """
@@ -155,7 +155,7 @@ def image_of_locked_books():
     return send_from_directory(current_app.config["SHELF_FOLDER"], "locked.jpg", as_attachment=False)
 
 @visitor_app.route("/books/<int:book_id>/<path:sub_dir>")
-def book_dir(book_id, sub_dir):
+def book_dir(book_id: int, sub_dir: str) -> FlaskResponse:
     """
     Make documents of a book reachable by the user. PDF file is sent as attachment.
     Check a few things before to send the file:
@@ -184,7 +184,7 @@ def book_dir(book_id, sub_dir):
 
 @visitor_app.route("/sitemap.xml")
 @cache.cached()
-def sitemap():
+def sitemap() -> Any:
     """
     Generate sitemap.xml. Makes a list of urls and date modified.
     The sitemap only includes the main public pages and released and
@@ -208,7 +208,7 @@ def sitemap():
         return(str(e))
 
 @visitor_app.route("/audit_log")
-def audit_log():
+def audit_log() -> Any:
     """
     List all events related to the connected member.
     """
@@ -220,7 +220,7 @@ def audit_log():
         is_prod=not current_app.config["DEBUG"])
 
 @visitor_app.route("/stories")
-def shelf():
+def shelf() -> Any:
     """
     List my stories and e-books.
     The listing is ordered by `shelf`.`position` DESC and takes into account the
@@ -266,7 +266,7 @@ def shelf():
         is_prod=not current_app.config["DEBUG"])
 
 @visitor_app.route("/stories/<int:book_id>/<string:story_url>")
-def story(book_id, story_url):
+def story(book_id: int, story_url: str) -> Any:
     """
     Print one story. The story is printed only if the visitor's access level is
     okay and if the book file is Markdown. The story can be a draft, so you can
@@ -305,12 +305,9 @@ def story(book_id, story_url):
             book_processor = BookProcessor(current_app, book_id, story, data[4])
             book_content = book_processor.print_book()
         except Exception as e: # f.i. Markdown file not found
-            if current_app.config["DEBUG"] or current_app.config["TESTING"]:
-                book_content = e
-            else:
-                book_content = "" # avoid disclosing sensitive system info
+            current_app.logger.exception("Failed to process Markdown file")
     else:
-        book_content = ""
+        book_content = book_processor.get_empty_book()
     book = {
         "id": book_id,
         "title": data[1],
@@ -332,7 +329,7 @@ def story(book_id, story_url):
         is_prod=not current_app.config["DEBUG"])
 
 @visitor_app.route("/about")
-def about():
+def about() -> Any:
     """ The about page with the contact form. """
     return render_template(
         "about.html",
@@ -343,7 +340,7 @@ def about():
 
 @visitor_app.route("/detailed_feedback", methods=("POST",))
 @visitor_app.route("/contact", methods=("POST",))
-def send_mail():
+def send_mail() -> FlaskResponse:
     """
     The XHR procedure, check all fields and send the email.
     The email includes system information for security and debug purposes.
@@ -489,7 +486,7 @@ def send_mail():
 
 @visitor_app.route("/create_password", methods=("POST",))
 @visitor_app.route("/create_password/<int:member_id>/<string:newsletter_id>/<string:one_time_password>", methods=("GET",))
-def create_password(member_id=None, newsletter_id=None, one_time_password=None):
+def create_password(member_id: int = 0, newsletter_id: str = "", one_time_password: str = "") -> Any:
     """
     Create a password by visiting the URL (sent via e-mail by the administrator).
     The URL looks like ``/create_password/3/umA...V59I/Dscx...QaZ6WM` and the page is
@@ -583,7 +580,7 @@ def create_password(member_id=None, newsletter_id=None, one_time_password=None):
 
 @visitor_app.route("/change_email", methods=("POST", "GET"))
 @visitor_app.route("/change_email/<int:member_id>/<string:hashed_url_email>", methods=("GET",))
-def change_email(member_id=None, hashed_url_email=None):
+def change_email(member_id: int = 0, hashed_url_email: str = "") -> Any:
     """
     The steps to update a user email address are:
 
@@ -737,7 +734,7 @@ def change_email(member_id=None, hashed_url_email=None):
         is_prod=not current_app.config["DEBUG"])
 
 @visitor_app.route("/change_password", methods=("POST", "GET"))
-def change_password():
+def change_password() -> Any:
     """
     Change password.
 
@@ -803,7 +800,7 @@ def change_password():
         is_prod=not current_app.config["DEBUG"])
 
 @visitor_app.route("/subscribe", methods=("POST",))
-def subscribe_newsletter_form():
+def subscribe_newsletter_form() -> FlaskResponse:
     """
     Subscribe the visitor to the newsletter members list.
     The feedback is intentionally lacking to avoid data disclosure.
@@ -818,7 +815,7 @@ def subscribe_newsletter_form():
     return basic_json(True, "Thank you!")
 
 @visitor_app.route("/unsubscribe/<int:member_id>/<string:newsletter_id>")
-def unsubscribe_from_newsletter(member_id, newsletter_id):
+def unsubscribe_from_newsletter(member_id: int, newsletter_id: str) -> Any:
     """
     Unsubscribe ``member_id`` from the newsletter.
 
@@ -865,7 +862,7 @@ def unsubscribe_from_newsletter(member_id, newsletter_id):
         is_prod=not current_app.config["DEBUG"])
 
 @visitor_app.route("/photos", methods=("POST",))
-def fetch_photos():
+def fetch_photos() -> FlaskResponse:
     """
     XHR procedure sending photos metadata according to the access level.
     Photo title and description are empty if the user is not allowed to read them.
@@ -904,7 +901,7 @@ def fetch_photos():
     return jsonify(formated_data)
 
 @visitor_app.route("/share_emotion_photo", methods=("POST",))
-def share_emotion_photo():
+def share_emotion_photo() -> FlaskResponse:
     """
     XHR procedure updating the visitor log according to his emotion.
 
@@ -936,7 +933,7 @@ def share_emotion_photo():
     return basic_json(True, info)
 
 @visitor_app.route("/share_emotion_book", methods=("POST",))
-def share_emotion_book():
+def share_emotion_book() -> FlaskResponse:
     """
     XHR procedure adding a new entry into the visitor log. The emotion is
     neutral if the user has open a book or it is a like if the user clicked
@@ -971,7 +968,7 @@ def share_emotion_book():
 
     # manage visitor identifier
     raw_cookie = request.cookies.get("visitor_data")
-    def bake():
+    def bake() -> Dict:
         # MySQL INT is 32-bit signed. Keep positive, so the 32nd bit is 0
         return JSONSecureCookie({"id": secrets.randbits(31)}, current_app.config["COOKIE_SECRET_KEY"])
     if not raw_cookie: # create a new visitor identifier
@@ -1012,7 +1009,7 @@ def share_emotion_book():
     return resp
 
 @visitor_app.route("/login", methods=("POST", "GET"))
-def login(result=None, status=True):
+def login(result: str = "", status: bool = True) -> Any:
     """
     Log in a user or logout if he is already logged in.
     Arguments are reset in POST requests and could be used in GET requests.
@@ -1090,7 +1087,7 @@ def login(result=None, status=True):
         is_prod=not current_app.config["DEBUG"])
 
 @visitor_app.route("/reset_password", methods=("POST","GET"))
-def reset_password(result=None, status=True):
+def reset_password(result: str = "", status: bool = True) -> Any:
     """
     Send an email to reset the password. The email is only sent if the
     user does not have a one time password, which is generated and put
@@ -1168,7 +1165,7 @@ def reset_password(result=None, status=True):
         is_prod=not current_app.config["DEBUG"])
 
 @visitor_app.route("/log_visit_photo", methods=("POST",))
-def log_visit_photo():
+def log_visit_photo() -> Any:
     """
     XHR procedure logging visits. The `visitor_id` cookie is used but not
     required by ``share_emotion_photo()`` which uses the `last_visit_photo_id`
@@ -1234,7 +1231,7 @@ def log_visit_photo():
     return resp
 
 @visitor_app.route("/captcha.png")
-def create_captcha():
+def create_captcha() -> FlaskResponse:
     """ Create a CAPTCHA and return it. """
     captcha = Captcha(current_app)
     captcha.create_image()
@@ -1242,7 +1239,7 @@ def create_captcha():
 
 @visitor_app.route("/")
 @visitor_app.route("/index")
-def index():
+def index() -> Any:
     """ The gallery. """
     cursor = mysql.cursor()
     cursor.execute("""SELECT photo_id, thumbnail_src
@@ -1263,6 +1260,6 @@ def index():
         thumbnail_networks=thumbnail_networks)
 
 @visitor_app.route("/logout")
-def logout():
+def logout() -> Any:
     """ The login page will log out the user. """
     return redirect("/login")

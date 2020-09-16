@@ -2,3 +2,6 @@ sphinx
 sphinxcontrib-napoleon
 sphinx-js
 sphinx_bootstrap_theme
+mypy
+isort
+pylint

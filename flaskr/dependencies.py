@@ -28,28 +28,62 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-from flask import (
-    Flask, request, render_template, jsonify, abort, redirect, g, session,
-    send_file, make_response, Markup, send_from_directory, Blueprint,
-    current_app, flash
-)
-from flaskext.markdown import Markdown
-from flask.cli import with_appcontext
-from time import strftime, strptime, gmtime, time
-from secure_cookie.cookie import SecureCookie # https://github.com/pallets/secure-cookie
-from werkzeug.utils import secure_filename
-from werkzeug.local import LocalProxy
-from flask_talisman import Talisman
-from flask_seasurf import SeaSurf
-from PIL import Image, ImageFont, ImageDraw
+import base64
+import datetime
+import functools
+import glob
+import hashlib
+import io
+import json
+import logging
+import os
+import pickle
+import random
+import re
+import secrets
+import shutil
+import stat
+import string
+import sys
+import xml.etree.ElementTree as eltree
 from fractions import Fraction
 from pathlib import Path
+from time import gmtime, strftime, strptime, time
+
+import click
+import exifread
+import markdown
+import mdx_sections
+import pymysql
+import requests
 import sentry_sdk
+import werkzeug.security
+from flask import (
+    Blueprint,
+    Flask,
+    Markup,
+    abort,
+    current_app,
+    flash,
+    g,
+    jsonify,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    send_from_directory,
+    session
+)
+from flask.cli import with_appcontext
+from flask_seasurf import SeaSurf
+from flask_talisman import Talisman
+from flaskext.markdown import Markdown
+from PIL import Image, ImageDraw, ImageFont
+from secure_cookie.cookie import SecureCookie
 from sentry_sdk.integrations.flask import FlaskIntegration
-import werkzeug.security, markdown, exifread, pymysql, functools, click
-import hashlib, os, sys, string, random, datetime, re, io, base64, secrets
-import requests, json, stat, shutil, logging, pickle, glob, mdx_sections
-import xml.etree.ElementTree as eltree
+from werkzeug.local import LocalProxy
+from werkzeug.utils import secure_filename
 
 try:
     from urllib.parse import quote, quote_plus, unquote_plus
@@ -58,4 +92,4 @@ except ImportError:
 
 from .mdx_amazon_affiliate_links import AmazonAffiliateLinksExtension
 from .mdx_tweetable import TweetableExtension
-from typing import List, Dict
+from .typing import *

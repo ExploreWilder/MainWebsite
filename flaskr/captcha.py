@@ -34,12 +34,12 @@ class Captcha:
     """ Create, check and kill a CAPTCHA. """
 
     #: File path to the current CAPTCHA. No CAPTCHA file if empty.
-    filepath = ""
+    filepath: str = ""
 
     #: Value of the CAPTCHA once generated. No CAPTCHA if empty.
-    passcode = ""
+    passcode: str = ""
 
-    def __init__(self, app):
+    def __init__(self, app: Flask) -> None:
         """
         Define the captcha salt.
 
@@ -48,14 +48,13 @@ class Captcha:
         """
         self.config = app.config
 
-    def check(self, passcode):
+    def check(self, passcode: str) -> bool:
         """
         Check if ``passcode`` is equal to the CAPTCHA code previously generated.
         Case insensitive. Whatever the result, the test unset the CAPTCHA.
 
         Args:
             passcode (str): The passcode typed by the user.
-            bypass (bool): True to bypass the check (for testing the app).
 
         Returns:
             bool: True if correct. False otherwise.
@@ -70,11 +69,17 @@ class Captcha:
         self.passcode = ""
         return result
 
-    def create_image(self):
-        """ Create the image. """
-        # create the captcha
+    def create_image(self) -> None:
+        """
+        Create the image.
+        The CAPTCHA font is hard to read by a machine, and easy by a human.
+        If the CAPTCHA font file cannot be read, a 'better than nothing' default font is loaded.
+        """
         self.captcha = Image.new("RGB", (self.config["CAPTCHA_LENGTH"] * 37, 35), "white")
-        font = ImageFont.truetype(self.config["CAPTCHA_TTF_FONT"], 32)
+        try:
+            font = ImageFont.truetype(self.config["CAPTCHA_TTF_FONT"], 32)
+        except OSError: # font file not found or could not be read
+            font = ImageFont.load_default()
         draw = ImageDraw.Draw(self.captcha)
         self.generate_passcode()
         offset = 0
@@ -84,7 +89,7 @@ class Captcha:
             offset += 1
         draw = ImageDraw.Draw(self.captcha)
 
-    def generate_passcode(self):
+    def generate_passcode(self) -> None:
         """
         Generate the passcode and save into the session. Data in session are signed
         but just base64 encoded, i.e. clear text. Therefore, the captcha is hashed
@@ -96,7 +101,7 @@ class Captcha:
         self.passcode = "".join(secrets.choice(self.config["CAPTCHA_CHARACTERS_OKAY"]) for _ in range(self.config["CAPTCHA_LENGTH"]))
         session["captcha_passcode"] = werkzeug.security.pbkdf2_bin(self.passcode, self.config["CAPTCHA_SALT"])[:9]
 
-    def random_colour(self):
+    def random_colour(self) -> Tuple[int, int, int]:
         """
         Generate a random colour as a tuple (R, G, B).
 
@@ -112,18 +117,24 @@ class Captcha:
         blue = min(max(3 * average - red - green, 0), 255) # force to [0, 255]
         return (int(red), int(green), int(blue))
 
-    def to_file(self):
+    def to_file(self) -> FlaskResponse:
         """
         Image to file. The image have to be already generated.
 
         Returns:
             PNG file.
+        
+        Raises:
+            404: If the image cannot be saved.
         """
-        self.filepath = os.path.join(absolute_path("captchas"), random_filename(64, "png"))
-        self.captcha.save(self.filepath, "PNG")
+        self.filepath = os.path.join(self.config["CAPTCHA_FOLDER"], random_filename(64, "png"))
+        try:
+            self.captcha.save(self.filepath, "PNG")
+        except: # directory 
+            abort(404)
         return send_file(self.filepath, mimetype="image/png") # copy file into RAM
 
-    def __del__(self):
+    def __del__(self) -> None:
         """ Remove the created file if existing. """
         if self.filepath != "":
             os.remove(self.filepath)

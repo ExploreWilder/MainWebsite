@@ -65,7 +65,7 @@ def track_path_to_header(book_id: int, book_url: str, book_title: str, gpx_name:
     ]
 
 @map_app.route("/player/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>")
-def map_player(book_id: int, book_url: str, gpx_name: str, country: str):
+def map_player(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
     """
     Map viewer with a real 3D map more focused on a fun user experience than a hiker-centric track viewer.
     A track is always linked to a story and the navbar would display breadcrumbs and a link to the 2D version.
@@ -98,7 +98,7 @@ def map_player(book_id: int, book_url: str, gpx_name: str, country: str):
         is_prod=not current_app.config["DEBUG"])
 
 @map_app.route("/viewer/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>")
-def map_viewer(book_id: int, book_url: str, gpx_name: str, country: str):
+def map_viewer(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
     """
     2D map viewer with some basic tools, track and topo information.
     A track is always linked to a story and the navbar would display breadcrumbs and a link to the 3D version.
@@ -162,7 +162,7 @@ def create_static_map(gpx_path: str, static_map_path: str, static_image_settings
         static_image.write(r.content)
 
 @map_app.route("/static_map/<int:book_id>/<string:book_url>/<string:gpx_name>.jpg")
-def static_map(book_id: int, book_url: str, gpx_name: str):
+def static_map(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
     """
     Print a static map and create it if not already existing or not up to date.
 
@@ -204,9 +204,9 @@ def static_map(book_id: int, book_url: str, gpx_name: str):
             return "{}".format(type(e).__name__), 500
     return send_from_directory(gpx_dir, gpx_filename + append_ext)
 
-@map_app.route("/profile/<int:book_id>/<string:book_url>/<string:gpx_name>")
+@map_app.route("/profile/<int:book_id>/<string:book_url>/<string:gpx_name>", defaults={'country': ''})
 @map_app.route("/profile/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>")
-def profile_file(book_id: int, book_url: str, gpx_name: str, country: str = None):
+def profile_file(book_id: int, book_url: str, gpx_name: str, country: str) -> FlaskResponse:
     """
     Print a profile file and create it if not already existing or not up to date.
 
@@ -367,7 +367,7 @@ def elevation_profile(gpx_path: str, profile_path: str, credentials: Dict[str, s
             profile_file.write(compressed_data + (b"=" if (len(compressed_data) % 2) else b""))
 
 @map_app.route("/middleware/lds/<string:layer>/<string:a_d>/<int:z>/<int:x>/<int:y>", methods=("GET",))
-def middleware_lds(layer: str, a_d: str, z: int, x: int, y: int):
+def middleware_lds(layer: str, a_d: str, z: int, x: int, y: int) -> bytes:
     """
     Tunneling map requests to the LDS servers in order to hide the API key.
     Help using LDS with OpenLayers:
@@ -394,7 +394,7 @@ def middleware_lds(layer: str, a_d: str, z: int, x: int, y: int):
     return r.content
 
 @map_app.route("/middleware/ign", methods=("GET",))
-def middleware_ign():
+def middleware_ign() -> bytes:
     """
     Tunneling map requests to the IGN servers in order to hide the API key.
 
@@ -415,7 +415,7 @@ def middleware_ign():
     return r.content
 
 @map_app.route("/middleware/topografisk/<int:z>/<int:x>/<int:y>", methods=("GET",))
-def middleware_topografisk(z: int, x: int, y: int):
+def middleware_topografisk(z: int, x: int, y: int) -> bytes:
     """
     Tunneling map requests to the Kartverket servers (Norway) in order to respect users' privacy.
     Howto available here: https://kartverket.no/en/data/lage-kart-pa-nett/
@@ -439,7 +439,7 @@ def middleware_topografisk(z: int, x: int, y: int):
     return r.content
 
 @map_app.route("/middleware/canvec", methods=("GET",))
-def middleware_canvec():
+def middleware_canvec() -> bytes:
     """
     Tunneling map requests to the Geogratis servers (Canada) in order to respect users' privacy.
 

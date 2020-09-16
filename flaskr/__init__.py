@@ -37,7 +37,7 @@ except ImportError:
 
 from .cache import cache
 
-def create_app(is_testing=False):
+def create_app(is_testing: bool = False) -> Flask:
     """ Create and configure an instance of the Flask application. """
     from .social_networks import social_networks_app, share_link
     from .visitor_space import visitor_app
@@ -48,11 +48,11 @@ def create_app(is_testing=False):
     app = Flask(__name__)
 
     @app.template_filter("numerator")
-    def numerator(s):
+    def numerator(s: str) -> int:
         return fracstr_to_numerator(s)
 
     @app.template_filter("denominator")
-    def denominator(s):
+    def denominator(s: str) -> int:
         return fracstr_to_denominator(s)
 
     is_debug = app.config["DEBUG"]
@@ -64,7 +64,7 @@ def create_app(is_testing=False):
     app.config["STATIC_PACKAGE"] = get_static_package_config()
     
     @app.context_processor
-    def app_ctx_processor():
+    def app_ctx_processor() -> Dict:
         return dict(
             share_link=share_link,
             allowed_external_connections=allowed_external_connections)
@@ -91,7 +91,7 @@ def create_app(is_testing=False):
     @app.errorhandler(403)
     @app.errorhandler(404) # "page not found" or access forbidden
     @app.errorhandler(405) # "method not allowed"
-    def just_error(error):
+    def just_error(error: Exception) -> Any:
         """
         The 404-error page with the specific HTTP field set.
         Any catched error are considered 404 to make guesses harder.
@@ -101,7 +101,7 @@ def create_app(is_testing=False):
             is_prod=not app.config["DEBUG"]), 404
     
     @app.errorhandler(500)
-    def handle_500(e):
+    def handle_500(e: Exception) -> Any:
         """
         More information:
         https://docs.sentry.io/enriching-error-data/user-feedback/?platform=flask

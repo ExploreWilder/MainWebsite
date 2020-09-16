@@ -58,7 +58,7 @@ def get_db():
             else:
                 print("MySQL error %d: %s" % (e.args[0], e.args[1]))
 
-    return g.db
+    return g.db if "db" in g else None
 
 def close_db(error=None):
     """ If this request connected to the database, close the connection. """
@@ -67,24 +67,29 @@ def close_db(error=None):
     if db is not None:
         db.close()
 
-def load_from_file(file):
+def load_from_file(file) -> bool:
     """ Load an SQL file descriptor into the database. """
     request_list = file.read().decode("utf8").split(';') # split file in list
     request_list.pop() # drop last empty entry
     if request_list is not False:
         db = get_db()
-        cursor = db.cursor()
-        for idx, sql_request in enumerate(request_list):
-            cursor.execute(sql_request)
-        db.commit()
+        if db:
+            cursor = db.cursor()
+            for idx, sql_request in enumerate(request_list):
+                cursor.execute(sql_request)
+            db.commit()
+            return True
+        else:
+            return False
+    return True
 
-def init_db():
+def init_db() -> bool:
     """
     Run the file schema.sql which clears the database.
     Ensure to be connected to the right database or data may be lost forever!
     """
     with current_app.open_resource("schema.sql") as f:
-        load_from_file(f)
+        return load_from_file(f)
 
 @click.command("init-db")
 @with_appcontext
@@ -93,8 +98,10 @@ def init_db_command():
     Clear the existing data and create new tables.
     Ensure to be connected to the right database or data may be lost forever!
     """
-    init_db()
-    click.echo("Database initialized.")
+    if init_db():
+        click.secho("Success: Database initialized.", fg='green')
+    else:
+        click.secho("Error: Failed to initialize the database.", fg='red')
 
 def init_app(app):
     """

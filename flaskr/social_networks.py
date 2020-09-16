@@ -34,7 +34,7 @@ from xml.dom import minidom
 
 social_networks_app = Blueprint("social_networks_app", __name__)
 
-def share_link(link, network, subject=None):
+def share_link(link: str, network: str, subject: str = "") -> str:
     """ Format a social platform link and return a string. """
     networks = {"twitter": 'https://twitter.com/intent/tweet?via=' + current_app.config["TWITTER_ACCOUNT"]["screen_name"] + '&url=',
                 "facebook": 'https://www.facebook.com/sharer/sharer.php?u=',
@@ -44,19 +44,24 @@ def share_link(link, network, subject=None):
                 "tumblr": 'http://www.tumblr.com/share/link?url='}
     return networks[network] + quote_plus(link if link.startswith('http') else request.url_root + link)
 
-def create_media_filename(src, salt):
+def create_media_filename(src: str, salt: bytes) -> str:
     """ Hash `src` with a secret `salt` so that the authenticity can be checked, and return a string. """
     return werkzeug.security.pbkdf2_hex(src, salt) + "." + file_extension(src)
 
-def encode_media_origin(url):
+def encode_media_origin(url: str) -> str:
     """ Convert the string `url` into an hexadecimal string (URL safer than base64, no trailing '='). """
     return url.encode().hex()
 
-def decode_media_origin(hex_str):
+def decode_media_origin(hex_str: str) -> str:
     """ Decode a string encoded with encode_media_origin() and return a string. """
     return bytes.fromhex(hex_str).decode()
 
-def download_image(clear_url, hashed_filename, data_store, timeout):
+def download_image(
+        clear_url: str,
+        hashed_filename: str,
+        data_store: str,
+        timeout: Union[float, Tuple[float, float]]
+    ) -> None:
     """
     Download `clear_url` and save it in the `data_store` directory as `hashed_filename`.
     The media download is intended to avoid enlarging the image-src rule of the CSP,
@@ -76,17 +81,17 @@ def download_image(clear_url, hashed_filename, data_store, timeout):
         with open(path_file, "wb") as f:
             f.write(r.content)
 
-def compress_timeline(timeline, salt):
+def compress_timeline(timeline: List, salt: bytes) -> List:
     """
     Compress the verbose Twitter feed into a small one. Just keep the useful elements.
     The images are downloaded per-request.
 
     Args:
-        timeline (Dict): The Twitter timeline.
+        timeline (List): The Twitter timeline.
         salt (bytes): The salt to apply on the filename.
     
     Returns:
-        Dict: The timeline with less information and links to the (locally) stored images.
+        List: The timeline with less information and links to the (locally) stored images.
     """
     compressed_timeline = []
     for tweet in timeline:
@@ -117,7 +122,7 @@ def compress_timeline(timeline, salt):
 
     return compressed_timeline
 
-def get_dom_text(nodelist):
+def get_dom_text(nodelist) -> str:
     """ Find out the text node of `nodelist` and return a string. """
     rc = []
     for node in nodelist:
@@ -126,7 +131,7 @@ def get_dom_text(nodelist):
     return ''.join(rc)
 
 @social_networks_app.route("/<string:network>/media/<string:origin>/<string:filename>", methods=("GET",))
-def send_media(network, origin, filename):
+def send_media(network: str, origin: str, filename: str) -> FlaskResponse:
     """
     Make media reachable by the user. The HTTP referrer must point to the website.
 
@@ -159,11 +164,12 @@ def send_media(network, origin, filename):
     return send_from_directory(data_store, filename)
 
 @social_networks_app.route("/twitter/my_timeline", methods=("POST",))
-def my_twitter_timeline():
+def my_twitter_timeline() -> FlaskResponse:
     """ Update the locally saved timeline (if too old) and return it. """
     if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
         abort(404)
-    timeline_filename = "timeline_" + current_app.config["TWITTER_ACCOUNT"]["screen_name"] + ".json"
+    screen_name = current_app.config["TWITTER_ACCOUNT"]["screen_name"]
+    timeline_filename = "timeline_" + screen_name + ".json"
     data_store = current_app.config["TWITTER_ACCOUNT"]["data_store"]
     old_timeline = os.path.join(data_store, timeline_filename)
     current_timestamp = datetime.datetime.now().timestamp()
@@ -178,19 +184,24 @@ def my_twitter_timeline():
             current_app.config["TWITTER_ACCOUNT"]["user_access_token"],
             current_app.config["TWITTER_ACCOUNT"]["user_access_token_secret"])
         
-        # download:
-        content = twitter.get_user_timeline(
-            screen_name=current_app.config["TWITTER_ACCOUNT"]["screen_name"],
-            json_encoded=True)
-
-        # compress and overwrite the old timeline:
-        with open(old_timeline, "w") as new_timeline:
-            new_timeline.write(json.dumps(compress_timeline(content, current_app.config["RANDOM_SALT"])))
+        try: # download:
+            content = twitter.get_user_timeline(
+                screen_name=screen_name,
+                json_encoded=True)
+        except: # https://twython.readthedocs.io/en/latest/api.html#exceptions
+            current_app.logger.exception("Failed to get the " + screen_name + " timeline from Twitter")
+        else: # compress and overwrite the old timeline:
+            with open(old_timeline, "w") as new_timeline:
+                new_timeline.write(json.dumps(compress_timeline(content, current_app.config["RANDOM_SALT"])))
     
-    return send_from_directory(data_store, timeline_filename)
+    try:
+        return send_from_directory(data_store, timeline_filename)
+    except:
+        current_app.logger.exception("Failed to locally retrieve the Twitter timeline @" + screen_name)
+        abort(404)
 
 @social_networks_app.route("/mastodon/my_timeline", methods=("POST",))
-def my_mastodon_timeline():
+def my_mastodon_timeline() -> FlaskResponse:
     """ Update the locally saved timeline (if too old) and return it. """
     if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
         abort(404)
@@ -201,46 +212,50 @@ def my_mastodon_timeline():
     delta = current_app.config["MASTODON_ACCOUNT"]["max_refresh_period"]
     file_exists = os.path.isfile(old_timeline)
     timeout = current_app.config["MASTODON_ACCOUNT"]["connection_timeout"]
+    account_url = current_app.config["MASTODON_ACCOUNT"]["community_url"] + "@" + current_app.config["MASTODON_ACCOUNT"]["screen_name"]
 
     # update:
     if (not file_exists) or (os.stat(old_timeline).st_mtime + delta) < current_timestamp:
-        account_url = current_app.config["MASTODON_ACCOUNT"]["community_url"] + "@" + current_app.config["MASTODON_ACCOUNT"]["screen_name"]
-        r = requests.get(account_url + ".rss", timeout=timeout)
-        if current_app.config["DEBUG"]:
-            r.raise_for_status() # keep silent in prod, no error threw, no update
+        try:
+            r = requests.get(account_url + ".rss", timeout=timeout)
+        except:
+            current_app.logger.exception("Failed to get the Mastodon timeline: " + account_url)
+        else:
+            if current_app.config["DEBUG"]:
+                r.raise_for_status() # keep silent in prod, no error threw, no update
 
-        # if the HTTP status code < 400 (error), so it could be 200 (OK) or 301 (Not Modified):
-        if r.status_code == requests.codes.ok:
-            content = r.content
-            dom = minidom.parseString(content)
-            toots = dom.getElementsByTagName("item")
-            all_my_toots = []
+            # if the HTTP status code < 400 (error), so it could be 200 (OK) or 301 (Not Modified):
+            if r.status_code == requests.codes.ok:
+                content = r.content
+                dom = minidom.parseString(content)
+                toots = dom.getElementsByTagName("item")
+                all_my_toots = []
 
-            for toot_dom in toots:
-                toot_dict = {
-                    "text": get_dom_text(toot_dom.getElementsByTagName("title")[0].childNodes),
-                    "guid": get_dom_text(toot_dom.getElementsByTagName("guid")[0].childNodes),
-                    "created_at": get_dom_text(toot_dom.getElementsByTagName("pubDate")[0].childNodes)
-                }
-                media = toot_dom.getElementsByTagName("enclosure")
-                if len(media) > 0:
-                    images = []
-                    for image in media:
-                        image_url = image.getAttribute("url")
-                        images.append({
-                            "filename": create_media_filename(image_url, current_app.config["RANDOM_SALT"]),
-                            "origin": encode_media_origin(image_url),
-                            "type": image.getAttribute("type").split('/')[-1]
-                        })
-                    toot_dict["images"] = images
-                all_my_toots.append(toot_dict)
-            
-            # overwrite the old timeline:
-            with open(old_timeline, "w") as new_timeline:
-                new_timeline.write(json.dumps(all_my_toots))
-            
-            file_exists = True
+                for toot_dom in toots:
+                    toot_dict: Dict[str, Any] = {
+                        "text": get_dom_text(toot_dom.getElementsByTagName("title")[0].childNodes),
+                        "guid": get_dom_text(toot_dom.getElementsByTagName("guid")[0].childNodes),
+                        "created_at": get_dom_text(toot_dom.getElementsByTagName("pubDate")[0].childNodes)
+                    }
+                    media = toot_dom.getElementsByTagName("enclosure")
+                    if len(media) > 0:
+                        images = []
+                        for image in media:
+                            image_url = image.getAttribute("url")
+                            images.append({
+                                "filename": create_media_filename(image_url, current_app.config["RANDOM_SALT"]),
+                                "origin": encode_media_origin(image_url),
+                                "type": image.getAttribute("type").split('/')[-1]
+                            })
+                        toot_dict["images"] = images
+                    all_my_toots.append(toot_dict)
+                
+                # overwrite the old timeline:
+                with open(old_timeline, "w") as new_timeline:
+                    new_timeline.write(json.dumps(all_my_toots))
     
-    if not file_exists:
+    try:
+        return send_from_directory(data_store, timeline_filename)
+    except:
+        current_app.logger.exception("Failed to locally retrieve the Mastodon timeline " + account_url)
         abort(404)
-    return send_from_directory(data_store, timeline_filename)

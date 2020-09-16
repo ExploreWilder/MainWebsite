@@ -55,12 +55,6 @@ Run as user:
     pip3 install --user virtualenv
     virtualenv -p /usr/bin/python3.7 venv
 
-Run as root:
-
-.. code-block:: none
-
-    `pwd`/venv/python/python3 -m pip3 install --upgrade pip
-
 More information about venv: `virtual environment <https://docs.python-guide.org/dev/virtualenvs/>`_.
 
 **Install the Python dependencies inside the venv**
@@ -69,7 +63,9 @@ Run as user:
 
 .. code-block:: none
 
+    cd MainWebsite
     source venv/bin/activate
+    `pwd`/venv/python/python3 -m pip3 install --upgrade pip
     pip3 install -U setuptools
     
     git clone https://github.com/pallets/secure-cookie.git
@@ -124,6 +120,19 @@ Run as root:
     mysql> exit;
     systemctl restart mysql
     mysqladmin -u root password 'root'
+
+**Configure the Website**
+
+Update the config.py file with the MySQL settings and choose a database name. The following command will create the database and tables based on schema.sql.
+
+Run as user:
+
+.. code-block:: none
+
+    cd MainWebsite
+    ./utils.sh init-db
+    cd flaskr
+    mkdir captchas
 
 On Fedora
 ^^^^^^^^^

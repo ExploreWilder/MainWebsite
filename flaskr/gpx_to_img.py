@@ -33,11 +33,19 @@ import math as mod_math
 import json as mod_json
 import requests as mod_requests
 from urllib.parse import quote as mod_quote
-from typing import Dict, Optional
+from typing import Dict
+
+DEFAULT_MARGIN_POINTS_NO: int = 3
+DEFAULT_MAX_ITER: int = 20
 
 class MyGPXTrackSegment(mod_gpxpy.gpx.GPXTrackSegment):
     """ Add a custom simplification. """
-    def _distance_guesser(self, points_no: int, margin_points_no: int, max_iter: int) -> int:
+    def _distance_guesser(
+            self,
+            points_no: int,
+            margin_points_no: int = DEFAULT_MARGIN_POINTS_NO,
+            max_iter: int = DEFAULT_MAX_ITER
+        ) -> int:
         """
         Find out the max distance for the 'simplify' procedure with the number of points as a requirement.
 
@@ -64,7 +72,12 @@ class MyGPXTrackSegment(mod_gpxpy.gpx.GPXTrackSegment):
                 break
         return dicho
     
-    def simplify_with_distance_guesser(self, points_no: int, margin_points_no: int, max_iter: int) -> None:
+    def simplify_with_distance_guesser(
+            self,
+            points_no: int,
+            margin_points_no: int = DEFAULT_MARGIN_POINTS_NO,
+            max_iter: int = DEFAULT_MAX_ITER
+        ) -> None:
         """
         Simplify the segment to about `points_no` more or less `margin_points_no`.
 
@@ -75,7 +88,12 @@ class MyGPXTrackSegment(mod_gpxpy.gpx.GPXTrackSegment):
         """
         self.simplify(self._distance_guesser(points_no, margin_points_no, max_iter - 1))
 
-def gpx_to_src(gpx: mod_gpxpy.gpx.GPX, conf: Dict, margin_points_no: Optional[int]=3, max_iter: Optional[int]=20) -> str:
+def gpx_to_src(
+        gpx: mod_gpxpy.gpx.GPX,
+        conf: Dict,
+        margin_points_no: int=DEFAULT_MARGIN_POINTS_NO,
+        max_iter: int=DEFAULT_MAX_ITER
+    ) -> str:
     """
     Returns a url to a static JPG image that fit the track in the GPX file.
     Static image overview: https://docs.mapbox.com/help/how-mapbox-works/static-maps/

@@ -38,24 +38,24 @@ class SecureEmail:
     """ Handle the SMTP connection and send DKIM-signed emails. """
     
     #: The *From* field of the email as ``self.user``@``self.domain``. String-type.
-    mailfrom = None
+    mailfrom: str
     
     #: The username of the *From* field. String-type.
-    user = None
+    user: str
     
     #: The domain name of the *From* field. String-type.
-    domain = None
+    domain: str
     
     #: The DKIM private ASCII key as Bytes.
-    dkim_private_key = None
+    dkim_private_key: bytes
     
     #: The DKIM selector as Bytes.
-    dkim_selector = None
+    dkim_selector: bytes
     
     #: The SMTP socket. Open with ``__init__()`` and closed with ``__del__()``.
-    socket = None
+    socket: smtplib.SMTP
     
-    def __init__(self, user, domain, dkim_private_key, dkim_selector):
+    def __init__(self, user: str, domain: str, dkim_private_key: str, dkim_selector: str) -> None:
         """
         Configure the email account and open an SMTP connection.
         The SMTP host is `localhost`.
@@ -77,7 +77,7 @@ class SecureEmail:
         self.dkim_selector = dkim_selector.encode()
         self.socket = smtplib.SMTP('localhost')
         
-    def send(self, mailto, subject, text, html):
+    def send(self, mailto: str, subject: str, text: str, html: str) -> None:
         """
         Create and send a text/HTML email. Multiple calls use the same SMTP session.
         A `Message-ID`, `Date`, and `DKIM-Signature` fields are added to the email.
@@ -105,7 +105,7 @@ class SecureEmail:
         message['DKIM-Signature'] = sig[len("DKIM-Signature: "):]
         self.socket.sendmail(message['From'], message['To'], message.as_string())
     
-    def __del__(self):
+    def __del__(self) -> None:
         """
         Terminate the SMTP session and close the connection.
         """
