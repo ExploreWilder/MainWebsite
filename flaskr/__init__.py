@@ -43,6 +43,7 @@ def create_app(is_testing: bool = False) -> Flask:
     from .visitor_space import visitor_app
     from .admin_space import admin_app
     from .map import map_app
+    from .vts_proxy import vts_proxy_app
     from .kofi import kofi_app
 
     app = Flask(__name__)
@@ -118,6 +119,7 @@ def create_app(is_testing: bool = False) -> Flask:
     app.register_blueprint(visitor_app)
     app.register_blueprint(admin_app, url_prefix="/admin")
     app.register_blueprint(map_app, url_prefix="/map")
+    app.register_blueprint(vts_proxy_app, url_prefix="/map/vts_proxy")
     app.register_blueprint(kofi_app, url_prefix="/kofi")
     csrf.exempt_urls("/kofi/webhook")
 

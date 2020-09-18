@@ -1,6 +1,28 @@
 {% extends "layout.html" %}
 {% block title %}Map Player{% endblock %}
-{% block extra_header_items %}<a href="{{ url_topo_map }}" class="ml-3 btn btn-success btn-sm" role="button">Switch to topo view</a>{% endblock %}
+{% block extra_header_items %}
+    <div class="ml-3 dropdown map-player-interface">
+        <button class="btn btn-success dropdown-toggle btn-sm"
+                type="button"
+                id="dropdownMenuBoundLayer"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false">
+            <i class="fas fa-layer-group"></i> Layer Selection
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuBoundLayer">
+            <a class="dropdown-item active text-sm" href="#" data-boundlayer="default-satellite">World aerial (medium res)</a>
+            <a class="dropdown-item" href="#" data-boundlayer="world-satellite">World aerial (high res)</a>
+            <a class="dropdown-item" href="#" data-boundlayer="world-topo">World topo</a>
+            {% if country == "FR" %}
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" data-boundlayer="fr-satellite">Government aerial (IGN)</a>
+                <a class="dropdown-item" href="#" data-boundlayer="fr-topo">Government topo (IGN)</a>
+            {% endif %}
+        </div>
+    </div>
+    <a href="{{ url_topo_map }}" class="ml-3 btn btn-success btn-sm" role="button"><i class="fas fa-map"></i> Switch to 2D View</a>
+{% endblock %}
 {% block extra_tags %}
     <link href="https://cdn.melown.com/" rel="preconnect" crossorigin>
     <link href="https://cdn.melown.com/" rel="dns-prefetch" />

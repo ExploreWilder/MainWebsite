@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
-project = u'Website'
+project = u'ExploreWilder Website'
 copyright = u'2018-2020, Clement'
 author = u'Clement'
 
@@ -45,7 +45,7 @@ extensions = [
     'sphinx_js',
 ]
 
-js_source_path = '../flaskr/static/app/scripts'
+js_source_path = '../../flaskr/static/app/scripts'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -88,7 +88,18 @@ html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {
+  'navbar_site_name': "Contents",
+  'source_link_position': "footer",
+}
+
+# If given, this must be the name of an image file (path relative to the
+# configuration directory) that is the logo of the docs. It is placed at
+# the top of the sidebar; its width should therefore not exceed 200 pixels.
+# html_logo = ''
+
+def setup(app):
+    app.add_css_file("my-styles.css") 
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

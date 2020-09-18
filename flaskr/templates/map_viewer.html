@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 {% block title %}Map Viewer, {{ country }} version{% endblock %}
-{% block extra_header_items %}<a href="{{ url_player_map }}" class="ml-3 btn btn-success btn-sm" role="button">Switch to 3D view (experimental)</a>{% endblock %}
+{% block extra_header_items %}
+    <a href="{{ url_player_map }}" class="ml-3 btn btn-success btn-sm" role="button"><i class="fas fa-globe"></i> Switch to 3D view (beta)</a>
+{% endblock %}
 {% block extra_tags %}
     <link href="https://opentopomap.org/" rel="dns-prefetch" />
     <link href="https://api.mapbox.com/" rel="dns-prefetch" />

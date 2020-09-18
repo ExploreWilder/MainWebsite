@@ -307,7 +307,7 @@ def story(book_id: int, story_url: str) -> Any:
         except Exception as e: # f.i. Markdown file not found
             current_app.logger.exception("Failed to process Markdown file")
     else:
-        book_content = book_processor.get_empty_book()
+        book_content = BookProcessor.get_empty_book()
     book = {
         "id": book_id,
         "title": data[1],

@@ -131,8 +131,12 @@ Run as user:
 
     cd MainWebsite
     ./utils.sh init-db
+    # create directories required for tests:
     cd flaskr
     mkdir captchas
+    cd ..
+    mkdir books
+    mkdir photos
 
 On Fedora
 ^^^^^^^^^

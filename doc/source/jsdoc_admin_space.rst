@@ -1,0 +1,53 @@
+Admin Space
+===========
+
+.. js:autoattribute:: url_prefix
+.. js:autoattribute:: url_add_photo
+.. js:autoattribute:: url_add_book
+.. js:autoattribute:: url_change_access_level
+.. js:autoattribute:: url_revoke_member
+.. js:autoattribute:: url_delete_member
+.. js:autoattribute:: url_save_photo_metadata
+.. js:autoattribute:: url_save_book_metadata
+.. js:autoattribute:: url_delete
+.. js:autoattribute:: url_delete_book
+.. js:autoattribute:: url_move_photo
+.. js:autoattribute:: url_move_book
+.. js:autoattribute:: url_send_password_creation
+.. js:autoattribute:: url_move_photo_to_wastebasket
+.. js:autoattribute:: url_send_newsletter
+
+.. js:autofunction:: read_upload_photo
+.. js:autofunction:: update_filename
+.. js:autofunction:: update_modal_change_access_level
+.. js:autofunction:: save_access_level
+.. js:autofunction:: admin_send_password_creation
+.. js:autofunction:: init_admin_members
+.. js:autofunction:: update_progress_bar
+.. js:autofunction:: xhr_progress_bar
+.. js:autofunction:: md_short_tag
+.. js:autofunction:: md_long_tag
+.. js:autofunction:: update_newsletter_preview
+.. js:autofunction:: init_newsletter_form
+.. js:autofunction:: init_admin_add_photo
+.. js:autofunction:: init_admin_add_book
+.. js:autofunction:: admin_revoke_member
+.. js:autofunction:: admin_delete_member
+.. js:autofunction:: admin_delete_photo
+.. js:autofunction:: admin_delete_book
+.. js:autofunction:: admin_edit_photo_metadata
+.. js:autofunction:: admin_save_photo_metadata
+.. js:autofunction:: admin_edit_book_metadata
+.. js:autofunction:: admin_save_book_metadata
+.. js:autofunction:: admin_move_photo
+.. js:autofunction:: admin_move_book
+.. js:autofunction:: admin_move_photo_to_wastebasket
+.. js:autofunction:: update_ordering
+.. js:autofunction:: init_lost_photos
+.. js:autofunction:: init_admin_list_of_photos
+.. js:autofunction:: init_admin_list_of_books
+.. js:autofunction:: month_diff
+.. js:autofunction:: format_date
+.. js:autofunction:: two_digit_month
+.. js:autofunction:: init_admin_statistics
+.. js:autofunction:: refresh_access

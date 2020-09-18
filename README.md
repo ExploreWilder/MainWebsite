@@ -12,7 +12,7 @@ This is just an example of website using awesome open source technologies! The p
 
 - [x] Asynchronous photo gallery
 - [x] Hi-res photo viewer
-- [x] Configurable map viewer and real 3D map viewer with interactive elevation profile
+- [x] Configurable multi-layer map viewers (2D and 3D) with interactive elevation profile
 - [x] Show stories (markdown file and scrollytelling 2.5D map)
 - [x] Likes without subscription – easy peasy lemon squeezy!
 - [x] Social networks share buttons

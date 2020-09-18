@@ -28,10 +28,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+import srtm, gpxpy, gpxpy.gpx, pyproj, lzstring
+
 from .utils import *
 from .db import get_db
 from .gpx_to_img import gpx_to_src
-import srtm, gpxpy, gpxpy.gpx, pyproj, lzstring
 
 map_app = Blueprint("map_app", __name__)
 mysql = LocalProxy(get_db)
@@ -83,6 +84,7 @@ def map_player(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
     book_url = escape(book_url)
     gpx_name = escape(gpx_name)
     country_code = escape(country)
+    country_code_up = country_code.upper()
     cursor.execute("""SELECT access_level, title
         FROM shelf
         WHERE book_id={book_id} AND url='{book_url}'""".format(
@@ -95,6 +97,8 @@ def map_player(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
         "map_player.html",
         header_breadcrumbs=track_path_to_header(book_id, book_url, data[1], gpx_name),
         url_topo_map="/map/viewer/" + "/".join([str(book_id), book_url, gpx_name, country_code]),
+        country=country_code_up,
+        thumbnail_networks=request.url_root + "map/static_map/" + "/".join([str(book_id), book_url, gpx_name]) + ".jpg",
         is_prod=not current_app.config["DEBUG"])
 
 @map_app.route("/viewer/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>")
@@ -137,6 +141,7 @@ def map_viewer(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
         header_breadcrumbs=track_path_to_header(book_id, book_url, data[1], gpx_name),
         url_player_map="/map/player/" + "/".join([str(book_id), book_url, gpx_name, country_code]),
         gpx_download_path=gpx_download_path,
+        thumbnail_networks=request.url_root + "map/static_map/" + "/".join([str(book_id), book_url, gpx_name]) + ".jpg",
         is_prod=not current_app.config["DEBUG"])
 
 def create_static_map(gpx_path: str, static_map_path: str, static_image_settings: Dict) -> None:
@@ -165,6 +170,7 @@ def create_static_map(gpx_path: str, static_map_path: str, static_image_settings
 def static_map(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
     """
     Print a static map and create it if not already existing or not up to date.
+    Keep this route open to external requests since it's used as thumbnail for the social platforms.
 
     Args:
         book_id (int): Book ID based on the 'shelf' database table.
@@ -175,11 +181,8 @@ def static_map(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
         JPG image.
 
     Raises:
-        404: if the request comes from another website and not in testing mode.
         500: failed to create the image.
     """
-    if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
-        abort(404)
     book_url = escape(book_url)
     cursor = mysql.cursor()
     cursor.execute("""SELECT access_level
@@ -394,9 +397,10 @@ def middleware_lds(layer: str, a_d: str, z: int, x: int, y: int) -> bytes:
     return r.content
 
 @map_app.route("/middleware/ign", methods=("GET",))
-def middleware_ign() -> bytes:
+def proxy_ign() -> FlaskResponse:
     """
     Tunneling map requests to the IGN servers in order to hide the API key.
+    Notice: use this routine for OpenLayers and vts_proxy_ign_*() for VTS Browser JS.
 
     Raises:
         404: in case of IGN error or if the request comes from another website and not in testing mode.
@@ -412,7 +416,7 @@ def middleware_ign() -> bytes:
         r = requests.get(url)
     except:
         abort(404)
-    return r.content
+    return Response(r.content, mimetype="image/jpeg")
 
 @map_app.route("/middleware/topografisk/<int:z>/<int:x>/<int:y>", methods=("GET",))
 def middleware_topografisk(z: int, x: int, y: int) -> bytes:

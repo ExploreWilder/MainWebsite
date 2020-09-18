@@ -35,9 +35,16 @@ case ${tool} in
     doc-localhost)
         source venv/bin/activate
         cd doc
-        make clean
-        make html
-        echo "Open file: file://${PWD}/build/html/index.html"
+        case ${2} in
+            checklinks)
+                make checklinks
+                ;;
+            *)
+                make clean
+                make html
+                echo "Open file: file://${PWD}/build/html/index.html"
+                ;;
+        esac
         cd - >/dev/null
         deactivate
         ;;

@@ -23,8 +23,97 @@
 	},
 	"boundLayers" : 
 	{
-		"bmng08-world" : "https://cdn.melown.com/mario/proxy/melown2015/tms/melown/bmng08-world/boundlayer.json",
-		"sentinel2-cloudless-eox" : "https://cdn.melown.com/mario/proxy/melown2015/tms/melown/sentinel2-cloudless-eox/boundlayer.json"
+		"default-satellite" : {
+			"credits" : 
+			{
+				"eox-it" : 
+				{
+					"id" : 125,
+					"notice" : "Datasource: [https://s2maps.eu s2maps.eu] by EOX IT Services GmbH"
+				}
+			},
+			"lodRange" : [ 1, 15 ],
+			"maskUrl" : "{lod}-{x}-{y}.mask",
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "https://cdn.melown.com/vts/melown2015/imagery/global/eox-it-sentinel2-cloudless/{lod}-{x}-{y}.jpg?r=2"
+		},
+		"world-satellite" : {
+			"credits" : 
+			{
+				"mapbox" : 
+				{
+					"id" : 125,
+					"notice" : "Datasource: [https://www.mapbox.com/about/maps/ mapbox.com] by Mapbox"
+				}
+			},
+			"lodRange" : [ 1, 15 ],
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "/map/vts_proxy/world/satellite/{lod}/{x}/{y}.jpg"
+		},
+		"world-topo" : {
+			"credits" : 
+			{
+				"opentopomap" : 
+				{
+					"id" : 125,
+					"notice" : "Datasource: [https://opentopomap.org/ opentopomap.org] by OpenTopoMap (CC-BY-SA 3.0)"
+				}
+			},
+			"lodRange" : [ 1, 15 ],
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "/map/vts_proxy/world/topo/{lod}/{x}/{y}.png"
+		},
+		"fr-satellite" : {
+			"credits" : 
+			{
+				"ign" : 
+				{
+					"id" : 125,
+					"notice" : "Datasource: IGN"
+				}
+			},
+			"lodRange" : [ 1, 15 ],
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "/map/vts_proxy/fr/satellite/{lod}/{x}/{y}.jpg"
+		},
+		"fr-topo" : {
+			"credits" : 
+			{
+				"ign" : 
+				{
+					"id" : 125,
+					"notice" : "Datasource: IGN"
+				}
+			},
+			"lodRange" : [ 1, 15 ],
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "/map/vts_proxy/fr/topo/{lod}/{x}/{y}.jpg"
+		}
 	},
 	"browserOptions" : 
 	{
@@ -46,10 +135,7 @@
 			"notice" : "{copy}{Y} Melown Technologies SE"
 		}
 	},
-	"freeLayers" : 
-	{
-		"osm-tilehosting-v1" : "https://cdn.melown.com/mario/proxy/melown2015/geodata/melown/osm-tilehosting-v1/freelayer.json"
-	},
+	"freeLayers" : {},
 	"glue" : [],
 	"namedViews" : {},
 	"params" : {},
@@ -274,7 +360,7 @@
 		},
 		"surfaces" : 
 		{
-			"melown-viewfinder-world" : [ "bmng08-world", "sentinel2-cloudless-eox" ]
+			"melown-viewfinder-world" : [ "default-satellite" ]
 		}
 	},
 	"virtualSurfaces" : []

@@ -54,25 +54,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
- * This awesome interactive 3D map viewer displaying a track and the elevation profile
- * is mostly based on the VTS Browser JS demo:
- * https://vts-geospatial.org/tutorials/gpx-viewer.html
- * 
- * The differences with the original demo are:
- * 
- * * Removed the GPX drop capability because the track is automatically loaded,
- * * Rewrote the GPX loading function to handle my custom format,
- * * Removed the slow geodata.processHeights() because my custom format already includes the elevation,
- * * Removed the search box and the 2D/3D button,
- * * Managed to fit the tooltip inside the canvas and fixed an onresize bug,
- * * Changed the interface style and nested the map in my layout,
- * * Optimized onFeatureHover() to skip useless heavy computation,
- * * Changed centerPositonToGeometry() in a way to move the track above the elevation profile,
- * * Fixed some NaN error on tooltips.
- *
- */
-
 var browser, renderer, map;
 var geodata, lineGeometry = null;
 var demoTexture = null;
@@ -162,6 +143,13 @@ var pathLength = 0, pathDistance = 0;
     browser.on('geo-feature-hover', onFeatureHover);
 
     loadTexture();
+
+    $('.map-player-interface .dropdown-item').on('click', function (event) {
+        event.preventDefault();
+        $('.map-player-interface .dropdown-menu .active').removeClass("active");
+        $(this).addClass("active");
+        onSwitchView($(this).attr("data-boundlayer"));
+    });
 })();
 
 /**
@@ -638,5 +626,25 @@ function onCustomRender() {
             depthTest : false,
             blend : true
             });
+    }
+}
+
+/**
+ * Change the active bound layer on the surface.
+ * 
+ * Based on the 'VTS Browser API Examples'
+ * https://github.com/melowntech/vts-browser-js/wiki/Examples
+ * Switching bound layers:
+ * https://jsfiddle.net/jdhakmnt/
+ */
+function onSwitchView(newBoundLayer) {
+    if (map) {
+        var existingFreeLayers = map.getView().freeLayers;
+        map.setView({
+            surfaces: {
+                'melown-viewfinder-world': [newBoundLayer]
+            },
+            freeLayers: existingFreeLayers
+        }); 
     }
 }

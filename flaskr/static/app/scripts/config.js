@@ -244,3 +244,8 @@ const url_mastodon_media = "/social_networks/mastodon/media/";
  * Mastodon name specified by `flaskr.config.MASTODON_ACCOUNT["name"]`.
  */
 const mastodon_name = "ExploreWilder"
+
+/**
+ * Link to my GitHub repository.
+ */
+const my_github = "https://github.com/ExploreWilder/MainWebsite"

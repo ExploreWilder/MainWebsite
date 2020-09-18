@@ -1,74 +1,66 @@
 Python Tests
 ============
 
-tests.conftest module
----------------------
+Test Configuration
+------------------
 
 .. automodule:: tests.conftest
     :members:
     :undoc-members:
     :show-inheritance:
 
-tests.test\_db module
----------------------
+Database
+--------
 
 .. automodule:: tests.test_db
     :members:
     :undoc-members:
     :show-inheritance:
 
-tests.test\_factory module
---------------------------
+Factory Test
+------------
 
 .. automodule:: tests.test_factory
     :members:
     :undoc-members:
     :show-inheritance:
 
-tests.test\_login\_logout module
---------------------------------
+Login / Logout
+--------------
 
 .. automodule:: tests.test_login_logout
     :members:
     :undoc-members:
     :show-inheritance:
 
-tests.test\_restricted\_access module
--------------------------------------
+Restricted Access
+-----------------
 
 .. automodule:: tests.test_restricted_access
     :members:
     :undoc-members:
     :show-inheritance:
 
-tests.test\_utils module
-------------------------
+Utils
+-----
 
 .. automodule:: tests.test_utils
     :members:
     :undoc-members:
     :show-inheritance:
 
-tests.test\_xhr\_admin\_space module
-------------------------------------
+Admin Space
+-----------
 
 .. automodule:: tests.test_xhr_admin_space
     :members:
     :undoc-members:
     :show-inheritance:
 
-tests.test\_xhr\_visitor\_space module
---------------------------------------
+Visitor Space
+-------------
 
 .. automodule:: tests.test_xhr_visitor_space
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-tests.test\_map module
---------------------------------------
-
-.. automodule:: tests.test_map
     :members:
     :undoc-members:
     :show-inheritance:

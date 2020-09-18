@@ -57,7 +57,8 @@ class BookProcessor:
         self.static_map_height = 100 * app.config["MAPBOX_STATIC_IMAGES"]["height"] / app.config["MAPBOX_STATIC_IMAGES"]["width"]
         self.current_app = app
     
-    def get_empty_book(self) -> Dict[str, str]:
+    @staticmethod
+    def get_empty_book() -> Dict[str, str]:
         """ Returns an empty book dictionary. Static member. """
         return {"html": "", "toc": ""}
     

@@ -21,17 +21,17 @@ Locally run ``./utils.sh run-gulp``
 .. note::
     That will run gulp in the background every time you change a JS or Less file in the static directory (but not in subdirectories). If you want to run all Gulp tasks, run ``./utils.sh run-gulp run-all``
 
-GPX to GeoJSON file conversion
+GPX to GeoJSON File Conversion
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Locally run ``togeojson myfile.gpx > myfile.geojson``
 
-Find out the number of lines of code
+Find Out The Number of Lines of Code
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Locally run ``./utils.sh cloc``
 
-Generate this documentation
+Generate This Documentation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Locally run ``./utils.sh doc-localhost``
@@ -39,17 +39,20 @@ Locally run ``./utils.sh doc-localhost``
 .. warning::
     The documentation contains sensitive constants and code fragments (f.i. passwords) so please remove the sensitive information before generating the documentation or keep the doc secret.
 
-Test the application
+.. note::
+    The command ``./utils.sh doc-localhost checklinks`` will `test <https://sublime-and-sphinx-guide.readthedocs.io/en/latest/references.html#test-external-links>`_ all external links in the documentation.
+
+Test The Application
 ^^^^^^^^^^^^^^^^^^^^
 
 Run ``./utils.sh test-localhost``
 
-Test and generate test report
+Test and Generate Test Report
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Run ``./utils.sh test-coverage-localhost``
 
-Import/Export the MySQL Database
+Import/Export The MySQL Database
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Import your database locally:

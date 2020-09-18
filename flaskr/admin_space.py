@@ -485,7 +485,12 @@ def xhr_add_book() -> FlaskResponse:
     thumbnail_ext = file_extension(thumbnail.filename, "any")
     if thumbnail_ext != "jpg":
         return basic_json(False, "Thumbnail must be JPG!")
-    os.mkdir(book_dir_path)
+    try:
+        os.mkdir(book_dir_path)
+    except:
+        message = "Failed to create the book directory!"
+        current_app.logger.exception(message)
+        return basic_json(False, message + " Error logged.")
     filename = secure_filename(file.filename.rsplit("/", 1)[1] if '/' in file.filename else file.filename)
     thumbnail_path = os.path.join(book_dir_path, "card.jpg")
     thumbnail.save(thumbnail_path)
@@ -1084,6 +1089,9 @@ def move_into_wastebasket() -> FlaskResponse:
     photo_filename = secure_filename(escape(request.form["photo_filename"]))
     photo_src = os.path.join(current_app.config["GALLERY_FOLDER"], photo_filename)
     photo_dst = current_app.config["WASTEBASKET_FOLDER"]
+    path_dst = Path(photo_dst)
+    if not path_dst.is_dir():
+        path_dst.mkdir()
     shutil.move(photo_src, photo_dst)
     return basic_json(True, "Photo successfully moved into the wastebasket!")
 
@@ -1136,6 +1144,7 @@ def lost_photos() -> Any:
     if not is_admin():
         abort(404)
     cursor = mysql.cursor()
+    gallery_folder = current_app.config["GALLERY_FOLDER"]
 
     # Look for photos saved in the database but not existing in the server:
     cursor.execute("""SELECT photo_id, thumbnail_src, photo_l_src, photo_m_src, raw_src
@@ -1148,18 +1157,19 @@ def lost_photos() -> Any:
         types = ("Thumbnail", "Large", "Medium", "RAW")
         i = 0
         for src in photo[1:]:
-            if not os.path.isfile(os.path.join(current_app.config["GALLERY_FOLDER"], src)):
+            if not os.path.isfile(os.path.join(gallery_folder, src)):
                 photos_lost_in_server.append((photo[0], types[i], src))
             i = i + 1
         filenames_from_db = filenames_from_db + (photo[1:])
 
     # Look for photos in the server not saved in the database:
-    directory = os.fsencode(current_app.config["GALLERY_FOLDER"])
     photos_lost_in_database = []
-    for file in os.listdir(directory):
-        filename = os.fsdecode(file)
-        if filename not in filenames_from_db:
-            photos_lost_in_database.append(filename)
+    if Path(gallery_folder).is_dir():
+        directory = os.fsencode(gallery_folder)
+        for file in os.listdir(directory):
+            filename = os.fsdecode(file)
+            if filename not in filenames_from_db:
+                photos_lost_in_database.append(filename)
 
     return render_template("lost_photos.html",
         photos_lost_in_server=photos_lost_in_server,

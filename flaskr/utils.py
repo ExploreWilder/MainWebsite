@@ -296,6 +296,10 @@ def basic_json(success: bool, info: str, args: Dict = {}) -> FlaskResponse:
     r.update(args)
     return jsonify(r)
 
+def params_urlencode(params: Dict[str, Any]) -> str:
+    """ Returns a string of 'key=value' pairs joined by '&'. Don't forget to add the extra '&' or '?' to the URL. """
+    return "&".join([k + "=" + v for k, v in params.items()])
+
 def create_and_save(
         raw_path: str,
         max_size: Tuple[int, int],
