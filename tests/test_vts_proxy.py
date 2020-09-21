@@ -1,5 +1,5 @@
 #
-# Copyright 2018-2020 Clement
+# Copyright 2020 Clement
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -31,20 +31,20 @@
 import pytest
 
 @pytest.mark.parametrize("path", (
-    # LDS aerial:
-    ("/map/middleware/lds/set=2/a/0/0/0"),
-    # LDS topo:
-    ("/map/middleware/lds/layer=767/a/0/0/0"),
-    # IGN aerial:
-    ("/map/middleware/ign?layer=GEOGRAPHICALGRIDSYSTEMS.MAPS&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/jpeg&TileMatrix=11&TileCol=1023&TileRow=753"),
-    # IGN topo:
-    ("/map/middleware/ign?layer=ORTHOIMAGERY.ORTHOPHOTOS&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fjpeg&TileMatrix=11&TileCol=1026&TileRow=753"),
-    # Kartverket topo:
-    ("/map/middleware/topografisk/0/0/0"),
-    # Canada topo:
-    ("/map/middleware/canvec?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=false&LAYERS=canvec&WIDTH=256&HEIGHT=256&CRS=EPSG%3A3857&STYLES=&BBOX=-7983694.730330089%2C5948635.289265556%2C-7944558.971848079%2C5987771.047747566"),
+    ("/map/vts_proxy/world/satellite/0/0/0.jpg"),
+    ("/map/vts_proxy/world/topo/0/0/0.png"),
+    ("/map/vts_proxy/fr/satellite/0/0/0.jpg"),
+    ("/map/vts_proxy/fr/topo/0/0/0.jpg")
 ))
-def test_map_proxy_link_ok(client, path):
+def test_vts_proxy_link_ok(client, path):
     """ Ckeck the links availability. """
     rv = client.get(path)
     assert rv.status_code == 200
+
+@pytest.mark.parametrize("path", (
+    ("/map/vts_proxy/fr/underground/0/0/0.jpg"),
+))
+def test_vts_proxy_bad_link(client, path):
+    """ Ckeck the links inavailability. """
+    rv = client.get(path)
+    assert rv.status_code == 404

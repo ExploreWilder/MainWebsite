@@ -131,6 +131,7 @@ def get_dom_text(nodelist) -> str:
     return ''.join(rc)
 
 @social_networks_app.route("/<string:network>/media/<string:origin>/<string:filename>", methods=("GET",))
+@same_site
 def send_media(network: str, origin: str, filename: str) -> FlaskResponse:
     """
     Make media reachable by the user. The HTTP referrer must point to the website.
@@ -142,8 +143,6 @@ def send_media(network: str, origin: str, filename: str) -> FlaskResponse:
     Returns:
         The image.
     """
-    if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
-        abort(404)
     network = escape(network).upper()
     origin = escape(origin)
     filename = secure_filename(escape(filename))
@@ -164,10 +163,9 @@ def send_media(network: str, origin: str, filename: str) -> FlaskResponse:
     return send_from_directory(data_store, filename)
 
 @social_networks_app.route("/twitter/my_timeline", methods=("POST",))
+@same_site
 def my_twitter_timeline() -> FlaskResponse:
     """ Update the locally saved timeline (if too old) and return it. """
-    if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
-        abort(404)
     screen_name = current_app.config["TWITTER_ACCOUNT"]["screen_name"]
     timeline_filename = "timeline_" + screen_name + ".json"
     data_store = current_app.config["TWITTER_ACCOUNT"]["data_store"]
@@ -201,10 +199,9 @@ def my_twitter_timeline() -> FlaskResponse:
         abort(404)
 
 @social_networks_app.route("/mastodon/my_timeline", methods=("POST",))
+@same_site
 def my_mastodon_timeline() -> FlaskResponse:
     """ Update the locally saved timeline (if too old) and return it. """
-    if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
-        abort(404)
     timeline_filename = "my_timeline.json"
     data_store = current_app.config["MASTODON_ACCOUNT"]["data_store"]
     old_timeline = os.path.join(data_store, timeline_filename)

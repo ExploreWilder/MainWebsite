@@ -35,6 +35,8 @@ class Config(object):
 
     #: Interactive debugger for unhandled exceptions and auto-reload on code changes.
     DEBUG=True
+    #: True to warn the user about a maintenance.
+    MAINTENANCE=True
     #: Number of characters/digits in the CAPTCHA.
     CAPTCHA_LENGTH=3
     #: List of characters and digits without the similar ones 0O, LV, 1I, etc.

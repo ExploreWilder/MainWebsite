@@ -219,6 +219,18 @@ function profile_to_geodata(data) {
         geodata.addPoint(point, 'fix', {}, '', "EPSG:3857");
     }
     geodata.addLineString(coords, 'fix', {}, 'some-path', "EPSG:3857");
+
+    geodata.addGroup('waypoints');
+    var wpt = data["waypoints"];
+    for(var i = 0; i < wpt.length; i++) {
+        // https://vts-geospatial.org/tutorials/geojson-part2.html?highlight=addpointarray#extending-existing-data
+        geodata.addPoint([
+            wpt[i][2],
+            wpt[i][3],
+            parseFloat(wpt[i][4])
+        ], 'fix', {title: wpt[i][0]}, 'way-points', "EPSG:3857");
+    }
+
     onHeightProcessed(); // if unknown heights: geodata.processHeights('node-by-precision', 62, onHeightProcessed);
 }
 
@@ -237,6 +249,7 @@ function onHeightProcessed() {
     drawPathProfile(lineGeometry);
   
     //style used for displaying geodata
+    //find out more about styles: https://vts-geospatial.org/tutorials/geojson.html
     var style = {
         'constants': {
             '@icon-marker': ['icons', 6, 8, 18, 18]
@@ -268,10 +281,16 @@ function onHeightProcessed() {
 
             "way-points" : {
                 "filter" : ["all", ["==", "#type", "point"], ["==", "#group", "waypoints"]],
-                "point": true,
-                "point-radius" : 20,
-                "point-color": [0,255,255,255],              
-                "zbuffer-offset" : [-5,0,0]
+                "icon": true,
+                "icon-source": "@icon-marker",
+                "icon-color": [255,255,0,255], // yellow
+                "icon-scale": 2,
+                "icon-origin": "center-center",
+                "zbuffer-offset" : [-6,0,0],
+                "label": true,
+                "label-size": 18,
+                "label-source": "$title",
+                "label-offset": [0,-20],
             },
 
         }

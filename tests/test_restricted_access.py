@@ -60,6 +60,7 @@ import pytest
     ("/books/5/fifth_story/test_image.jpg"), # access level = 1
     ("/stories/5/fifth_story"), # access level = 1
     ("/map/viewer/4/fourth_story/my_track/fr"), # access level = 1
+    ("/map/player/4/fourth_story/my_track/fr"), # access level = 1
     ("/map/profile/4/fourth_story/my_track/fr"), # access level = 1
     ("/change_password"), # restricted to members
     ("/change_email"), # restricted to members
@@ -82,6 +83,7 @@ def test_restricted_access_denied(files, client, path):
     ("/books/5/fifth_story/test_image.jpg"), # access level = 1
     ("/stories/5/fifth_story"), # access level = 1
     ("/map/viewer/4/fourth_story/my_track/fr"), # access level = 1
+    ("/map/player/4/fourth_story/my_track/fr"), # access level = 1
     ("/books/4/fourth_story/my_track.gpx"), # access level = 1
     ("/map/profile/4/fourth_story/my_track/fr"), # access level = 1
     ("/change_password"),

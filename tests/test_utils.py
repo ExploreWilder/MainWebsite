@@ -157,3 +157,18 @@ def test_preview_image():
     """ Test the tiny image creation. """
     assert utils.preview_image("card2.jpg").startswith(b"data:image/jpeg;base64,/9j/4AAQSkZ")
     assert utils.preview_image("card42.jpg") == b""
+
+def test_secure_decode_query_string():
+    """ Check the query_string security layer. """
+    input_str = b'<script>bla%3Cbla</script>'
+    output_str = 'scriptblabla/script'
+    assert utils.secure_decode_query_string(input_str) == output_str
+
+def test_params_urlencode():
+    """ Test the URL params encoder. """
+    example_params = {
+        "style": "normal",
+        "tilematrixset": "PM",
+        "Service": "WMTS"
+    }
+    assert utils.params_urlencode(example_params) == "style=normal&tilematrixset=PM&Service=WMTS"

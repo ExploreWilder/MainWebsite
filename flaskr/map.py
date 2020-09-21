@@ -99,6 +99,7 @@ def map_player(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
         url_topo_map="/map/viewer/" + "/".join([str(book_id), book_url, gpx_name, country_code]),
         country=country_code_up,
         thumbnail_networks=request.url_root + "map/static_map/" + "/".join([str(book_id), book_url, gpx_name]) + ".jpg",
+        total_subscribers=total_subscribers(cursor),
         is_prod=not current_app.config["DEBUG"])
 
 @map_app.route("/viewer/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>")
@@ -142,6 +143,7 @@ def map_viewer(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
         url_player_map="/map/player/" + "/".join([str(book_id), book_url, gpx_name, country_code]),
         gpx_download_path=gpx_download_path,
         thumbnail_networks=request.url_root + "map/static_map/" + "/".join([str(book_id), book_url, gpx_name]) + ".jpg",
+        total_subscribers=total_subscribers(cursor),
         is_prod=not current_app.config["DEBUG"])
 
 def create_static_map(gpx_path: str, static_map_path: str, static_image_settings: Dict) -> None:
@@ -209,6 +211,7 @@ def static_map(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
 
 @map_app.route("/profile/<int:book_id>/<string:book_url>/<string:gpx_name>", defaults={'country': ''})
 @map_app.route("/profile/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>")
+@same_site
 def profile_file(book_id: int, book_url: str, gpx_name: str, country: str) -> FlaskResponse:
     """
     Print a profile file and create it if not already existing or not up to date.
@@ -226,8 +229,6 @@ def profile_file(book_id: int, book_url: str, gpx_name: str, country: str) -> Fl
         404: if the request comes from another website and not in testing mode.
         500: failed to create the elevation profile.
     """
-    if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
-        abort(404)
     book_url = escape(book_url)
     cursor = mysql.cursor()
     cursor.execute("""SELECT access_level
@@ -353,7 +354,8 @@ def elevation_profile(gpx_path: str, profile_path: str, credentials: Dict[str, s
         waypoints = []
         for waypoint in gpx.waypoints:
             web_point = proj_transformer.transform(waypoint.latitude, waypoint.longitude)
-            waypoints.append([waypoint.name, waypoint.symbol, int(web_point[0]), int(web_point[1])])
+            point_ele = elevation_data.get_elevation(waypoint.latitude, waypoint.longitude, approximate=False)
+            waypoints.append([waypoint.name, waypoint.symbol, int(web_point[0]), int(web_point[1]), int(point_ele)])
         full_profile = {
             "profile": elevation_profile,
             "waypoints": waypoints,
@@ -370,6 +372,7 @@ def elevation_profile(gpx_path: str, profile_path: str, credentials: Dict[str, s
             profile_file.write(compressed_data + (b"=" if (len(compressed_data) % 2) else b""))
 
 @map_app.route("/middleware/lds/<string:layer>/<string:a_d>/<int:z>/<int:x>/<int:y>", methods=("GET",))
+@same_site
 def middleware_lds(layer: str, a_d: str, z: int, x: int, y: int) -> bytes:
     """
     Tunneling map requests to the LDS servers in order to hide the API key.
@@ -386,17 +389,16 @@ def middleware_lds(layer: str, a_d: str, z: int, x: int, y: int) -> bytes:
         x (int): X parameter of the XYZ request.
         y (int): Y parameter of the XYZ request.
     """
-    if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
-        abort(404)
     url = "https://tiles-{}.data-cdn.linz.govt.nz/services;key={}/tiles/v4/{}/EPSG:3857/{}/{}/{}.png".format(
         escape(a_d), current_app.config["LDS_API_KEY"], escape(layer), z, x, y)
     try:
         r = requests.get(url)
     except:
         abort(404)
-    return r.content
+    return Response(r.content, mimetype="image/png")
 
 @map_app.route("/middleware/ign", methods=("GET",))
+@same_site
 def proxy_ign() -> FlaskResponse:
     """
     Tunneling map requests to the IGN servers in order to hide the API key.
@@ -405,8 +407,6 @@ def proxy_ign() -> FlaskResponse:
     Raises:
         404: in case of IGN error or if the request comes from another website and not in testing mode.
     """
-    if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
-        abort(404)
     url = "https://{}:{}@wxs.ign.fr/{}/geoportail/wmts?{}".format(
         current_app.config["IGN"]["username"],
         current_app.config["IGN"]["password"],
@@ -419,6 +419,7 @@ def proxy_ign() -> FlaskResponse:
     return Response(r.content, mimetype="image/jpeg")
 
 @map_app.route("/middleware/topografisk/<int:z>/<int:x>/<int:y>", methods=("GET",))
+@same_site
 def middleware_topografisk(z: int, x: int, y: int) -> bytes:
     """
     Tunneling map requests to the Kartverket servers (Norway) in order to respect users' privacy.
@@ -432,17 +433,16 @@ def middleware_topografisk(z: int, x: int, y: int) -> bytes:
         x (int): X parameter of the XYZ request.
         y (int): Y parameter of the XYZ request.
     """
-    if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
-        abort(404)
     url = "https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={}&x={}&y={}".format(
         z, x, y)
     try:
         r = requests.get(url)
     except:
         abort(404)
-    return r.content
+    return Response(r.content, mimetype="image/png")
 
 @map_app.route("/middleware/canvec", methods=("GET",))
+@same_site
 def middleware_canvec() -> bytes:
     """
     Tunneling map requests to the Geogratis servers (Canada) in order to respect users' privacy.
@@ -450,12 +450,10 @@ def middleware_canvec() -> bytes:
     Raises:
         404: in case of server error or if the request comes from another website and not in testing mode.
     """
-    if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
-        abort(404)
     url = "http://maps.geogratis.gc.ca/wms/canvec_en?{}".format(
         secure_decode_query_string(request.query_string))
     try:
         r = requests.get(url)
     except:
         abort(404)
-    return r.content
+    return Response(r.content, mimetype="image/png")

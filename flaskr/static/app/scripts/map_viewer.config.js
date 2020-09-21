@@ -50,8 +50,8 @@ const duration_zoom_animation = 300;
 const middleware_url = {
     "nz": "/map/middleware/lds/",
     "fr": "/map/middleware/ign",
-    "topo": "/map/middleware/topo/",
-    "satellite": "/map/middleware/satellite/",
+    "topo": "https://opentopomap.org/{z}/{x}/{y}.png",
+    "satellite": "https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90?access_token=" + MAPBOX_PUB_KEY,
     "ca": "/map/middleware/canvec",
     "no": "/map/middleware/topografisk/"
 };

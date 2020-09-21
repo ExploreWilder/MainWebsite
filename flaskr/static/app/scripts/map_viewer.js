@@ -97,19 +97,19 @@ var raster = {
     }),
     "no": new ol.layer.Tile({
         source : new ol.source.XYZ({
-            url: middleware_url["satellite"] + "{z}/{x}/{y}"
+            url: middleware_url["satellite"]
         }),
         opacity: default_opacity / 100.
     }),
     "ca": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: middleware_url["satellite"] + "{z}/{x}/{y}"
+            url: middleware_url["satellite"]
         }),
         opacity: default_opacity / 100.
     }),
     "satellite": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: "https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90?access_token=" + MAPBOX_PUB_KEY
+            url: middleware_url["satellite"]
         }),
         opacity: default_opacity / 100.
     })
@@ -154,7 +154,7 @@ var raster_topo50 = {
     }),
     "topo": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: "https://opentopomap.org/{z}/{x}/{y}.png"
+            url: middleware_url["topo"]
         })
     })
 };
@@ -486,7 +486,7 @@ function profile_to_source(data, source) {
     var waypoints = data["waypoints"];
     for(var i = 0; i < waypoints.length; i++) {
         features.push(new ol.Feature({
-            geometry: new ol.geom.Point(waypoints[i].slice(2)),
+            geometry: new ol.geom.Point([waypoints[i][2], waypoints[i][3]]),
             name: waypoints[i][0],
             sym: waypoints[i][1]
         }));

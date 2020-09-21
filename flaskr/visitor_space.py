@@ -119,12 +119,12 @@ def fetch_audit_log(member_id: int, event_description: str = "") -> Union[Tuple,
     return cursor.fetchall() or None
 
 @visitor_app.route("/photos/<int:photo_id>/<string:filename>")
+@same_site
 def photo_dir(photo_id: int, filename: str) -> FlaskResponse:
     """
     Make photo files reachable by the user.
     Check a few things before to send the picture:
 
-    * The HTTP referrer points to this website (test skipped in testing mode or for thumbnail),
     * The photo is in the database,
     * The user is allowed to see the photo.
 
@@ -141,17 +141,16 @@ def photo_dir(photo_id: int, filename: str) -> FlaskResponse:
     data = cursor.fetchone()
     if cursor.rowcount == 0 or actual_access_level() < data[0]:
         abort(404)
-    if data[1] != filename and not is_same_site() and not current_app.config["TESTING"]:
+    if data[1] != filename and not current_app.config["TESTING"]:
         abort(404)
     return send_from_directory(current_app.config["GALLERY_FOLDER"], filename)
 
 @visitor_app.route("/books/locked.jpg")
+@same_site
 def image_of_locked_books() -> FlaskResponse:
     """
     Image of the locked book(s).
     """
-    if not is_same_site() and not current_app.config["TESTING"]:
-        abort(404)
     return send_from_directory(current_app.config["SHELF_FOLDER"], "locked.jpg", as_attachment=False)
 
 @visitor_app.route("/books/<int:book_id>/<path:sub_dir>")
@@ -159,13 +158,10 @@ def book_dir(book_id: int, sub_dir: str) -> FlaskResponse:
     """
     Make documents of a book reachable by the user. PDF file is sent as attachment.
     Check a few things before to send the file:
-    * The HTTP referrer points to this website (test skipped in testing mode),
     * The book is in the database,
     * The user is allowed to access the book.
     """
     sub_dir = escape(sub_dir)
-    if not "card.jpg" in sub_dir and not is_same_site() and not current_app.config["TESTING"]:
-        abort(404)
     url = secure_filename(sub_dir.split("/", 1)[0].lower())
     cursor = mysql.cursor()
     cursor.execute("""SELECT access_level
@@ -262,6 +258,7 @@ def shelf() -> Any:
         default_name=session["username"] if "username" in session else "",
         default_email=session["email"] if "email" in session else "",
         is_logged="access_level" in session,
+        total_subscribers=total_subscribers(cursor),
         current_year=current_year(),
         is_prod=not current_app.config["DEBUG"])
 
@@ -325,6 +322,7 @@ def story(book_id: int, story_url: str) -> Any:
         add_visit=add_visit,
         default_name=session["username"] if "username" in session else "",
         default_email=session["email"] if "email" in session else "",
+        total_subscribers=total_subscribers(cursor),
         thumbnail_networks=thumbnail_networks,
         is_prod=not current_app.config["DEBUG"])
 
@@ -335,6 +333,7 @@ def about() -> Any:
         "about.html",
         default_name=session["username"] if "username" in session else "",
         default_email=session["email"] if "email" in session else "",
+        total_subscribers=total_subscribers(mysql.cursor()),
         is_prod=not current_app.config["DEBUG"],
         current_year=current_year())
 
@@ -862,6 +861,7 @@ def unsubscribe_from_newsletter(member_id: int, newsletter_id: str) -> Any:
         is_prod=not current_app.config["DEBUG"])
 
 @visitor_app.route("/photos", methods=("POST",))
+@same_site
 def fetch_photos() -> FlaskResponse:
     """
     XHR procedure sending photos metadata according to the access level.
@@ -1257,6 +1257,7 @@ def index() -> Any:
         "gallery.html",
         is_prod=not current_app.config["DEBUG"],
         is_logged="access_level" in session,
+        total_subscribers=total_subscribers(cursor),
         thumbnail_networks=thumbnail_networks)
 
 @visitor_app.route("/logout")

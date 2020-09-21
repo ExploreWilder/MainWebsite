@@ -58,11 +58,21 @@
                <img src="/static/favicons/brand.svg" height="30" class="d-inline-block align-top" alt="" style="opacity: 0.5;" />
                ExploreWilder<span class="tld">.com</span>
             </a>
-            <span class="navbar-text">
+            <span>
+                {%if config.MAINTENANCE %}
+                    <span class="alert alert-warning mr-3">
+                        Currently under maintenance. Please visit my
+                        <a href="https://explorewilder.statuspage.io/"
+                           class="alert-link"
+                           title="status page for critical updates"
+                           target="_blank">status page</a>
+                        for updates.
+                    </span>
+                {% endif %}
             </span>
             {%if header_breadcrumbs %}
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
+                    <ol class="breadcrumb mr-3">
                         {% for item in header_breadcrumbs %}
                             {% if "url" in item %}
                                 <li class="breadcrumb-item"><a href="{{ item.url }}">{{ item.title }}</a></li>

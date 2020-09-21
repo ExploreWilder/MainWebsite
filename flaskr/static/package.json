@@ -1,7 +1,7 @@
 {
   "name": "ExploreWilder.com",
   "private": true,
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "The website for my photos and stories. Focus on simplicity, security, privacy, and a nice user experience!",
   "main": "main.js",
   "scripts": {

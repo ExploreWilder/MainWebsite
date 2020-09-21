@@ -499,3 +499,18 @@ def allowed_external_connections(csp_config: Dict) -> List[str]:
             if source.startswith('https://'):
                 connections.append(source)
     return list(dict.fromkeys(connections))
+
+def total_subscribers(cursor: MySQLCursor) -> int:
+    """ Count the number of subscribers and returns a positive integer or 0. """
+    cursor.execute("SELECT COUNT(newsletter_id) FROM members WHERE email IS NOT NULL")
+    data = cursor.fetchone()
+    return data[0] if cursor.rowcount else 0
+
+def same_site(view: Any) -> Any:
+    """ View decorator redirecting external requests to the 404-error page. """
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
+            abort(404)
+        return view(**kwargs)
+    return wrapped_view

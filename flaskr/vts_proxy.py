@@ -43,6 +43,7 @@ IGN_COMMON_PARAMS = {
 }
 
 @vts_proxy_app.route("/world/satellite/<int:z>/<int:x>/<int:y>.jpg", methods=("GET",))
+@same_site
 def vts_proxy_world_sat(z: int, x: int, y: int) -> FlaskResponse:
     """
     Tunneling map requests to the Mapbox servers.
@@ -52,8 +53,6 @@ def vts_proxy_world_sat(z: int, x: int, y: int) -> FlaskResponse:
     Raises:
         404: in case of Mapbox error or if the request comes from another website and not in testing mode.
     """
-    if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
-        abort(404)
     url = "https://api.mapbox.com/v4/mapbox.satellite/{}/{}/{}@2x.jpg90?access_token={}".format(
         z - 1, # hack
         x,
@@ -66,6 +65,7 @@ def vts_proxy_world_sat(z: int, x: int, y: int) -> FlaskResponse:
     return Response(r.content, mimetype="image/jpeg")
 
 @vts_proxy_app.route("/world/topo/<int:z>/<int:x>/<int:y>.png", methods=("GET",))
+@same_site
 def vts_proxy_world_topo(z: int, x: int, y: int) -> FlaskResponse:
     """
     Tunneling map requests to the OpenTopoMap servers.
@@ -75,8 +75,6 @@ def vts_proxy_world_topo(z: int, x: int, y: int) -> FlaskResponse:
     Raises:
         404: in case of OpenTopoMap error or if the request comes from another website and not in testing mode.
     """
-    if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
-        abort(404)
     url = "https://opentopomap.org/{}/{}/{}.png".format(
         z - 1,
         x,
@@ -87,8 +85,9 @@ def vts_proxy_world_topo(z: int, x: int, y: int) -> FlaskResponse:
         abort(404)
     return Response(r.content, mimetype="image/png")
 
-@vts_proxy_app.route("/fr/satellite/<int:z>/<int:x>/<int:y>.jpg", methods=("GET",))
-def vts_proxy_ign_sat(z: int, x: int, y: int) -> FlaskResponse:
+@vts_proxy_app.route("/fr/<string:layer>/<int:z>/<int:x>/<int:y>.jpg", methods=("GET",))
+@same_site
+def vts_proxy_ign_sat(layer: str, z: int, x: int, y: int) -> FlaskResponse:
     """
     Tunneling map requests to the IGN servers in order to hide the API key.
     To use only with VTS Browser JS. Use proxy_ign() for OpenLayers.
@@ -97,42 +96,24 @@ def vts_proxy_ign_sat(z: int, x: int, y: int) -> FlaskResponse:
     Raises:
         404: in case of IGN error or if the request comes from another website and not in testing mode.
     """
-    if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
+    layer = escape(layer)
+    if layer == "satellite":
+        layer = "ORTHOIMAGERY.ORTHOPHOTOS"
+    elif layer == "topo":
+        layer = "GEOGRAPHICALGRIDSYSTEMS.MAPS"
+    else:
         abort(404)
+    
     url = "https://{}:{}@wxs.ign.fr/{}/geoportail/wmts?layer={}&{}&TileMatrix={}&TileCol={}&TileRow={}".format(
         current_app.config["IGN"]["username"],
         current_app.config["IGN"]["password"],
         current_app.config["IGN"]["app"],
-        "ORTHOIMAGERY.ORTHOPHOTOS", # layer
+        layer,
         params_urlencode(IGN_COMMON_PARAMS),
         z - 1,
         x,
         y)
-    try:
-        r = requests.get(url)
-    except:
-        abort(404)
-    return Response(r.content, mimetype="image/jpeg")
-
-@vts_proxy_app.route("/fr/topo/<int:z>/<int:x>/<int:y>.jpg", methods=("GET",))
-def vts_proxy_ign_topo(z: int, x: int, y: int) -> FlaskResponse:
-    """
-    Tunneling map requests to the IGN servers in order to hide the API key.
-
-    Raises:
-        404: in case of IGN error or if the request comes from another website and not in testing mode.
-    """
-    if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
-        abort(404)
-    url = "https://{}:{}@wxs.ign.fr/{}/geoportail/wmts?layer={}&{}&TileMatrix={}&TileCol={}&TileRow={}".format(
-        current_app.config["IGN"]["username"],
-        current_app.config["IGN"]["password"],
-        current_app.config["IGN"]["app"],
-        "GEOGRAPHICALGRIDSYSTEMS.MAPS",
-        params_urlencode(IGN_COMMON_PARAMS),
-        z - 1,
-        x,
-        y)
+    
     try:
         r = requests.get(url)
     except:
