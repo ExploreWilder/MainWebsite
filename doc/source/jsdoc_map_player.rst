@@ -28,19 +28,15 @@ Please refer to the following image for a graphical overview of the interface to
 Module
 ^^^^^^
 
+.. js:autofunction:: map_player.update_hiker_pos
 .. js:autofunction:: loadTexture
 .. js:autofunction:: onMapLoaded
 .. js:autofunction:: loadTrack
-.. js:autofunction:: profile_to_geodata
+.. js:autofunction:: webtrack_to_geodata
 .. js:autofunction:: onHeightProcessed
 .. js:autofunction:: centerPositonToGeometry
-.. js:autofunction:: setProfilePointer
-.. js:autofunction:: onResize
-.. js:autofunction:: refereshCanvasDimensions
-.. js:autofunction:: drawPathProfile
 .. js:autofunction:: onMouseMove
 .. js:autofunction:: onMouseLeave
 .. js:autofunction:: onFeatureHover
-.. js:autofunction:: onCanvasHover
 .. js:autofunction:: onCustomRender
 .. js:autofunction:: onSwitchView

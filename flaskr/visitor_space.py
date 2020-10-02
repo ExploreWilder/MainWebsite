@@ -119,14 +119,14 @@ def fetch_audit_log(member_id: int, event_description: str = "") -> Union[Tuple,
     return cursor.fetchall() or None
 
 @visitor_app.route("/photos/<int:photo_id>/<string:filename>")
-@same_site
 def photo_dir(photo_id: int, filename: str) -> FlaskResponse:
     """
     Make photo files reachable by the user.
     Check a few things before to send the picture:
 
     * The photo is in the database,
-    * The user is allowed to see the photo.
+    * The user is allowed to see the photo,
+    * Only the thumbnail is reachable by external requests.
 
     """
     filename = secure_filename(escape(filename))
@@ -141,7 +141,7 @@ def photo_dir(photo_id: int, filename: str) -> FlaskResponse:
     data = cursor.fetchone()
     if cursor.rowcount == 0 or actual_access_level() < data[0]:
         abort(404)
-    if data[1] != filename and not current_app.config["TESTING"]:
+    if data[1] != filename and (not is_same_site()) and (not current_app.config["TESTING"]):
         abort(404)
     return send_from_directory(current_app.config["GALLERY_FOLDER"], filename)
 

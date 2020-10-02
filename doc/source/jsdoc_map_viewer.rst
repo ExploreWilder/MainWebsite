@@ -30,12 +30,8 @@ Interface
 .. js:autofunction:: refresh_opacity
 .. js:autofunction:: display_tooltip
 .. js:autofunction:: zoom
-.. js:autofunction:: label_elevation
-.. js:autofunction:: create_elevation_chart
-.. js:autofunction:: map_viewer.number_with_commas
-.. js:autofunction:: track_info
-.. js:autofunction:: profile_to_source
+.. js:autofunction:: map_viewer.update_hiker_pos
+.. js:autofunction:: webtrack_to_source
 .. js:autofunction:: fetch_data
-.. js:autofunction:: unfocus_menu
 .. js:autofunction:: select_basemap
 .. js:autofunction:: init_basemap_selection

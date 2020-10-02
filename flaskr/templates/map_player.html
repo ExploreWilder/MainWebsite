@@ -21,7 +21,7 @@
             {% endif %}
         </div>
     </div>
-    <a href="{{ url_topo_map }}" class="ml-3 btn btn-success btn-sm" role="button"><i class="fas fa-map"></i> Switch to 2D View</a>
+    <a href="{{ url_topo_map }}" class="ml-3 mr-2 btn btn-success btn-sm" role="button"><i class="fas fa-map"></i> Switch to 2D View</a>
 {% endblock %}
 {% block extra_tags %}
     <link href="https://cdn.melown.com/" rel="preconnect" crossorigin>
@@ -31,6 +31,8 @@
 {% endblock %}
 {% block body %}
     <div id="map-player"></div>
+    {% include "map_dialog_gpx_info.html" %}
+    {% include "map_dialog_download_gpx.html" %}
     {% if not "subscribed" in session %}
         {% include "subscribe_newsletter.html" %}
     {% endif %}

@@ -150,11 +150,21 @@ def check_access_level_range(access_level: int) -> bool:
 
 def is_same_site() -> bool:
     """
-    Check if the page loaded comes from the same website.
+    Check if the request comes from the same website.
+    The decision is based on the Sec-Fetch-Site field if
+    existing, otherwise the Referer. The Sec-Fetch-Site is
+    only supported by Chrome-based browsers, that do not
+    include the Referer when requested (contrary to Firefox-
+    based browsers).
+    
+    * Sec-Fetch-Site Spec: https://www.w3.org/TR/fetch-metadata/
+    * Referer Spec: https://tools.ietf.org/html/rfc7231#section-5.5.2
 
     Returns:
         True if the page loaded comes from the same website. False otherwise.
     """
+    if "Sec-Fetch-Site" in request.headers:
+        return request.headers.get("Sec-Fetch-Site") == "same-origin"
     return request.referrer != None and request.url_root in request.referrer
 
 def is_admin() -> bool:
@@ -514,3 +524,17 @@ def same_site(view: Any) -> Any:
             abort(404)
         return view(**kwargs)
     return wrapped_view
+
+def replace_extension(filename_src: str, new_ext: str) -> str:
+    """
+    Replace the extension of ``filename_src`` to ``new_ext``.
+
+    Args:
+        filename_src (str): The filename with the old extension.
+        new_ext (str): The new extension without dot.
+    
+    Returns:
+        str: The filename with the new extension.
+    """
+    pre, ext = os.path.splitext(filename_src)
+    return ".".join([pre, new_ext])

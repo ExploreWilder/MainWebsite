@@ -1,0 +1,232 @@
+/*!
+ * Copyright 2018-2020 Clement
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/**
+ * Common functions used by map_viewer.js (2D) and map_player.js (3D).
+ */
+
+/**
+ * Returns the content of the tooltip used in the elevation chart.
+ */
+function label_elevation(tooltip_item, data) {
+    var label = "Elevation: " + tooltip_item.yLabel + " m | ";
+    label += "Distance: " + (Math.round(tooltip_item.xLabel * 10.) / 10.) + " km";
+    return label;
+}
+
+/**
+ * Returns a string of the number x with commas on thousands.
+ * NOTICE: identical to main.js
+ */
+function number_with_commas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+/**
+ * Update statistics displayed in the track info.
+ */
+function track_info(source) {
+    var stats = source.statistics;
+    var ul = $("#gpx-info-list");
+    var lis = [
+        $('<li></li>').text("Total Length: " + (Math.round(stats.length / 10.) / 100.) + " km"),
+        $('<li></li>').text("Minimum Altitude: " + number_with_commas(stats.min) + " m"),
+        $('<li></li>').text("Maximum Altitude: " + number_with_commas(stats.max) + " m"),
+        $('<li></li>').html("<abbr title='Filtered radar data'>Total Elevation:</abbr> "
+            + number_with_commas(stats.gain + stats.loss) + " m (Gain: "
+            + number_with_commas(stats.gain) + " m, Loss: -"
+            + number_with_commas(stats.loss) + " m)")
+        ];
+    
+    ul.append(lis);
+    create_elevation_chart(source.points);
+}
+
+/**
+ * Blur the close button tooltip when the window is open.
+ */
+function unfocus_menu() {
+    $(this).parents(".ui-dialog").attr("tabindex", -1)[0].focus();
+}
+
+/**
+ * Create a jQuery UI dialog containing GPX information (statistics + chart).
+ */
+function create_gpx_info_dialog() {
+    let offset_top = 0;
+    if($("#goto-menu").length) {
+        offset_top = parseInt($("#goto-menu").offset().top);
+    }
+    else if($("#goto-gpx-info").length) {
+        offset_top = parseInt($("#goto-gpx-info").offset().top);
+    }
+
+    let gpx_info = $("#gpx-info").dialog({
+        autoOpen: false,
+        width: 600,
+        minWidth: 500,
+        position: { my: "left top", at: "left+10 top+" + offset_top},
+        open: unfocus_menu,
+        resize: function(event, ui) {
+            $("#elevation-chart-container").height($("#gpx-info").height() - $("#gpx-info-list").height());
+            $("#elevation-chart-container").width($("#gpx-info").width());
+        },
+        close: function() {
+            $("#goto-gpx-info").show();
+        }
+    });
+
+    $("#goto-gpx-info").button({
+        icon: "ui-icon-newwin"
+    }).on("click", function() {
+        gpx_info.dialog("open");
+            $("#goto-gpx-info").hide();
+    });
+
+    return gpx_info;
+}
+
+/**
+ * Create a jQuery UI dialog containing the button to download the GPX (or sign in).
+ */
+function create_download_gpx_dialog() {
+    let download_gpx = $("#download-gpx").dialog({
+        autoOpen: false,
+        width: 600,
+        minWidth: 500,
+        position: { my: "right bottom", at: "right-10 bottom-" + parseInt($("#goto-download-gpx").css("bottom"))},
+        open: unfocus_menu,
+        close: function() {
+            $("#goto-download-gpx").show();
+        }
+    });
+
+    $("#goto-download-gpx").button({
+        icon: "ui-icon-newwin"
+    }).on("click", function() {
+        download_gpx.dialog("open");
+            $("#goto-download-gpx").hide();
+    });
+
+    return download_gpx;
+}
+
+/**
+ * Create the elevation chart based on the elevation profile of the track.
+ * NOTE: update_hiker_pos() has to be defined on the specific map viewer.
+ */
+function create_elevation_chart(profile) {
+    var ctx = $("#elevation-chart");
+    var data = [];
+    for(var i = 0; i < profile.length; i++) {
+        data[i] = {x: profile[i][2] / 1000., y: profile[i][3], lon: profile[i][0], lat: profile[i][1]};
+    }
+    var distance = data[data.length - 1][1];
+    var elevation_chart = new Chart.Scatter(ctx, {
+        data: {
+            datasets: [{
+                data: data,
+                showLine: true,
+                pointRadius: 0,
+                borderColor: "black",
+                backgroundColor: "#3f3",
+                borderWidth: 1,
+                label: "Elevation",
+                fill: true
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: "Elevation Chart"
+            },
+            tooltips: {
+				mode: "index",
+				intersect: false,
+                callbacks: {
+                    label: (tooltip_item, data) => {
+                        update_hiker_pos(tooltip_item, data);
+                        return label_elevation(tooltip_item, data);
+                    }
+                }
+            },
+            scales: {
+                xAxes: [{
+                    type: "linear",
+                    position: "bottom",
+    				display: true,
+    				scaleLabel: {
+    					display: true,
+    					labelString: "Distance (km)"
+    				}
+    			}],
+    			yAxes: [{
+                    type: "linear",
+                    position: "left",
+    				display: true,
+    				scaleLabel: {
+    					display: true,
+    					labelString: "Elevation (m)"
+    				}
+    			}]
+            },
+            legend: {
+                display: false
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+
+/**
+ * Returns the path of the WebTrack file.
+ */
+function get_webtrack_url(book_id, book_url, gpx_name) {
+    return `/map/webtracks/${book_id}/${book_url}/${gpx_name}.webtrack`;
+}
+
+/**
+ * Change the breadcrumb maximum width to fit the navbar.
+ * The breadcrumb is like the flexible item of the bar.
+ */
+function fit_breadcrumb() {
+    $("#header .breadcrumb").css(
+        "max-width",
+        $(window).width() -
+        (
+            $("#header .navbar-brand").width() +
+            $("#header .btn").width() +
+            ($("#header .map-player-interface").length ? $("#header .map-player-interface").width() : 0) +
+            $("#header .navbar-nav").width() +
+            110
+        )
+    );
+}

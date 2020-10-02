@@ -28,11 +28,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-import srtm, gpxpy, gpxpy.gpx, pyproj, lzstring
+import srtm, gpxpy, gpxpy.gpx
 
 from .utils import *
 from .db import get_db
 from .gpx_to_img import gpx_to_src
+from .webtrack import WebTrack
 
 map_app = Blueprint("map_app", __name__)
 mysql = LocalProxy(get_db)
@@ -65,6 +66,24 @@ def track_path_to_header(book_id: int, book_url: str, book_title: str, gpx_name:
         }
     ]
 
+def get_gpx_download_path(book_id: int, book_url: str, gpx_name: str) -> str:
+    """
+    Returns the path to the GPX file.
+
+    Returns:
+        str: For example '/books/42/my_story/super_track.gpx'
+    """
+    return "/".join(["/books", str(book_id), book_url, gpx_name]) + ".gpx"
+
+def get_thumbnail_path(book_id: int, book_url: str, gpx_name: str) -> str:
+    """
+    Returns the path to the thumbnail file.
+
+    Returns:
+        str: For example: 'map/static_map/42/my_story/super_track.gpx.jpg'
+    """
+    return "map/static_map/" + "/".join([str(book_id), book_url, gpx_name]) + ".jpg"
+
 @map_app.route("/player/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>")
 def map_player(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
     """
@@ -93,12 +112,17 @@ def map_player(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
     data = cursor.fetchone()
     if cursor.rowcount == 0 or actual_access_level() < data[0]:
         abort(404)
+    if actual_access_level() >= current_app.config["ACCESS_LEVEL_DOWNLOAD_GPX"]:
+        gpx_download_path = get_gpx_download_path(book_id, book_url, gpx_name)
+    else:
+        gpx_download_path = ""
     return render_template(
         "map_player.html",
         header_breadcrumbs=track_path_to_header(book_id, book_url, data[1], gpx_name),
         url_topo_map="/map/viewer/" + "/".join([str(book_id), book_url, gpx_name, country_code]),
         country=country_code_up,
-        thumbnail_networks=request.url_root + "map/static_map/" + "/".join([str(book_id), book_url, gpx_name]) + ".jpg",
+        gpx_download_path=gpx_download_path,
+        thumbnail_networks=request.url_root + get_thumbnail_path(book_id, book_url, gpx_name),
         total_subscribers=total_subscribers(cursor),
         is_prod=not current_app.config["DEBUG"])
 
@@ -133,7 +157,7 @@ def map_viewer(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
         or not country_code_up in current_app.config["MAP_LAYERS"]:
         abort(404)
     if actual_access_level() >= current_app.config["ACCESS_LEVEL_DOWNLOAD_GPX"]:
-        gpx_download_path = "/".join(["/books", str(book_id), book_url, gpx_name]) + ".gpx"
+        gpx_download_path = get_gpx_download_path(book_id, book_url, gpx_name)
     else:
         gpx_download_path = ""
     return render_template(
@@ -142,7 +166,7 @@ def map_viewer(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
         header_breadcrumbs=track_path_to_header(book_id, book_url, data[1], gpx_name),
         url_player_map="/map/player/" + "/".join([str(book_id), book_url, gpx_name, country_code]),
         gpx_download_path=gpx_download_path,
-        thumbnail_networks=request.url_root + "map/static_map/" + "/".join([str(book_id), book_url, gpx_name]) + ".jpg",
+        thumbnail_networks=request.url_root + get_thumbnail_path(book_id, book_url, gpx_name),
         total_subscribers=total_subscribers(cursor),
         is_prod=not current_app.config["DEBUG"])
 
@@ -209,10 +233,9 @@ def static_map(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
             return "{}".format(type(e).__name__), 500
     return send_from_directory(gpx_dir, gpx_filename + append_ext)
 
-@map_app.route("/profile/<int:book_id>/<string:book_url>/<string:gpx_name>", defaults={'country': ''})
-@map_app.route("/profile/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>")
+@map_app.route("/webtracks/<int:book_id>/<string:book_url>/<string:gpx_name>.webtrack")
 @same_site
-def profile_file(book_id: int, book_url: str, gpx_name: str, country: str) -> FlaskResponse:
+def webtrack_file(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
     """
     Print a profile file and create it if not already existing or not up to date.
 
@@ -242,15 +265,24 @@ def profile_file(book_id: int, book_url: str, gpx_name: str, country: str) -> Fl
     gpx_filename = secure_filename(escape(gpx_name) + ".gpx")
     gpx_dir = os.path.join(current_app.config["SHELF_FOLDER"], secure_filename(book_url))
     gpx_path = os.path.join(gpx_dir, gpx_filename)
-    profile_path = gpx_path + "_profile.bin"
-    if not os.path.isfile(profile_path) \
-        or os.stat(profile_path).st_size == 0 \
-        or os.stat(profile_path).st_mtime < os.stat(gpx_path).st_mtime: # update profile
+    if not os.path.isfile(gpx_path) or os.stat(gpx_path).st_size == 0:
+        return "GPX file missing or empty", 500
+    webtrack_path = replace_extension(gpx_path, "webtrack")
+    if not os.path.isfile(webtrack_path) \
+        or os.stat(webtrack_path).st_size == 0 \
+        or os.stat(webtrack_path).st_mtime < os.stat(gpx_path).st_mtime: # update webtrack
         try:
-            elevation_profile(gpx_path, profile_path, current_app.config["NASA_EARTHDATA"])
+            gpx_to_webtrack_with_elevation(
+                gpx_path,
+                webtrack_path,
+                current_app.config["NASA_EARTHDATA"]
+            )
         except Exception as e:
             return "{}".format(type(e).__name__), 500
-    return send_from_directory(gpx_dir, gpx_filename + "_profile.bin")
+    return send_from_directory(
+        gpx_dir,
+        replace_extension(gpx_filename, "webtrack"),
+        mimetype="application/prs.webtrack")
 
 class CustomFileHandler(srtm.data.FileHandler):
     """
@@ -268,11 +300,15 @@ class CustomFileHandler(srtm.data.FileHandler):
 
         return result
 
-def elevation_profile(gpx_path: str, profile_path: str, credentials: Dict[str, str]) -> None:
+def gpx_to_webtrack_with_elevation(
+        gpx_path: str,
+        webtrack_path: str,
+        credentials: Dict[str, str]
+    ) -> None:
     """
     Find out the elevation profile of ``gpx_path`` thanks to SRTM data
     version 3.0 with 1-arc-second for the whole world and save the result
-    into ``profile_path`` which is overwritten if already existing.
+    into ``webtrack_path`` which is overwritten if already existing.
     Data source: https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/
     Also: https://lpdaac.usgs.gov/products/srtmgl1v003/
     Note: In case of USGS.gov server error, you should see a notification banner in:
@@ -282,24 +318,10 @@ def elevation_profile(gpx_path: str, profile_path: str, credentials: Dict[str, s
     Use gpxpy: https://github.com/tkrajina/gpxpy
     Use SRTM.py: https://github.com/nawagers/srtm.py/tree/EarthDataLogin
     SRTM data are stored in the folder specified in CustomFileHandler().get_srtm_dir()
-    Elements of the elevation profile are:
-
-    * Height (aka elevation) in m,
-    * Distance from the beginning in km rounded with 2 digits,
-    * X coordinate in the Web Mercator projection (EPSG:3857),
-    * Y coordinate in the Web Mercator projection (EPSG:3857).
-
-    Also, do some statistics:
-
-    * Total length in km,
-    * Minimum altitude in m,
-    * Maximum altitude in m,
-    * Total elevation gain in m,
-    * Total elevation loss in m (negative).
     
     Args:
         gpx_path (str): Secured path to the input file.
-        profile_path (str): Secured path to the overwritten output file.
+        webtrack_path (str): Secured path to the overwritten output file.
     
     Returns:
         The result is saved into a file, nothing is returned.
@@ -309,7 +331,6 @@ def elevation_profile(gpx_path: str, profile_path: str, credentials: Dict[str, s
         EDuser=credentials["username"],
         EDpass=credentials["password"],
         file_handler=CustomFileHandler())
-    print(elevation_data.file_handler)
     with open(gpx_path, "r") as input_gpx_file:
         gpx = gpxpy.parse(input_gpx_file)
         elevation_data.add_elevations(gpx, smooth=True)
@@ -318,62 +339,72 @@ def elevation_profile(gpx_path: str, profile_path: str, credentials: Dict[str, s
         elevation_max = -elevation_min
         elevation_total_gain = 0
         elevation_total_loss = 0
-        delta_h = None
         current_length = 0
-        proj_transformer = pyproj.Transformer.from_crs('epsg:4326', 'epsg:3857')
-        i = 0
+        delta_h = None
         for track in gpx.tracks:
             for segment in track.segments:
-                for point in segment.points:
+                for gps_curr_point in segment.points:
+                    # add point to segment:
                     if delta_h is not None:
                         current_length += gpxpy.geo.haversine_distance(
-                            point.latitude,
-                            point.longitude,
-                            location.latitude,
-                            location.longitude)
-                    web_point = proj_transformer.transform(point.latitude, point.longitude)
+                            gps_curr_point.latitude,
+                            gps_curr_point.longitude,
+                            gps_prev_point.latitude,
+                            gps_prev_point.longitude)
                     elevation_profile.append([
-                        int(point.elevation),
-                        round(float(current_length) / 1000., 2),
-                        int(web_point[0]) + 485 - i * 30, # slight obfuscation
-                        int(web_point[1]) + 1567])
-                    if elevation_min > point.elevation:
-                        elevation_min = point.elevation
-                    if elevation_max < point.elevation:
-                        elevation_max = point.elevation
+                        gps_curr_point.longitude,
+                        gps_curr_point.latitude,
+                        current_length,
+                        gps_curr_point.elevation])
+
+                    # statistics:
+                    if elevation_min > gps_curr_point.elevation:
+                        elevation_min = gps_curr_point.elevation
+                    if elevation_max < gps_curr_point.elevation:
+                        elevation_max = gps_curr_point.elevation
                     if delta_h is None:
-                        delta_h = point.elevation
+                        delta_h = gps_curr_point.elevation
                     else:
-                        delta_h = point.elevation - location.elevation
+                        delta_h = gps_curr_point.elevation - gps_prev_point.elevation
                         if delta_h > 0:
                             elevation_total_gain += delta_h
                         else:
-                            elevation_total_loss += delta_h
-                    location = gpxpy.geo.Location(point.latitude, point.longitude, point.elevation)
-                    i += 1
+                            elevation_total_loss -= delta_h # keep loss positive/unsigned
+                    
+                    gps_prev_point = gpxpy.geo.Location(
+                        gps_curr_point.latitude,
+                        gps_curr_point.longitude,
+                        gps_curr_point.elevation)
+        
         waypoints = []
         for waypoint in gpx.waypoints:
-            web_point = proj_transformer.transform(waypoint.latitude, waypoint.longitude)
             point_ele = elevation_data.get_elevation(waypoint.latitude, waypoint.longitude, approximate=False)
-            waypoints.append([waypoint.name, waypoint.symbol, int(web_point[0]), int(web_point[1]), int(point_ele)])
+            waypoints.append([
+                waypoint.longitude,
+                waypoint.latitude,
+                True, # with elevation
+                point_ele,
+                waypoint.symbol,
+                waypoint.name])
+        
         full_profile = {
-            "profile": elevation_profile,
+            "segments": [{
+                "withEle": True,
+                "points": elevation_profile
+            }],
             "waypoints": waypoints,
-            "statistics": {
-                "totalLength": round(float(current_length) / 1000., 2),
-                "minimumAltitude": int(elevation_min),
-                "maximumAltitude": int(elevation_max),
-                "totalElevationGain": int(elevation_total_gain),
-                "totalElevationLoss": int(elevation_total_loss)}}
-        with open(profile_path, "wb") as profile_file:
-            x = lzstring.LZString()
-            compressed_data = x.compressToUint8Array(json.dumps(full_profile))
-            # the JavaScript decompression require an even number of bytes
-            profile_file.write(compressed_data + (b"=" if (len(compressed_data) % 2) else b""))
+            "trackInformation": {
+                "length": current_length,
+                "minimumAltitude": elevation_min,
+                "maximumAltitude": elevation_max,
+                "elevationGain": elevation_total_gain,
+                "elevationLoss": elevation_total_loss}}
+        
+        webTrack = WebTrack(webtrack_path, full_profile)
 
 @map_app.route("/middleware/lds/<string:layer>/<string:a_d>/<int:z>/<int:x>/<int:y>", methods=("GET",))
 @same_site
-def middleware_lds(layer: str, a_d: str, z: int, x: int, y: int) -> bytes:
+def proxy_lds(layer: str, a_d: str, z: int, x: int, y: int) -> bytes:
     """
     Tunneling map requests to the LDS servers in order to hide the API key.
     Help using LDS with OpenLayers:
@@ -420,7 +451,7 @@ def proxy_ign() -> FlaskResponse:
 
 @map_app.route("/middleware/topografisk/<int:z>/<int:x>/<int:y>", methods=("GET",))
 @same_site
-def middleware_topografisk(z: int, x: int, y: int) -> bytes:
+def proxy_topografisk(z: int, x: int, y: int) -> bytes:
     """
     Tunneling map requests to the Kartverket servers (Norway) in order to respect users' privacy.
     Howto available here: https://kartverket.no/en/data/lage-kart-pa-nett/
@@ -443,7 +474,7 @@ def middleware_topografisk(z: int, x: int, y: int) -> bytes:
 
 @map_app.route("/middleware/canvec", methods=("GET",))
 @same_site
-def middleware_canvec() -> bytes:
+def proxy_canvec() -> bytes:
     """
     Tunneling map requests to the Geogratis servers (Canada) in order to respect users' privacy.
 

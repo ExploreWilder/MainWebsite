@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block title %}Map Viewer, {{ country }} version{% endblock %}
 {% block extra_header_items %}
-    <a href="{{ url_player_map }}" class="btn btn-success btn-sm" role="button"><i class="fas fa-globe"></i> Switch to 3D view</a>
+    <a href="{{ url_player_map }}" class="btn btn-success btn-sm mr-2" role="button"><i class="fas fa-globe"></i> Switch to 3D view</a>
 {% endblock %}
 {% block extra_tags %}
     <link href="https://opentopomap.org/" rel="dns-prefetch" />
@@ -54,36 +54,10 @@
             <a href="https://www.mapbox.com/about/maps/" title="Find out more">Mapbox</a> (satellite)
         </p>
     </div>
-
-    <div id="gpx-info" title="Track Info">
-        <ul id="gpx-info-list"></ul>
-        <!-- https://www.chartjs.org/docs/latest/general/responsive.html -->
-        <div id="elevation-chart-container" style="position: relative; width: calc(600px - 2em); min-height: 300px;">
-            <canvas id="elevation-chart"></canvas>
-        </div>
-    </div>
-
-    <div id="download-gpx" title="Download GPX">
-        {% if gpx_download_path %}
-            <p>
-                The GPX file is just for you and <a href="/about" target="_blank" title="Read the copyright notice">copyright {{ config.LEGAL_NAME }}</a>.
-            </p>
-            <p>
-                <a class="ui-button ui-widget ui-corner-all" href="{{ gpx_download_path }}">Download Raw GPX File</a>
-            </p>
-        {% else %}
-            <p>
-                Only members can download GPX files.
-            </p>
-            <p>
-                <a class="ui-button ui-widget ui-corner-all" href="/login" target="_blank">Sign in</a>
-            </p>
-        {% endif %}
-    </div>
-
-    <button id="goto-gpx-info" title="Open Track Info">Track Info</button>
     <button id="goto-menu" title="Open Settings &amp; Attributions">Menu</button>
-    <button id="goto-download-gpx" title="Download Raw GPX File">Download GPX</button>
+
+    {% include "map_dialog_gpx_info.html" %}
+    {% include "map_dialog_download_gpx.html" %}
 
     <div id="tooltip-waypoint" title=""></div>
     {% if not "subscribed" in session %}

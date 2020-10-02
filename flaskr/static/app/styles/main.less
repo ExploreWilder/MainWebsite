@@ -85,14 +85,24 @@
 
 #header {
     .breadcrumb {
-        @media (max-width:1360px) {
+        @media (max-width:1160px) {
             display: none;
         }
+        @media (min-width:1160px) {
+            display: block !important;
+        }
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         padding: 0rem 1rem !important;
         margin-bottom: 0 !important;
         .breadcrumb-item {
             line-height: 2;
+            display: inline;
         }
+    }
+    * {
+        white-space: nowrap;
     }
 }
 

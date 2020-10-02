@@ -96,6 +96,7 @@ def create_app(is_testing: bool = False) -> Flask:
         """
         The 404-error page with the specific HTTP field set.
         Any catched error are considered 404 to make guesses harder.
+        The HTML page is intentionally lightweight to reduce load.
         """
         return render_template(
             "error.html",

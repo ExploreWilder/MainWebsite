@@ -64,3 +64,27 @@ Visitor Space
     :members:
     :undoc-members:
     :show-inheritance:
+
+Map
+---
+
+.. automodule:: tests.test_map
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+VTS Proxy
+---------
+
+.. automodule:: tests.test_vts_proxy
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Social Networks
+---------------
+
+.. automodule:: tests.test_social_networks
+    :members:
+    :undoc-members:
+    :show-inheritance:

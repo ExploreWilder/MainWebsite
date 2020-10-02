@@ -59,11 +59,18 @@ var geodata, lineGeometry = null;
 var demoTexture = null;
 var usedMouseCoords = [0,0];
 var linePoint, lineSegment = 0, lastLineSegment = -1;
-var distancePointer, heightPointer, heightPointer2;
-var trackHeights = [], trackLengths = [];
-var trackMinHeight, trackMaxHeight;
-var canvas, canvasCtx;
-var pathLength = 0, pathDistance = 0;
+var distancePointer;
+var pathDistance = 0;
+
+/**
+ * Add or move the position pointed by the user on the map along the track.
+ */
+function update_hiker_pos(tooltip_item, data) {
+    var el = data.datasets[tooltip_item.datasetIndex].data[tooltip_item.index];
+    pathDistance = tooltip_item.xLabel * 1000;
+    linePoint = lineGeometry.getPathPoint(pathDistance);
+    map.redraw();
+}
 
 /**
  * Setup the entire interface.
@@ -97,12 +104,6 @@ var pathLength = 0, pathDistance = 0;
         return;
     }
 
-    //move map controls little bit higher
-    browser.ui.getControl('credits').getElement('vts-credits').setStyle('bottom', '134px');
-    browser.ui.getControl('zoom').getElement('vts-zoom-plus').setStyle('bottom', '140px');
-    browser.ui.getControl('zoom').getElement('vts-zoom-minus').setStyle('bottom', '140px');
-    browser.ui.getControl('compass').getElement('vts-compass').setStyle('bottom', '170px');
-
     // create ui control with info pointers
     var infoPointers = browser.ui.addControl('info-pointers',
         '<div id="distance-div" class="distance-div tooltip-arrow"></div>' +
@@ -111,32 +112,14 @@ var pathLength = 0, pathDistance = 0;
         '</div>');
 
     distancePointer = infoPointers.getElement('distance-div');
-    heightPointer = infoPointers.getElement('height-div'); // tooltip
-    heightPointer2 = infoPointers.getElement('height-div2'); // line
-
-    // create panel with path profile
-    var profilePanel = browser.ui.addControl('profile-panel',
-        '<div id="profile-div" class="profile-div">' +
-            '<div id="profile-canvas-holder" class="profile-canvas-holder">' +
-                '<canvas id="profile-canvas" class="profile-canvas">' +
-                '</canvas>' +
-            '</div>' + 
-        '</div>');
-
     renderer = browser.renderer;
 
     //add mouse events to map element
     var mapElement = browser.ui.getMapElement();
     mapElement.on('mousemove', onMouseMove);
     mapElement.on('mouseleave', onMouseLeave);
-    mapElement.on('resize', onResize, window);
-
-    //add mouse events to canvas element
-    canvas = profilePanel.getElement('profile-canvas');
-    canvas.on('mousemove', onCanvasHover);
-    canvasCtx = canvas.getElement().getContext("2d");
     
-    //callback once is map config loaded
+    //callback once the map config is loaded
     browser.on('map-loaded', onMapLoaded);
 
     //callback when path hovered
@@ -171,6 +154,7 @@ function onMapLoaded() {
     map = browser.map;
     map.addRenderSlot('custom-render', onCustomRender, true);
     map.moveRenderSlotAfter('after-map-render', 'custom-render');
+    fit_breadcrumb();
 
     loadTrack();
 }
@@ -180,40 +164,52 @@ function onMapLoaded() {
  */
 function loadTrack() {
     var oReq = new XMLHttpRequest();
-    oReq.open("GET", "/map/profile/" + book_id + "/" + book_url + "/" + gpx_name, true);
+    oReq.open("GET", get_webtrack_url(book_id, book_url, gpx_name), true);
     // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data
     oReq.responseType = "arraybuffer";
 
     oReq.onload = function(oEvent) {
         if(oReq.status == 500) { // exception raised in map.py:profile_file()
             var response_str = new TextDecoder("utf-8").decode(new Uint8Array(oReq.response));
-            window.alert("Failed to fetch profile data: " + response_str);
+            window.alert("Failed to fetch the WebTrack: " + response_str);
             return;
         }
-        var arrayBuffer = oReq.response;
-        var data = new Uint8Array(arrayBuffer);
-        data = LZString.decompressFromUint8Array(data);
-        data = JSON.parse(data);
-        profile_to_geodata(data);
+        let webtrack = new WebTrack();
+        webtrack.loadWebTrack(oReq.response);
+        webtrack_to_geodata(webtrack);
+
+        let data = {
+            statistics: webtrack.getTrackInfo(),
+            points: webtrack.getTrack()[0].points
+        }
+        track_info(data);
+
+        // show the button before the dialog to get the button offset
+        $("#goto-gpx-info").show();
+        $("#goto-download-gpx").show();
+
+        gpx_info = create_gpx_info_dialog();
+        download_gpx = create_download_gpx_dialog();
     };
+    
     oReq.send();
 }
 
 /**
- * Read the XHR `data` and save the features into `source`.
- * @param {Array} data XHR data, see map_player.loadTrack().
+ * Read the `webtrack` and save the features into `source`.
+ * @param {WebTrack} webtrack see map_player.loadTrack().
  */
-function profile_to_geodata(data) {
+function webtrack_to_geodata(webtrack) {
     geodata = map.createGeodata();
     geodata.addGroup('tracks');
 
-    var trk = data["profile"];
+    var trk = webtrack.getTrack()[0].points;
     var coords = [];
     for(var i = 0; i < trk.length; i++) {
         point = [
-            trk[i][2] - 485 + i * 30, // longitude
-            trk[i][3] - 1567, // latitude
-            parseFloat(trk[i][0]) // elevation
+            trk[i][0], // longitude
+            trk[i][1], // latitude
+            trk[i][3] // elevation
         ];
         coords.push(point);
         geodata.addPoint(point, 'fix', {}, '', "EPSG:3857");
@@ -221,14 +217,19 @@ function profile_to_geodata(data) {
     geodata.addLineString(coords, 'fix', {}, 'some-path', "EPSG:3857");
 
     geodata.addGroup('waypoints');
-    var wpt = data["waypoints"];
+    var wpt = webtrack.getWaypoints();
     for(var i = 0; i < wpt.length; i++) {
-        // https://vts-geospatial.org/tutorials/geojson-part2.html?highlight=addpointarray#extending-existing-data
-        geodata.addPoint([
-            wpt[i][2],
-            wpt[i][3],
-            parseFloat(wpt[i][4])
-        ], 'fix', {title: wpt[i][0]}, 'way-points', "EPSG:3857");
+        switch(wpt[i].sym) {
+            case "Campground":
+            case "Fishing Hot Spot Facility":
+                // https://vts-geospatial.org/tutorials/geojson-part2.html?highlight=addpointarray#extending-existing-data
+                geodata.addPoint([
+                    wpt[i].lon,
+                    wpt[i].lat,
+                    wpt[i].ele
+                ], 'fix', {title: wpt[i].name}, 'way-points', "EPSG:3857");
+                break;
+        }
     }
 
     onHeightProcessed(); // if unknown heights: geodata.processHeights('node-by-precision', 62, onHeightProcessed);
@@ -244,9 +245,6 @@ function onHeightProcessed() {
     
     //center map postion to track gemetery
     centerPositonToGeometry(lineGeometry);
-
-    //draw track profile
-    drawPathProfile(lineGeometry);
   
     //style used for displaying geodata
     //find out more about styles: https://vts-geospatial.org/tutorials/geojson.html
@@ -386,11 +384,6 @@ function centerPositonToGeometry(geometry) {
         viewExtent = navigationSrs.a*1.4;
     }
 
-    //move the track above the profile canvas
-    var offsetBottom = parseInt(browser.ui.getControl('zoom').getElement('vts-zoom-plus').getStyle('bottom')); // px
-    var mapHeight = renderer.getCanvasSize()[1];
-    midPoint[0] += viewExtent * offsetBottom / mapHeight; // should be 'viewExtentY' instead
-
     //convert coods from physical to nav
     var navCoords = vts.proj4(physicalSrs.srsDef, navigationSrs.srsDef, midPoint);
     navCoords[2] = 0;
@@ -401,147 +394,6 @@ function centerPositonToGeometry(geometry) {
     pos.setOrientation([0, -60, 0]);
     pos.setViewExtent(viewExtent);
     map.setPosition(pos);
-}
-
-/**
- * Set heigth profile pointer accoring to current track position
- */
-function setProfilePointer(p) {
-    var rect = canvas.getRect();
-    var x = (pathDistance / pathLength) * rect.width;
-
-    var rect2 = heightPointer.getRect();
-
-    if(typeof(p) === 'undefined' && typeof(last_p) !== 'undefined') {
-        p = last_p;
-    }
-    else {
-        p = map.convertCoordsFromPhysToPublic(p);
-        last_p = p;
-    }
-
-    //keep the tooltip inside the canvas
-    var minLeft = rect.left, maxLeft = rect.width + rect.left - rect2.width;
-    var tooltipLeft = rect.left + x - rect2.width * 0.5;
-    
-    if(tooltipLeft < minLeft) {
-        tooltipLeft = minLeft;
-    }
-    else if(tooltipLeft > maxLeft) {
-        tooltipLeft = maxLeft;
-    }
-
-    heightPointer.setStyle('display', 'block');
-    heightPointer.setStyle('left', tooltipLeft + 'px');
-    heightPointer.setStyle('top', (rect.top) + 'px');
-    heightPointer.setHtml((p[2]).toFixed(0) + " m");
-
-    heightPointer2.setStyle('display', 'block');
-    heightPointer2.setStyle('left', (rect.left + x - 1) + 'px');
-    heightPointer2.setStyle('top', (rect.top) + 'px');
-}
-
-/**
- * Redraw track profile when browser window is resized
- */
-function onResize() {
-    refereshCanvasDimensions();
-    drawPathProfile(lineGeometry);
-    if(heightPointer.getStyle('display') == 'block') {
-        setProfilePointer();
-    }
-}
-
-/**
- * Sets canvas size accoding to HTML element size
- */
-function refereshCanvasDimensions() {
-    var rect = canvas.getRect();
-    var canvasElement = canvas.getElement();
-    if (canvasElement.width != rect.width) { 
-        canvasElement.width = rect.width;
-    }
-    if (canvasElement.height != rect.height) {
-        canvasElement.height = rect.height;
-    }
-    return [rect.width, rect.height];
-}
-
-/**
- * Process track geometry and display track profile
- */
-function drawPathProfile(geometry) {
-    if (!geometry) {
-        return;
-    }
-
-    var totalElements = geometry.getElements();
-
-    if (!totalElements) {
-        return;
-    }
-
-    pathLength = geometry.getPathLength();
-
-    trackHeights = new Array(totalElements);
-    trackLengths = new Array(totalElements);
-    trackMinHeight = Number.POSITIVE_INFINITY;
-    trackMaxHeight = Number.NEGATIVE_INFINITY;
-
-    var totalLength = 0;
-
-    //get track point heights and length between track points
-    for (var i = 0, li = totalElements; i < li; i++) {
-        var l = geometry.getElement(i);
-        var p = map.convertCoordsFromPhysToPublic(l[0]);
-        trackHeights[i] = p[2];
-
-        totalLength += vts.vec3.length([l[1][0] - l[0][0], l[1][1] - l[0][1], l[1][2] - l[0][2]]);
-        trackLengths[i] = totalLength;
-
-        if (p[2] > trackMaxHeight) {
-            trackMaxHeight = p[2];
-        }
-
-        if (p[2] < trackMinHeight) {
-            trackMinHeight = p[2];
-        }
-    }
-
-    //draw track profile
-    var dim = refereshCanvasDimensions();
-    var lx = dim[0], ly = dim[1];
-
-    canvasCtx.clearRect(0,0,lx,ly);
-    canvasCtx.beginPath();
-    canvasCtx.moveTo(-1,ly-1);
-
-    if (trackMaxHeight == trackMinHeight) {
-        canvasCtx.lineTo(lx,ly);
-    } else {
-
-        canvasCtx.lineTo(-1, (ly - 2) - ((trackHeights[0] - trackMinHeight) / (trackMaxHeight - trackMinHeight)) * (ly-30) );
-
-        for (var i = 0, li = trackHeights.length; i < li; i++) {
-            canvasCtx.lineTo((trackLengths[i]/pathLength)*lx, (ly - 2) - ((trackHeights[i] - trackMinHeight) / (trackMaxHeight - trackMinHeight)) * (ly-30) );
-        }
-    }
-
-    canvasCtx.lineTo(lx,ly-1);
-    canvasCtx.lineTo(0,ly-1);
-
-    // Create gradient
-    var grd = canvasCtx.createLinearGradient(0,0,0,ly);
-    grd.addColorStop(0,"rgba(252,186,136,0.3)");
-    grd.addColorStop(1,"rgba(94,45,18,0.3)");
-
-    // Fill profile with gradient
-    canvasCtx.fillStyle = grd;
-    canvasCtx.fill();
-
-    //draw profile outline
-    canvasCtx.strokeStyle = "rgba(50,50,50,0.7)";
-    canvasCtx.stroke();
 }
 
 /**
@@ -587,36 +439,11 @@ function onFeatureHover(event) {
         //get point coodinates
         linePoint = lineGeometry.getPathPoint(pathDistance);
 
-        //refresh pointer in height profile
-        setProfilePointer(linePoint);
-
         //force redraw map (we have to redraw track point)
         map.redraw();
 
         //remember the current segment ID to skip the next event if it is the same ID
         lastLineSegment = lineSegment;
-    }
-}
-
-/**
- * Event handler.
- */
-function onCanvasHover(event) {
-    if (map && lineGeometry) {
-        var coords = event.getMouseCoords();
-        usedMouseCoords = coords;
-
-        //compute new path distance from cursor position in canvas
-        pathDistance = (coords[0] / canvas.getElement().width) * pathLength; // m
-
-        //get point coodinates
-        linePoint = lineGeometry.getPathPoint(pathDistance);
-
-        //refresh pointer in height profile
-        setProfilePointer(linePoint);
-
-        //force redraw map (we have to redraw track point)
-        map.redraw();
     }
 }
 
@@ -667,3 +494,7 @@ function onSwitchView(newBoundLayer) {
         }); 
     }
 }
+
+$(window).resize(function() {
+    fit_breadcrumb();
+});

@@ -61,12 +61,11 @@
             <span>
                 {%if config.MAINTENANCE %}
                     <span class="alert alert-warning mr-3">
-                        Currently under maintenance. Please visit my
+                        Currently under maintenance.
                         <a href="https://explorewilder.statuspage.io/"
                            class="alert-link"
                            title="status page for critical updates"
-                           target="_blank">status page</a>
-                        for updates.
+                           target="_blank">Critical updates</a>.
                     </span>
                 {% endif %}
             </span>
@@ -77,7 +76,7 @@
                             {% if "url" in item %}
                                 <li class="breadcrumb-item"><a href="{{ item.url }}">{{ item.title }}</a></li>
                             {% else %}
-                                <li class="breadcrumb-item active" aria-current="page">{{ item.title }}</li>
+                                <li class="breadcrumb-item active" aria-current="page" title="{{ item.title }}" data-toggle="tooltip">{{ item.title }}</li>
                             {% endif %}
                         {% endfor %}
                     </ol>

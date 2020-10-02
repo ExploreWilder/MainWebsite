@@ -54,15 +54,17 @@ var vendor_scripts = [
             './vendor/jquery-ui-1.12.1/jquery-ui.min.js',
             './vendor/ol-6.4.3.js',
             './node_modules/chart.js/dist/Chart.bundle.min.js',
-            './node_modules/lz-string/libs/lz-string.min.js',
+            './vendor/webtrack.min.js',
         ]
     },
     {
         name: 'map_player',
         scripts: [
+            './vendor/jquery-ui-1.12.1/jquery-ui.min.js',
             // use a custom vts-browser.min.js: '//cdn.melown.com' changed to 'https://cdn.melown.com' to enforce a secure connection
             './vendor/vts-browser.min.js',
-            './node_modules/lz-string/libs/lz-string.min.js',
+            './node_modules/chart.js/dist/Chart.bundle.min.js',
+            './vendor/webtrack.min.js',
         ]
     }
 ];
@@ -98,6 +100,7 @@ var app_scripts = [
     {
         name: 'map_viewer',
         scripts: [
+            './app/scripts/map_utils.js',
             './app/scripts/map_viewer.config.js',
             './app/scripts/map_viewer.js',
         ]
@@ -105,6 +108,7 @@ var app_scripts = [
     {
         name: 'map_player',
         scripts: [
+            './app/scripts/map_utils.js',
             './app/scripts/map_player.js',
         ]
     }

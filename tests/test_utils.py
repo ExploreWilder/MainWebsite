@@ -172,3 +172,10 @@ def test_params_urlencode():
         "Service": "WMTS"
     }
     assert utils.params_urlencode(example_params) == "style=normal&tilematrixset=PM&Service=WMTS"
+
+def test_replace_extension():
+    """ Test the file extension replacer. """
+    assert utils.replace_extension("hello/file.txt", "bin") == "hello/file.bin"
+    assert utils.replace_extension("super_track.gpx", "webtrack") == "super_track.webtrack"
+    assert utils.replace_extension("main", "txt") == "main.txt"
+    assert utils.replace_extension(".main", "txt") == ".main.txt"

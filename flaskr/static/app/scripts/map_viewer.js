@@ -346,124 +346,30 @@ function zoom(zoom_increment) {
 }
 
 /**
- * Returns the content of the tooltip used in the elevation chart.
- * @see profile_to_source()
+ * Add or move the position pointed by the user on the map along the track.
  */
-function label_elevation(tooltip_item, data) {
-    var label = "Elevation: " + tooltip_item.yLabel + " m | ";
-    label += "Distance: " + (Math.round(tooltip_item.xLabel * 100) / 100) + " km";
+function update_hiker_pos(tooltip_item, data) {
     var el = data.datasets[tooltip_item.datasetIndex].data[tooltip_item.index];
-    hiker.getGeometry().setCoordinates([el.lon - 485 + tooltip_item.index * 30, el.lat - 1567]);
+    hiker.getGeometry().setCoordinates([el.lon, el.lat]);
     if(!hiker_on_map) {
         var source = track_vector.getSource();
         source.addFeature(hiker);
         hiker_on_map = true;
     }
-    return label;
 }
 
 /**
- * Create the elevation chart based on the elevation profile of the track.
- */
-function create_elevation_chart(profile) {
-    var ctx = $("#elevation-chart");
-    var data = [];
-    for(var i = 0; i < profile.length; i++) {
-        data[i] = {x: profile[i][1], y: profile[i][0], lon: profile[i][2], lat: profile[i][3]};
-    }
-    var distance = data[data.length - 1][1];
-    var elevation_chart = new Chart.Scatter(ctx, {
-        data: {
-            datasets: [{
-                data: data,
-                showLine: true,
-                pointRadius: 0,
-                borderColor: "black",
-                backgroundColor: "#3f3",
-                borderWidth: 1,
-                label: "Elevation",
-                fill: true
-            }]
-        },
-        options: {
-            title: {
-                display: true,
-                text: "Elevation Chart"
-            },
-            tooltips: {
-				mode: "index",
-				intersect: false,
-                callbacks: {label: label_elevation}
-            },
-            scales: {
-                xAxes: [{
-                    type: "linear",
-                    position: "bottom",
-    				display: true,
-    				scaleLabel: {
-    					display: true,
-    					labelString: "Distance (km)"
-    				}
-    			}],
-    			yAxes: [{
-                    type: "linear",
-                    position: "left",
-    				display: true,
-    				scaleLabel: {
-    					display: true,
-    					labelString: "Elevation (m)"
-    				}
-    			}]
-            },
-            legend: {
-                display: false
-            },
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
-}
-
-/**
- * Returns a string of the number x with commas on thousands.
- * NOTICE: identical to main.js
- */
-function number_with_commas(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
-/**
- * Update statistics displayed in the track info.
- */
-function track_info(source) {
-    var stats = source["statistics"];
-    var ul = $("#gpx-info-list");
-    var lis = [
-        $('<li></li>').text("Total Length: " + (Math.round(stats["totalLength"] * 10) / 10) + " km"),
-        $('<li></li>').text("Minimum Altitude: " + number_with_commas(stats["minimumAltitude"]) + " m"),
-        $('<li></li>').text("Maximum Altitude: " + number_with_commas(stats["maximumAltitude"]) + " m"),
-        $('<li></li>').html("<abbr title='Filtered radar data'>Total Elevation:</abbr> "
-            + number_with_commas(stats["totalElevationGain"] - stats["totalElevationLoss"]) + " m (Gain: "
-            + number_with_commas(stats["totalElevationGain"]) + " m, Loss: "
-            + number_with_commas(stats["totalElevationLoss"]) + " m)")
-        ];
-    
-    ul.append(lis);
-    create_elevation_chart(source["profile"]);
-}
-
-/**
- * Read the XHR `data` and save the features into `source`.
+ * Read the `webtrack` and save the features into `source`.
  * @see label_elevation()
- * @param {Array} data XHR data, see map_viewer.fetch_data().
+ * @param {Dict} data See map_viewer.fetch_data().
  * @param {SourceType} source The OpenLayers source.
  */
-function profile_to_source(data, source) {
-    var trk = data["profile"];
+function webtrack_to_source(data, source) {
+    var trk = data.points;
     var coords = [];
     var features = [];
     for(var i = 0; i < trk.length; i++) {
-        coords.push([trk[i][2] - 485 + i * 30, trk[i][3] - 1567]);
+        coords.push([trk[i][0], trk[i][1]]);
     }
     var trk_feature = new ol.Feature({
         geometry: new ol.geom.MultiLineString([coords], 'XY')
@@ -483,12 +389,12 @@ function profile_to_source(data, source) {
     });
     features.push(ending_point);
 
-    var waypoints = data["waypoints"];
+    var waypoints = data.waypoints;
     for(var i = 0; i < waypoints.length; i++) {
         features.push(new ol.Feature({
-            geometry: new ol.geom.Point([waypoints[i][2], waypoints[i][3]]),
-            name: waypoints[i][0],
-            sym: waypoints[i][1]
+            geometry: new ol.geom.Point([waypoints[i].lon, waypoints[i].lat]),
+            name: waypoints[i].name,
+            sym: waypoints[i].sym
         }));
     }
     source.addFeatures(features);
@@ -499,22 +405,25 @@ function profile_to_source(data, source) {
  */
 function fetch_data() {
     var oReq = new XMLHttpRequest();
-    oReq.open("GET", "/map/profile/" + book_id + "/" + book_url + "/" + gpx_name + "/" + country_code, true);
+    oReq.open("GET", get_webtrack_url(book_id, book_url, gpx_name), true);
     // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data
     oReq.responseType = "arraybuffer";
 
     oReq.onload = function(oEvent) {
         if(oReq.status == 500) { // exception raised in map.py:profile_file()
             var response_str = new TextDecoder("utf-8").decode(new Uint8Array(oReq.response));
-            window.alert("Failed to fetch profile data: " + response_str);
+            window.alert("Failed to fetch the WebTrack: " + response_str);
             return;
         }
-        var arrayBuffer = oReq.response;
-        var data = new Uint8Array(arrayBuffer);
-        data = LZString.decompressFromUint8Array(data);
-        data = JSON.parse(data);
+        let webtrack = new WebTrack();
+        webtrack.loadWebTrack(oReq.response);
         var source = track_vector.getSource();
-        profile_to_source(data, source);
+        let data = {
+            statistics: webtrack.getTrackInfo(),
+            points: webtrack.getTrack()[0].points,
+            waypoints: webtrack.getWaypoints()
+        }
+        webtrack_to_source(data, source);
 
         map.getView().fit(source.getExtent(), {
             size: map.getSize(),
@@ -526,27 +435,10 @@ function fetch_data() {
         track_info(data);
 
         // display the "Track Info" button only when information are available
-        $("#goto-gpx-info").show().button({
-            icon: "ui-icon-newwin"
-        }).on("click", function() {
-            gpx_info.dialog("open");
-                $("#goto-gpx-info").hide();
-        });
-        $("#goto-download-gpx").show().button({
-            icon: "ui-icon-newwin"
-        }).on("click", function() {
-            download_gpx.dialog("open");
-                $("#goto-download-gpx").hide();
-        });
+        $("#goto-gpx-info").show();
+        $("#goto-download-gpx").show();
     };
     oReq.send();
-}
-
-/**
- * Blur the close button tooltip when the window is open.
- */
-function unfocus_menu() {
-    $(this).parents(".ui-dialog").attr("tabindex", -1)[0].focus();
 }
 
 /**
@@ -608,31 +500,8 @@ $(function() {
         }
     });
 
-    gpx_info = $("#gpx-info").dialog({
-        autoOpen: false,
-        width: 600,
-        minWidth: 500,
-        position: { my: "left top", at: "left+10 top+" + offset_top},
-        open: unfocus_menu,
-        resize: function(event, ui) {
-            $("#elevation-chart-container").height($("#gpx-info").height() - $("#gpx-info-list").height());
-            $("#elevation-chart-container").width($("#gpx-info").width());
-        },
-        close: function() {
-            $("#goto-gpx-info").show();
-        }
-    });
-
-    download_gpx = $("#download-gpx").dialog({
-        autoOpen: false,
-        width: 600,
-        minWidth: 500,
-        position: { my: "right bottom", at: "right-10 bottom-10"},
-        open: unfocus_menu,
-        close: function() {
-            $("#goto-download-gpx").show();
-        }
-    });
+    gpx_info = create_gpx_info_dialog();
+    download_gpx = create_download_gpx_dialog();
 
     map = new ol.Map({
         target: document.getElementById("map"),
@@ -694,4 +563,10 @@ $(function() {
 
     $(document).tooltip();
     init_basemap_selection();
+
+    fit_breadcrumb();
+});
+
+$(window).resize(function() {
+    fit_breadcrumb();
 });

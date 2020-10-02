@@ -87,11 +87,6 @@ Run as user:
     cd srtm.py
     python3 setup.py install
     cd -
-
-    git clone https://github.com/gkovacs/lz-string-python.git
-    cd lz-string-python
-    python3 setup.py install
-    cd -
     
     mkdir dkimpy
     cd dkimpy
@@ -177,4 +172,11 @@ Then create a new app:
 
 .. image:: _images/cpanel_create_python_app.png
 
-Then choose the latest Python version (I'm using 3.7.3) and the application root directory. Finally, enter the created venv, install the Python dependencies as detailed above, copy the app and data, setup your MySQL database and that's it!
+Then choose the latest Python version (I'm using 3.7.8) and the application root directory. Finally, enter the created venv, install the Python dependencies as detailed above, copy the app and data, setup your MySQL database.
+
+Apache mod_deflate
+^^^^^^^^^^^^^^^^^^
+
+The Apache mod_deflate is configured as below:
+
+.. image:: _images/mod_deflate.png

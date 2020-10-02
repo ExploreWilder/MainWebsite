@@ -1,0 +1,18 @@
+<div id="download-gpx" title="Download GPX">
+    {% if gpx_download_path %}
+        <p>
+            The GPX file is just for you and <a href="/about" target="_blank" title="Read the copyright notice">copyright {{ config.LEGAL_NAME }}</a>.
+        </p>
+        <p>
+            <a class="ui-button ui-widget ui-corner-all" href="{{ gpx_download_path }}">Download Raw GPX File</a>
+        </p>
+    {% else %}
+        <p>
+            Only members can download GPX files.
+        </p>
+        <p>
+            <a class="ui-button ui-widget ui-corner-all" href="/login" target="_blank">Sign in</a>
+        </p>
+    {% endif %}
+</div>
+<button id="goto-download-gpx" title="Download Raw GPX File">Download GPX</button>

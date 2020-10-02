@@ -61,7 +61,7 @@ import pytest
     ("/stories/5/fifth_story"), # access level = 1
     ("/map/viewer/4/fourth_story/my_track/fr"), # access level = 1
     ("/map/player/4/fourth_story/my_track/fr"), # access level = 1
-    ("/map/profile/4/fourth_story/my_track/fr"), # access level = 1
+    ("/map/webtracks/4/fourth_story/my_track.webtrack"), # access level = 1
     ("/change_password"), # restricted to members
     ("/change_email"), # restricted to members
     ("/audit_log"), # restricted to members
@@ -85,7 +85,6 @@ def test_restricted_access_denied(files, client, path):
     ("/map/viewer/4/fourth_story/my_track/fr"), # access level = 1
     ("/map/player/4/fourth_story/my_track/fr"), # access level = 1
     ("/books/4/fourth_story/my_track.gpx"), # access level = 1
-    ("/map/profile/4/fourth_story/my_track/fr"), # access level = 1
     ("/change_password"),
     ("/change_email"),
     ("/audit_log"),
@@ -98,6 +97,15 @@ def test_member_access_granted(files, client, auth, path):
     auth.login()
     rv = client.get(path)
     assert rv.status_code == 200
+
+def test_webtrack_failed(client, auth):
+    """
+    Ask for a restricted WebTrack that cannot be created because the GPX file is missing.
+    """
+    auth.login()
+    rv = client.get("/map/webtracks/4/fourth_story/my_track.webtrack")
+    assert rv.status_code == 500
+    assert b"GPX file missing or empty" in rv.data
 
 @pytest.mark.parametrize("path", (
     ("/admin/members/revoke"),
