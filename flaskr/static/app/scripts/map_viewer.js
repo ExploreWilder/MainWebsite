@@ -64,10 +64,18 @@ const resolutions = [
 const matrix_ids = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"];
 
 /**
- * Returns a formatted link to the tiles.
+ * Returns a formatted link to the New Zealand tiles.
  */
-function get_tiles_link(layer) {
+function get_nz_tiles_link(layer) {
     return middleware_url["nz"] + layer + "/{a-d}/{z}/{x}/{y}";
+}
+
+/**
+ * Returns a formatted link to the Swiss tiles.
+ * TODO: dynamic subdomain.
+ */
+function get_ch_tiles_link(layer) {
+    return `${middleware_url["ch"]}${layer}/default/current/3857/{z}/{x}/{y}.jpeg`;
 }
 
 /**
@@ -76,7 +84,7 @@ function get_tiles_link(layer) {
 var raster = {
     "nz": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: get_tiles_link("set=2")
+            url: get_nz_tiles_link("set=2")
         }),
         opacity: default_opacity / 100.
     }),
@@ -112,6 +120,12 @@ var raster = {
             url: middleware_url["satellite"]
         }),
         opacity: default_opacity / 100.
+    }),
+    "ch": new ol.layer.Tile({
+        source: new ol.source.XYZ({
+            url: get_ch_tiles_link("ch.swisstopo.swissimage")
+        }),
+        opacity: default_opacity / 100.
     })
 };
 
@@ -121,7 +135,7 @@ var raster = {
 var raster_topo50 = {
     "nz": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: get_tiles_link("layer=767")
+            url: get_nz_tiles_link("layer=767")
         })
     }),
     "fr": new ol.layer.Tile({
@@ -152,9 +166,24 @@ var raster_topo50 = {
             url: middleware_url["no"] + "{z}/{x}/{y}"
         })
     }),
-    "topo": new ol.layer.Tile({
+    "topo-otm": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: middleware_url["topo"]
+            url: middleware_url["topo-otm"]
+        })
+    }),
+    "topo-thunderforest-outdoors": new ol.layer.Tile({
+        source: new ol.source.XYZ({
+            url: middleware_url["topo-thunderforest"] + "outdoors/{z}/{x}/{y}"
+        })
+    }),
+    "topo-thunderforest-landscape": new ol.layer.Tile({
+        source: new ol.source.XYZ({
+            url: middleware_url["topo-thunderforest"] + "landscape/{z}/{x}/{y}"
+        })
+    }),
+    "ch": new ol.layer.Tile({
+        source: new ol.source.XYZ({
+            url: get_ch_tiles_link("ch.swisstopo.pixelkarte-farbe")
         })
     })
 };
@@ -448,9 +477,22 @@ function fetch_data() {
 function select_basemap() {
     var is_country_specific = $("#country-specific-layers").is(":checked");
     raster_topo50[country_code].setVisible(is_country_specific);
-    raster_topo50["topo"].setVisible(!is_country_specific);
     raster[country_code].setVisible(is_country_specific);
     raster["satellite"].setVisible(!is_country_specific);
+
+    if(is_country_specific) {
+        $("#topo-layer-selection").hide();
+        world_topo.forEach((layer) => {
+            raster_topo50[layer].setVisible(false);
+        });
+    }
+    else {
+        $("#topo-layer-selection").show();
+        world_topo.forEach((layer) => {
+            raster_topo50[layer].setVisible($("#" + layer).is(":checked"));
+        });
+    }
+
     console.log("Layer selection: " + ((is_country_specific) ? "Country specific" : "Worldwide"));
     refresh_opacity();
 }
@@ -463,9 +505,8 @@ function init_basemap_selection() {
     $("input[type=radio]").checkboxradio({
         icon: false
     }).change(select_basemap);
-    $("#country-specific-layers").prop("checked", true);
+    $("#topo-layer-selection").hide();
     select_basemap();
-    $("input[type=radio]").checkboxradio("refresh");
 }
 
 /**
@@ -503,11 +544,16 @@ $(function() {
     gpx_info = create_gpx_info_dialog();
     download_gpx = create_download_gpx_dialog();
 
+    let all_raster_world_topo = [];
+    world_topo.forEach((layer) => {
+        all_raster_world_topo.push(raster_topo50[layer]);
+    })
+
     map = new ol.Map({
         target: document.getElementById("map"),
         layers: [
             raster_topo50[country_code],
-            raster_topo50["topo"],
+            ...all_raster_world_topo,
             raster[country_code],
             raster["satellite"],
             track_vector

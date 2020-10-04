@@ -11,23 +11,85 @@
             <i class="fas fa-layer-group"></i> Layer Selection
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuBoundLayer">
-            <a class="dropdown-item active text-sm" href="#" data-boundlayer="default-satellite">World aerial (medium res)</a>
-            <a class="dropdown-item" href="#" data-boundlayer="world-satellite">World aerial (high res)</a>
-            <a class="dropdown-item" href="#" data-boundlayer="world-topo">World topo</a>
+            <a class="dropdown-item active text-sm"
+               href="#"
+               data-boundlayer="default-satellite">
+                World aerial (medium res)
+            </a>
+            <a class="dropdown-item"
+               href="#"
+               data-boundlayer="world-satellite">
+                World aerial (high res)
+            </a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item"
+               href="#"
+               data-boundlayer="world-topo-otm"
+               title="My recommendation">
+                World topo (OpenTopoMap)
+            </a>
+            <a class="dropdown-item"
+               href="#"
+               data-boundlayer="world-topo-thunderforest-outdoors"
+               title="Emphasise hiking routes, ski runs and many useful points of interest">
+                World topo (Thunderforest Outdoor)
+            </a>
+            <a class="dropdown-item"
+               href="#"
+               data-boundlayer="world-topo-thunderforest-landscape"
+               title="Emphasises natural features">
+                World topo (Thunderforest Landscape)
+            </a>
             {% if country == "FR" %}
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#" data-boundlayer="fr-satellite">Government aerial (IGN)</a>
-                <a class="dropdown-item" href="#" data-boundlayer="fr-topo">Government topo (IGN)</a>
+                <a class="dropdown-item"
+                   href="#"
+                   data-boundlayer="fr-satellite">
+                    Government aerial (IGN)
+                </a>
+                <a class="dropdown-item"
+                   href="#"
+                   data-boundlayer="fr-topo">
+                    Government topo (IGN)
+                </a>
             {% elif country == "NZ" %}
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#" data-boundlayer="nz-satellite">Government aerial (LINZ)</a>
-                <a class="dropdown-item" href="#" data-boundlayer="nz-topo">Government topo (LINZ)</a>
+                <a class="dropdown-item"
+                   href="#"
+                   data-boundlayer="nz-satellite">
+                    Government aerial (LINZ)
+                </a>
+                <a class="dropdown-item"
+                   href="#"
+                   data-boundlayer="nz-topo">
+                    Government topo (LINZ)
+                </a>
+            {% elif country == "CH" %}
+                <!--<div class="dropdown-divider"></div>
+                <a class="dropdown-item"
+                   href="#"
+                   data-boundlayer="ch-satellite">
+                    Government aerial (Swisstopo)
+                </a>
+                <a class="dropdown-item"
+                   href="#"
+                   data-boundlayer="ch-topo">
+                    Government topo (Swisstopo)
+                </a>-->
             {% elif country == "NO" %}
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#" data-boundlayer="no-topo">Government topo (Kartverket)</a>
+                <a class="dropdown-item"
+                   href="#"
+                   data-boundlayer="no-topo">
+                    Government topo (Kartverket)
+                </a>
             {% elif country == "CA" %}
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#" data-boundlayer="ca-topo">Government topo (Canvec)</a>
+                <a class="dropdown-item"
+                   href="#"
+                   data-boundlayer="ca-topo">
+                    Government topo (Canvec)
+                </a>
             {% endif %}
         </div>
     </div>

@@ -50,11 +50,18 @@ const duration_zoom_animation = 300;
 const middleware_url = {
     "nz": "/map/middleware/lds/",
     "fr": "/map/middleware/ign",
-    "topo": "https://opentopomap.org/{z}/{x}/{y}.png",
+    "topo-otm": "https://opentopomap.org/{z}/{x}/{y}.png",
+    "topo-thunderforest": "/map/proxy/thunderforest/",
     "satellite": "https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90?access_token=" + MAPBOX_PUB_KEY,
     "ca": "/map/middleware/canvec",
-    "no": "/map/middleware/topografisk/"
+    "no": "/map/middleware/topografisk/",
+    "ch": "https://wmts10.geo.admin.ch/1.0.0/",
 };
+
+/**
+ * List of world topo layers.
+ */
+const world_topo = ["topo-otm", "topo-thunderforest-outdoors", "topo-thunderforest-landscape"];
 
 /**
  * Minimum padding (in pixels) to be cleared inside the view, around the GPX track.

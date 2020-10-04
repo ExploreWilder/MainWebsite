@@ -154,9 +154,13 @@ class Config(object):
     #: Additional extensions for processing the stories.
     BOOK_MD_EXT=MD_EXT + ["mdx_sections",]
     #: Publicly available country-specific layers accessible by the map viewer app.
-    MAP_LAYERS=["NZ", "FR", "CA", "NO"]
+    MAP_LAYERS=["NZ", "FR", "CA", "NO", "CH"]
     #: LDS API key.
     LDS_API_KEY="UNDISCLOSED"
+    #: Thunderforest API key.
+    THUNDERFOREST_API_KEY="UNDISCLOSED"
+    #: Microsoft Bing key.
+    BING_API_KEY="UNDISCLOSED"
     #: IGN app key and credentials.
     IGN={"username": "UNDISCLOSED", "password": "UNDISCLOSED", "app": "UNDISCLOSED"}
     #: Mapbox public token.
@@ -200,7 +204,8 @@ class Config(object):
             "data:",
             "blob:", # Mapbox GL JS
             "https://api.mapbox.com", # map viewer
-            "https://opentopomap.org" # map viewer
+            "https://opentopomap.org", # map viewer
+            "https://*.geo.admin.ch" # map viewer
         ],
         "style-src": [
             "'self'",

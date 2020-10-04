@@ -7,6 +7,7 @@ Configuration
 .. js:autoattribute:: default_opacity
 .. js:autoattribute:: duration_zoom_animation
 .. js:autoattribute:: middleware_url
+.. js:autoattribute:: world_topo
 .. js:autoattribute:: track_padding
 .. js:autoattribute:: default_gps_position
 .. js:autoattribute:: default_zoom
@@ -26,7 +27,8 @@ Interface
 .. js:autoattribute:: hiker
 .. js:autoattribute:: hiker_on_map
 
-.. js:autofunction:: get_tiles_link
+.. js:autofunction:: get_nz_tiles_link
+.. js:autofunction:: get_ch_tiles_link
 .. js:autofunction:: refresh_opacity
 .. js:autofunction:: display_tooltip
 .. js:autofunction:: zoom

@@ -60,9 +60,14 @@
 			"type" : "raster",
 			"url" : "/map/vts_proxy/world/satellite/{lod}/{x}/{y}.jpg"
 		},
-		"world-topo" : {
+		"world-topo-otm" : {
 			"credits" : 
 			{
+				"osm" :
+				{
+					"id" : 100,
+					"notice" : "Datasource: [http://www.openstreetmap.org/copyright OpenStreetMap contributors] (ODbL)"
+				},
 				"opentopomap" : 
 				{
 					"id" : 125,
@@ -76,7 +81,53 @@
 				[ 1, 1 ]
 			],
 			"type" : "raster",
-			"url" : "/map/vts_proxy/world/topo/{lod}/{x}/{y}.png"
+			"url" : "/map/vts_proxy/world/topo/otm/{lod}/{x}/{y}.png"
+		},
+		"world-topo-thunderforest-outdoors" : {
+			"credits" : 
+			{
+				"osm" :
+				{
+					"id" : 100,
+					"notice" : "Datasource: [http://www.openstreetmap.org/copyright OpenStreetMap contributors] (ODbL)"
+				},
+				"thunderforest" : 
+				{
+					"id" : 125,
+					"notice" : "Datasource: [https://www.thunderforest.com thunderforest.com] by Thunderforest (CC-BY-SA 2.0)"
+				}
+			},
+			"lodRange" : [ 1, 15 ],
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "/map/vts_proxy/world/topo/thunderforest/outdoors/{lod}/{x}/{y}.png"
+		},
+		"world-topo-thunderforest-landscape" : {
+			"credits" : 
+			{
+				"osm" :
+				{
+					"id" : 100,
+					"notice" : "Datasource: [http://www.openstreetmap.org/copyright OpenStreetMap contributors] (ODbL)"
+				},
+				"thunderforest" : 
+				{
+					"id" : 125,
+					"notice" : "Datasource: [https://www.thunderforest.com thunderforest.com] by Thunderforest (CC-BY-SA 2.0)"
+				}
+			},
+			"lodRange" : [ 1, 15 ],
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "/map/vts_proxy/world/topo/thunderforest/landscape/{lod}/{x}/{y}.png"
 		},
 		"fr-satellite" : {
 			"credits" : 
@@ -185,6 +236,42 @@
 			],
 			"type" : "raster",
 			"url" : "/map/vts_proxy/ca/topo/{lod}/{x}/{y}.png"
+		},
+		"ch-topo" : {
+			"credits" : 
+			{
+				"swisstopo" : 
+				{
+					"id" : 125,
+					"notice" : "Datasource: [https://www.swisstopo.admin.ch/en/home.html geodata swisstopo]"
+				}
+			},
+			"lodRange" : [ 1, 15 ],
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "/map/vts_proxy/ch/topo/{lod}/{x}/{y}.jpeg"
+		},
+		"ch-satellite" : {
+			"credits" : 
+			{
+				"swisstopo" : 
+				{
+					"id" : 125,
+					"notice" : "Datasource: [https://www.swisstopo.admin.ch/en/home.html ESA / Eurimage / swisstopo, NPOC]"
+				}
+			},
+			"lodRange" : [ 1, 15 ],
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "/map/vts_proxy/ch/satellite/{lod}/{x}/{y}.jpeg"
 		}
 	},
 	"browserOptions" : 

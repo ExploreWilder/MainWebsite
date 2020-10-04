@@ -481,8 +481,49 @@ def proxy_canvec() -> bytes:
     Raises:
         404: in case of server error or if the request comes from another website and not in testing mode.
     """
-    url = "http://maps.geogratis.gc.ca/wms/canvec_en?{}".format(
+    url = "https://maps.geogratis.gc.ca/wms/canvec_en?{}".format(
         secure_decode_query_string(request.query_string))
+    try:
+        r = requests.get(url)
+    except:
+        abort(404)
+    return Response(r.content, mimetype="image/png")
+
+@map_app.route("/proxy/thunderforest/<string:layer>/<int:z>/<int:x>/<int:y>", methods=("GET",))
+@same_site
+def proxy_thunderforest(layer: str, z: int, x: int, y: int) -> bytes:
+    """
+    Tunneling map requests to the Thunderforest servers in order to hide the API key.
+    Other tile layer URLs:
+    https://manage.thunderforest.com/dashboard
+
+    Raises:
+        404: in case of Thunderforest error (such as ConnectionError).
+
+    Args:
+        layer (str): Tile layer.
+        z (int): Z parameter of the XYZ request.
+        x (int): X parameter of the XYZ request.
+        y (int): Y parameter of the XYZ request.
+    """
+    layer = escape(layer)
+    if not layer in (
+        'cycle',
+        'transport',
+        'landscape',
+        'outdoors',
+        'transport-dark',
+        'spinal-map',
+        'pioneer',
+        'mobile-atlas',
+        'neighbourhood'):
+        abort(404)
+    url = "https://tile.thunderforest.com/{}/{}/{}/{}.png?apikey={}".format(
+        layer,
+        z,
+        x,
+        y,
+        current_app.config["THUNDERFOREST_API_KEY"])
     try:
         r = requests.get(url)
     except:

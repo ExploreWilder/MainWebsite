@@ -12,17 +12,32 @@
     <div id="map"></div>
 
     <div id="menu" title="Menu">
-        <p>
-            Basemap:
+        <fieldset>
+            <legend>Basemap:</legend>
             <label
                 for="country-specific-layers"
                 title="Official government data">Country Specific</label>
-            <input type="radio" name="layer" id="country-specific-layers" />
+            <input type="radio" name="layer" id="country-specific-layers" checked /><br />
             <label
                 for="worldwide-layers"
                 title="Worldwide harmonised data">Worldwide</label>
             <input type="radio" name="layer" id="worldwide-layers" />
-        </p>
+        </fieldset>
+        <fieldset id="topo-layer-selection">
+            <legend>Topo Layer:</legend>
+            <label
+                for="topo-otm"
+                title="My recommendation">OpenTopoMap</label>
+            <input type="radio" name="topo-layer" id="topo-otm" checked /><br />
+            <label
+                for="topo-thunderforest-outdoors"
+                title="Emphasise hiking routes, ski runs and many useful points of interest">Thunderforest Outdoors</label>
+            <input type="radio" name="topo-layer" id="topo-thunderforest-outdoors" /><br />
+            <label
+                for="topo-thunderforest-landscape"
+                title="Emphasises natural features">Thunderforest Landscape</label>
+            <input type="radio" name="topo-layer" id="topo-thunderforest-landscape" />
+        </fieldset>
         <p>
             Aerial Imagery Basemap Opacity (<span id="opacity-slider-value">50</span>%):
         </p>
@@ -32,26 +47,27 @@
             <button id="zoom-out">Zoom out</button>
         </p>
         <p class="attribution">
-            Application (c) <a href="/about" target="_blank" title="Read the copyright notice">{{ config.LEGAL_NAME }}</a><br />
-            Country specific tiles (c)
+            Application © <a href="/about" target="_blank" title="Read the copyright notice">{{ config.LEGAL_NAME }}</a><br />
+            Country specific tiles
             {% if country == "NZ" %}
-                <a href="http://data.linz.govt.nz" target="_blank" title="Find out more">LINZ</a>
+                © <a href="http://data.linz.govt.nz" target="_blank" title="Find out more">LINZ</a>
                 (<a href="https://creativecommons.org/licenses/by/3.0/"
-                target="_blank"
-                title="Read the copyright notice">CC-BY 3.0</a>)
+                    target="_blank"
+                    title="Read the copyright notice">CC-BY 3.0</a>) (topo + satellite)
             {% elif country == "FR" %}
-                IGN
+                © IGN (topo + satellite)
             {% elif country == "CA" %}
-                <a href="https://open.canada.ca/en/open-government-licence-canada" title="Find out more">Open Government Licence - Canada</a> (topo),
-                <a href="https://www.mapbox.com/about/maps/" title="Find out more">Mapbox</a> (satellite)
+                © <a href="https://open.canada.ca/en/open-government-licence-canada" title="Find out more">Open Government Licence - Canada</a> (topo)
+            {% elif country == "CH" %}
+                © <a href="https://www.swisstopo.admin.ch/en/home.html" title="Find out more">geodata swisstopo</a> (topo),
+                © <a href="https://www.swisstopo.admin.ch/en/home.html" title="Find out more">ESA / Eurimage / swisstopo, NPOC</a> (satellite)
             {% elif country == "NO" %}
-                <a href="http://www.kartverket.no/" title="Find out more">Kartverket</a> (topo),
-                <a href="https://www.mapbox.com/about/maps/" title="Find out more">Mapbox</a> (satellite)
+                © <a href="http://www.kartverket.no/" title="Find out more">Kartverket</a> (topo)
             {% endif %}<br />
-            Worldwide tiles (c)
+            Worldwide tiles ©
             <a href="https://opentopomap.org" title="Find out more">OpenTopoMap</a>
-            (<a href="https://creativecommons.org/licenses/by-sa/3.0/" title="Read the copyright notice">CC-BY-SA 3.0</a>),
-            <a href="https://www.mapbox.com/about/maps/" title="Find out more">Mapbox</a> (satellite)
+            (<a href="https://creativecommons.org/licenses/by-sa/3.0/" title="Read the copyright notice">CC-BY-SA 3.0</a>) (topo),
+            © <a href="https://www.mapbox.com/about/maps/" title="Find out more">Mapbox</a> (satellite)
         </p>
     </div>
     <button id="goto-menu" title="Open Settings &amp; Attributions">Menu</button>
