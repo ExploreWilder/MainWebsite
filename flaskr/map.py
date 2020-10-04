@@ -453,7 +453,7 @@ def proxy_ign() -> FlaskResponse:
 @same_site
 def proxy_topografisk(z: int, x: int, y: int) -> bytes:
     """
-    Tunneling map requests to the Kartverket servers (Norway) in order to respect users' privacy.
+    Tunneling map requests to the Kartverket servers (Norway).
     Howto available here: https://kartverket.no/en/data/lage-kart-pa-nett/
 
     Raises:
@@ -476,7 +476,7 @@ def proxy_topografisk(z: int, x: int, y: int) -> bytes:
 @same_site
 def proxy_canvec() -> bytes:
     """
-    Tunneling map requests to the Geogratis servers (Canada) in order to respect users' privacy.
+    Tunneling map requests to the Geogratis servers (Canada).
 
     Raises:
         404: in case of server error or if the request comes from another website and not in testing mode.

@@ -113,6 +113,78 @@
 			],
 			"type" : "raster",
 			"url" : "/map/vts_proxy/fr/topo/{lod}/{x}/{y}.jpg"
+		},
+		"nz-satellite" : {
+			"credits" : 
+			{
+				"linz" : 
+				{
+					"id" : 125,
+					"notice" : "Datasource: [http://data.linz.govt.nz data.linz.govt.nz] by LINZ (CC-BY 4.0)"
+				}
+			},
+			"lodRange" : [ 1, 15 ],
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "/map/vts_proxy/nz/satellite/{lod}/{x}/{y}.png"
+		},
+		"nz-topo" : {
+			"credits" : 
+			{
+				"linz" : 
+				{
+					"id" : 125,
+					"notice" : "Datasource: [http://data.linz.govt.nz data.linz.govt.nz] by LINZ (CC-BY 4.0)"
+				}
+			},
+			"lodRange" : [ 1, 15 ],
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "/map/vts_proxy/nz/topo/{lod}/{x}/{y}.png"
+		},
+		"no-topo" : {
+			"credits" : 
+			{
+				"kartverket" : 
+				{
+					"id" : 125,
+					"notice" : "Datasource: [http://www.kartverket.no/ kartverket.no] by Kartverket"
+				}
+			},
+			"lodRange" : [ 1, 15 ],
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "/map/vts_proxy/no/topo/{lod}/{x}/{y}.png"
+		},
+		"ca-topo" : {
+			"credits" : 
+			{
+				"canada" : 
+				{
+					"id" : 125,
+					"notice" : "Datasource: [https://open.canada.ca/en/open-government-licence-canada open.canada.ca] by Canada - Open Government Licence"
+				}
+			},
+			"lodRange" : [ 1, 15 ],
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "/map/vts_proxy/ca/topo/{lod}/{x}/{y}.png"
 		}
 	},
 	"browserOptions" : 
