@@ -31,7 +31,6 @@
 import pytest
 
 @pytest.mark.parametrize("path", (
-    ("/map/vts_proxy/world/satellite/0/0/0.jpg"),
     ("/map/vts_proxy/world/topo/otm/0/0/0.png"),
     ("/map/vts_proxy/world/topo/thunderforest/outdoors/0/0/0.png"),
     ("/map/vts_proxy/world/topo/thunderforest/landscape/0/0/0.png"),
@@ -44,7 +43,6 @@ import pytest
     ("/map/vts_proxy/world/topo/thunderforest/neighbourhood/0/0/0.png"),
     ("/map/vts_proxy/nz/satellite/0/0/0.png"),
     ("/map/vts_proxy/nz/topo/0/0/0.png"),
-    ("/map/vts_proxy/no/topo/0/0/0.png"),
     ("/map/vts_proxy/ca/topo/0/0/0.png"),
     ("/map/vts_proxy/fr/satellite/0/0/0.jpg"),
     ("/map/vts_proxy/fr/topo/0/0/0.jpg")

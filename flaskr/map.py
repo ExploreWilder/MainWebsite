@@ -271,7 +271,7 @@ def webtrack_file(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
     if not os.path.isfile(webtrack_path) \
         or os.stat(webtrack_path).st_size == 0 \
         or os.stat(webtrack_path).st_mtime < os.stat(gpx_path).st_mtime: # update webtrack
-        try:
+        try: # TODO: re-create the WebTrack file if bad header information
             gpx_to_webtrack_with_elevation(
                 gpx_path,
                 webtrack_path,
@@ -404,7 +404,7 @@ def gpx_to_webtrack_with_elevation(
 
 @map_app.route("/middleware/lds/<string:layer>/<string:a_d>/<int:z>/<int:x>/<int:y>", methods=("GET",))
 @same_site
-def proxy_lds(layer: str, a_d: str, z: int, x: int, y: int) -> bytes:
+def proxy_lds(layer: str, a_d: str, z: int, x: int, y: int) -> FlaskResponse:
     """
     Tunneling map requests to the LDS servers in order to hide the API key.
     Help using LDS with OpenLayers:
@@ -448,84 +448,3 @@ def proxy_ign() -> FlaskResponse:
     except:
         abort(404)
     return Response(r.content, mimetype="image/jpeg")
-
-@map_app.route("/middleware/topografisk/<int:z>/<int:x>/<int:y>", methods=("GET",))
-@same_site
-def proxy_topografisk(z: int, x: int, y: int) -> bytes:
-    """
-    Tunneling map requests to the Kartverket servers (Norway).
-    Howto available here: https://kartverket.no/en/data/lage-kart-pa-nett/
-
-    Raises:
-        404: in case of server error or if the request comes from another website and not in testing mode.
-
-    Args:
-        z (int): Z parameter of the XYZ request.
-        x (int): X parameter of the XYZ request.
-        y (int): Y parameter of the XYZ request.
-    """
-    url = "https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={}&x={}&y={}".format(
-        z, x, y)
-    try:
-        r = requests.get(url)
-    except:
-        abort(404)
-    return Response(r.content, mimetype="image/png")
-
-@map_app.route("/middleware/canvec", methods=("GET",))
-@same_site
-def proxy_canvec() -> bytes:
-    """
-    Tunneling map requests to the Geogratis servers (Canada).
-
-    Raises:
-        404: in case of server error or if the request comes from another website and not in testing mode.
-    """
-    url = "https://maps.geogratis.gc.ca/wms/canvec_en?{}".format(
-        secure_decode_query_string(request.query_string))
-    try:
-        r = requests.get(url)
-    except:
-        abort(404)
-    return Response(r.content, mimetype="image/png")
-
-@map_app.route("/proxy/thunderforest/<string:layer>/<int:z>/<int:x>/<int:y>", methods=("GET",))
-@same_site
-def proxy_thunderforest(layer: str, z: int, x: int, y: int) -> bytes:
-    """
-    Tunneling map requests to the Thunderforest servers in order to hide the API key.
-    Other tile layer URLs:
-    https://manage.thunderforest.com/dashboard
-
-    Raises:
-        404: in case of Thunderforest error (such as ConnectionError).
-
-    Args:
-        layer (str): Tile layer.
-        z (int): Z parameter of the XYZ request.
-        x (int): X parameter of the XYZ request.
-        y (int): Y parameter of the XYZ request.
-    """
-    layer = escape(layer)
-    if not layer in (
-        'cycle',
-        'transport',
-        'landscape',
-        'outdoors',
-        'transport-dark',
-        'spinal-map',
-        'pioneer',
-        'mobile-atlas',
-        'neighbourhood'):
-        abort(404)
-    url = "https://tile.thunderforest.com/{}/{}/{}/{}.png?apikey={}".format(
-        layer,
-        z,
-        x,
-        y,
-        current_app.config["THUNDERFOREST_API_KEY"])
-    try:
-        r = requests.get(url)
-    except:
-        abort(404)
-    return Response(r.content, mimetype="image/png")

@@ -163,7 +163,7 @@ var raster_topo50 = {
     }),
     "no": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: middleware_url["no"] + "{z}/{x}/{y}"
+            url: middleware_url["no"]
         })
     }),
     "topo-otm": new ol.layer.Tile({
@@ -173,12 +173,12 @@ var raster_topo50 = {
     }),
     "topo-thunderforest-outdoors": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: middleware_url["topo-thunderforest"] + "outdoors/{z}/{x}/{y}"
+            url: middleware_url["topo-thunderforest"] + "outdoors/{z}/{x}/{y}.png"
         })
     }),
     "topo-thunderforest-landscape": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: middleware_url["topo-thunderforest"] + "landscape/{z}/{x}/{y}"
+            url: middleware_url["topo-thunderforest"] + "landscape/{z}/{x}/{y}.png"
         })
     }),
     "ch": new ol.layer.Tile({

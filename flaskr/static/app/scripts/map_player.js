@@ -54,6 +54,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+/*
+ * Information about the mapConfig.json:
+ * https://github.com/melowntech/vts-mapproxy/blob/master/docs/resources.md
+ */
+
 var browser, renderer, map;
 var geodata, lineGeometry = null;
 var demoTexture = null;

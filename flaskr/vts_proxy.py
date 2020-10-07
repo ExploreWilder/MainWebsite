@@ -33,6 +33,7 @@ from .tilenames import tileLatLonEdges
 
 vts_proxy_app = Blueprint("vts_proxy_app", __name__)
 
+#: OpenTopoMap cache directory.
 OTM_CACHE = absolute_path("../otm_cache")
 
 #: IGN parameters used for all IGN layers.
@@ -59,28 +60,6 @@ CANVEC_PARAMS = {
     "STYLES": ""
 }
 
-@vts_proxy_app.route("/world/satellite/<int:z>/<int:x>/<int:y>.jpg", methods=("GET",))
-@same_site
-def vts_proxy_world_sat(z: int, x: int, y: int) -> FlaskResponse:
-    """
-    Tunneling map requests to the Mapbox servers.
-    To use only with VTS Browser JS. Use proxy_ign() for OpenLayers.
-    Notice: an offset of 1 on the Z index has been applied.
-
-    Raises:
-        404: in case of Mapbox error or if the request comes from another website and not in testing mode.
-    """
-    url = "https://api.mapbox.com/v4/mapbox.satellite/{}/{}/{}@2x.jpg90?access_token={}".format(
-        z - 1, # hack
-        x,
-        y,
-        current_app.config["MAPBOX_PUB_KEY"])
-    try:
-        r = requests.get(url)
-    except:
-        abort(404)
-    return Response(r.content, mimetype="image/jpeg")
-
 @vts_proxy_app.route("/world/topo/otm/<int:z>/<int:x>/<int:y>.png", methods=("GET",))
 @same_site
 def vts_proxy_world_topo_otm(z: int, x: int, y: int) -> FlaskResponse:
@@ -94,10 +73,10 @@ def vts_proxy_world_topo_otm(z: int, x: int, y: int) -> FlaskResponse:
     Raises:
         404: in case of OpenTopoMap error or if the request comes from another website and not in testing mode.
     """
-    cache_filename = "{}.{}.{}.png".format(z-1, x, y)
+    cache_filename = "{}.{}.{}.png".format(z, x, y)
     cache_path = os.path.join(OTM_CACHE, cache_filename)
     if not os.path.isfile(cache_path):
-        url = "https://opentopomap.org/{}/{}/{}.png".format(z-1, x, y)
+        url = "https://opentopomap.org/{}/{}/{}.png".format(z, x, y)
         try:
             r = requests.get(url)
         except:
@@ -138,7 +117,7 @@ def vts_proxy_world_topo_thunderforest(layer: str, z: int, x: int, y: int) -> Fl
         abort(404)
     url = "https://tile.thunderforest.com/{}/{}/{}/{}.png?apikey={}".format(
         layer,
-        z - 1,
+        z,
         x,
         y,
         current_app.config["THUNDERFOREST_API_KEY"])
@@ -173,7 +152,7 @@ def vts_proxy_ign(layer: str, z: int, x: int, y: int) -> FlaskResponse:
         current_app.config["IGN"]["app"],
         layer,
         params_urlencode(IGN_COMMON_PARAMS),
-        z - 1,
+        z,
         x,
         y)
     
@@ -193,6 +172,10 @@ def get_subdomain(x: int, y:int, subdomains: Union[str, Tuple[str]] = "abc") -> 
         x (int): X coord in the XYZ system.
         y (int): Y coord in the XYZ system.
         subdomains: List of letters made available by the tiles supplier.
+                    Example:
+                    
+                    * a string: "abcd" for subdomains a, b, c, and d
+                    * or a tuple/list: ("10", "100", "101", "102", "103", "104", "20")
     
     Returns:
         str: One of the subdomain letter.
@@ -231,70 +214,9 @@ def vts_proxy_lds(layer: str, z: int, x: int, y: int) -> FlaskResponse:
         get_subdomain(x, y, subdomains),
         current_app.config["LDS_API_KEY"],
         layer,
-        z - 1,
+        z,
         x,
         y)
-    try:
-        r = requests.get(url)
-    except:
-        abort(404)
-    return Response(r.content, mimetype="image/png")
-
-@vts_proxy_app.route("/ch/<string:layer>/<int:z>/<int:x>/<int:y>.jpeg", methods=("GET",))
-@same_site
-def vts_proxy_swisstopo(layer: str, z: int, x: int, y: int) -> FlaskResponse:
-    """
-    Tunneling map requests to the Swisstopo servers.
-    Topo tiles: https://map.geo.admin.ch/?bgLayer=ch.swisstopo.pixelkarte-farbe
-    Satellite tiles: https://map.geo.admin.ch/?bgLayer=ch.swisstopo.swissimage
-    NOTE: it is NOT working! Always get a 403 error!
-
-    Raises:
-        404: in case of Swisstopo error (such as ConnectionError).
-
-    Args:
-        layer (str): satellite or topo. The layer type is replaced to the actual tile name.
-        z (int): Z parameter of the XYZ request.
-        x (int): X parameter of the XYZ request.
-        y (int): Y parameter of the XYZ request.
-    """
-    layer = escape(layer)
-    if layer == "satellite":
-        layer = "ch.swisstopo.swissimage"
-    elif layer == "topo":
-        layer = "ch.swisstopo.pixelkarte-farbe"
-    else:
-        abort(404)
-
-    url = "https://wmts{}.geo.admin.ch/1.0.0/{}/default/current/3857/{}/{}/{}.jpeg".format(
-        get_subdomain(x, y, ("10", "100", "101", "102", "103", "104", "20")),
-        layer,
-        z - 1,
-        x,
-        y)
-    try:
-        r = requests.get(url) # r.status_code == 403
-    except:
-        abort(404)
-    return Response(r.content, mimetype="image/jpeg")
-
-@vts_proxy_app.route("/no/topo/<int:z>/<int:x>/<int:y>.png", methods=("GET",))
-@same_site
-def vts_proxy_topografisk(z: int, x: int, y: int) -> FlaskResponse:
-    """
-    Tunneling map requests to the Kartverket servers (Norway).
-    Howto available here: https://kartverket.no/en/data/lage-kart-pa-nett/
-
-    Raises:
-        404: in case of server error or if the request comes from another website and not in testing mode.
-
-    Args:
-        z (int): Z parameter of the XYZ request.
-        x (int): X parameter of the XYZ request.
-        y (int): Y parameter of the XYZ request.
-    """
-    url = "https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={}&x={}&y={}".format(
-        z - 1, x, y)
     try:
         r = requests.get(url)
     except:
@@ -314,7 +236,7 @@ def vts_proxy_canvec(z: int, x: int, y: int) -> FlaskResponse:
         404: in case of server error or if the request comes from another website and not in testing mode.
     """
 
-    s,w,n,e = tileLatLonEdges(x,y,z - 1)
+    s,w,n,e = tileLatLonEdges(x,y,z)
     url = "https://maps.geogratis.gc.ca/wms/canvec_en?{}&BBOX={},{},{},{}".format(
         params_urlencode(CANVEC_PARAMS), s, w, n, e)
     try:

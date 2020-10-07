@@ -36,6 +36,7 @@ class WebTrack:
     """
     Implementation of the Rich Geo Tracking Web Format (WebTrack for short).
     Refer to map.py for an example of use.
+    TODO: read capability, or at least a format header check for map.webtrack_file()
     """
 
     #: Big-endian order as specified.
@@ -49,7 +50,7 @@ class WebTrack:
             file_path: str,
             data: Dict,
             format_name: bytes = b"webtrack-bin",
-            format_version: bytes = b"0.0.1"
+            format_version: bytes = b"0.1.0"
         ):
         """ Open the binary file and write the WebTrack data. """
         with open(file_path, "wb") as stream:

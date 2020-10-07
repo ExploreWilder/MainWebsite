@@ -38,11 +38,7 @@ import pytest
     # IGN aerial:
     ("/map/middleware/ign?layer=GEOGRAPHICALGRIDSYSTEMS.MAPS&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/jpeg&TileMatrix=11&TileCol=1023&TileRow=753"),
     # IGN topo:
-    ("/map/middleware/ign?layer=ORTHOIMAGERY.ORTHOPHOTOS&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fjpeg&TileMatrix=11&TileCol=1026&TileRow=753"),
-    # Kartverket topo:
-    ("/map/middleware/topografisk/0/0/0"),
-    # Canada topo:
-    ("/map/middleware/canvec?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=false&LAYERS=canvec&WIDTH=256&HEIGHT=256&CRS=EPSG%3A3857&STYLES=&BBOX=-7983694.730330089%2C5948635.289265556%2C-7944558.971848079%2C5987771.047747566"),
+    ("/map/middleware/ign?layer=ORTHOIMAGERY.ORTHOPHOTOS&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fjpeg&TileMatrix=11&TileCol=1026&TileRow=753")
 ))
 def test_map_proxy_link_ok(client, path):
     """ Ckeck the links availability. """

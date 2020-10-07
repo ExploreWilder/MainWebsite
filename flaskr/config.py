@@ -197,15 +197,17 @@ class Config(object):
             "https://*.sentry.io", # for error reporting
             "https://*.tiles.mapbox.com", # Mapbox GL JS
             "https://api.mapbox.com", # Mapbox GL JS
-            "https://cdn.melown.com" # VTS Browser JS
+            "https://cdn.melown.com", # map viewer (3D only)
+            "https://*.geo.admin.ch" # map viewer (3D only)
         ],
         "img-src": [
             "'self'",
             "data:",
             "blob:", # Mapbox GL JS
-            "https://api.mapbox.com", # map viewer
-            "https://opentopomap.org", # map viewer
-            "https://*.geo.admin.ch" # map viewer
+            "https://api.mapbox.com", # map viewer (2D only)
+            "https://*.geo.admin.ch", # map viewer (2D only)
+            "https://opencache.statkart.no", # map viewers (2D+3D)
+            "https://maps.geogratis.gc.ca" # map viewer (2D only)
         ],
         "style-src": [
             "'self'",

@@ -50,11 +50,11 @@ const duration_zoom_animation = 300;
 const middleware_url = {
     "nz": "/map/middleware/lds/",
     "fr": "/map/middleware/ign",
-    "topo-otm": "https://opentopomap.org/{z}/{x}/{y}.png",
-    "topo-thunderforest": "/map/proxy/thunderforest/",
+    "topo-otm": "/map/vts_proxy/world/topo/otm/{z}/{x}/{y}.png",
+    "topo-thunderforest": "/map/vts_proxy/world/topo/thunderforest/",
     "satellite": "https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90?access_token=" + MAPBOX_PUB_KEY,
-    "ca": "/map/middleware/canvec",
-    "no": "/map/middleware/topografisk/",
+    "ca": "https://maps.geogratis.gc.ca/wms/canvec_en",
+    "no": "https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}",
     "ch": "https://wmts10.geo.admin.ch/1.0.0/",
 };
 
