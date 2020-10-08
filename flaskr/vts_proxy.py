@@ -29,7 +29,8 @@
 #
 
 from .utils import *
-from .tilenames import tileLatLonEdges
+from .tilenames import tileLatLonEdges # bbox
+from pyquadkey2 import tilesystem # Bing Maps QuadKey
 
 vts_proxy_app = Blueprint("vts_proxy_app", __name__)
 
@@ -244,3 +245,94 @@ def vts_proxy_canvec(z: int, x: int, y: int) -> FlaskResponse:
     except:
         abort(404)
     return Response(r.content, mimetype="image/png")
+
+def download_bing_metadata(bing_key: str, imagery_set: str = "Aerial", timeout: int = 10) -> Tuple[str, List[str]]:
+    """
+    Download the metadata URL from Bing Maps.
+
+    More information:
+
+    * Get Imagery Metadata (Microsoft):
+      https://docs.microsoft.com/en-us/bingmaps/rest-services/imagery/get-imagery-metadata
+    
+    * The request configuration (timeout and Keep-Alive) is based on the VTS Mapproxy / TMS Bing:
+      https://github.com/melowntech/vts-mapproxy/blob/master/mapproxy/src/mapproxy/generator/tms-bing.cpp#L105
+    
+    Args:
+        bing_key (str): The Bing Maps private app key.
+        imagery_set (str): The type of imagery for which you are requesting metadata.
+        timeout (int): The HTTP request timeout in seconds.
+    
+    Returns:
+        The image URL and a list of subdomains. The URL is forced to be HTTPS.
+    """
+    metadata_url = "https://dev.virtualearth.net/REST/v1/Imagery/Metadata/" + imagery_set + "?key=" + bing_key
+
+    with requests.Session() as s:
+        s.keep_alive = False # no reuse
+        try:
+            r = s.get(metadata_url, timeout=timeout)
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            raise Exception("Failed to download the imagery metadata from Bing Maps (" + r.status_code + " status code)")
+    
+    try:
+        metadata = json.loads(r.content)
+        if metadata["authenticationResultCode"] != "ValidCredentials":
+            raise Exception("Invalid Bing Maps credentials")
+        if metadata["statusCode"] >= 400: # 400, 401, 404, 429, 500, 503
+            raise Exception("Bing Maps error status code " + metadata["statusCode"])
+    except:
+        raise Exception("Bad metadata")
+    try:
+        resource = metadata["resourceSets"][0]["resources"][0]
+        image_url = resource["imageUrl"]
+        subdomains = resource["imageUrlSubdomains"]
+    except:
+        raise Exception("Missing resources from the metadata")
+    
+    return (image_url.replace("http://", "https://"), subdomains)
+
+@vts_proxy_app.route("/world/satellite/bing/<int:z>/<int:x>/<int:y>.jpeg", methods=("GET",))
+@same_site
+def vts_proxy_bing_aerial(z: int, x: int, y: int) -> FlaskResponse:
+    """
+    Handle the Bing Maps protocol of tiles request:
+
+    1) get metadata for imagery that is hosted by Bing Maps,
+    2) get the image URLs from the metadata,
+    3) find out the QuadKey from the xyz coords,
+    4) download and return the tile.
+
+    The first step is done only once to find out the regularly changing
+    Bing tile URL and subdomains, then the result is saved into the session.
+    
+    The private key is sent to Bing only.
+    The image URLs are not sensitive data and actually exposed to the user
+    via the session, which is signed by design to avoid requesting a bad URL.
+
+    More information:
+    
+    * Displaying Bing Map layers (Melowntech):
+      https://vts-geospatial.org/tutorials/bing-maps.html?highlight=bing
+    
+    * Directly accessing the Bing Maps tiles (Microsoft):
+      https://docs.microsoft.com/en-us/bingmaps/rest-services/directly-accessing-the-bing-maps-tiles
+    
+    * Bing Maps Tile System (Microsoft):
+      https://docs.microsoft.com/en-us/bingmaps/articles/bing-maps-tile-system
+    
+    """
+    if not "BingImageryMetadata" in session:
+        try:
+            metadata = download_bing_metadata(current_app.config["BING_API_KEY"])
+            session["BingImageryMetadata"] = metadata
+        except Exception as e:
+            return str(e), 500
+    else:
+        metadata = session["BingImageryMetadata"]
+    image_url, subdomains = metadata
+    r = requests.get(image_url.format(
+        subdomain=get_subdomain(x, y, subdomains),
+        quadkey=tilesystem.tile_to_quadkey((x, y), z)))
+    return Response(r.content, mimetype="image/jpeg")

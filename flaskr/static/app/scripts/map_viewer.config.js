@@ -46,6 +46,7 @@ const duration_zoom_animation = 300;
  * URL to the map tiles proxy server. It can be an external link if a private key is not required.
  * Example: "/map/middleware/lds/" or "https://..."
  * Notice: Update the Content Security Policy in case of external requests
+ * TODO: add the Bing layer: https://openlayers.org/en/latest/examples/bing-maps.html
  */
 const middleware_url = {
     "nz": "/map/middleware/lds/",
