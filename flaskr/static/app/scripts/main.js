@@ -58,6 +58,11 @@ var no_more_photos = false;
  */
 var is_autoplay = false;
 
+/**
+ * Used by the onscroll event.
+ */
+var scroll_ticking = false;
+
 if(typeof(String.prototype.trim) === "undefined") {
     /**
      * Remove spaces after and before the string.
@@ -1414,8 +1419,11 @@ class toc {
      * Initialiser.
      */
     constructor() {
-        /** Previous title on focus (section where the reader probably was). */
-        this.prev_id_on_focus = null;
+        /** Current anchor on focus (section where the reader probably is). Unset after update. */
+        this.id_on_focus = undefined;
+
+        /** Used for scroll event throttling. */
+        this.scroll_timeout = undefined;
         
         // move the section id into a created div that will become the anchor
         $("#content-book .section").prepend(function() {
@@ -1426,15 +1434,14 @@ class toc {
     }
 
     /**
-     * Update the URL according to the first visible anchor on the screen.
+     * Find out the visible anchor on the screen.
      * @see animate()
      * @param elem {Object} - An anchor.
      * @return {Boolean} False at the first visible anchor to stop looping.
      */
-    animate_elem(elem) {
+    get_elem(elem) {
         if(is_on_screen(elem)) {
-            var curr_id = elem.attr("id");
-            window.history.replaceState(window.location.pathname, "", window.location.pathname + "#" + curr_id);
+            this.id_on_focus = elem.attr("id");
             return false; // stop looping through anchors
         }
         return true;
@@ -1443,12 +1450,32 @@ class toc {
     /**
      * Loop through all anchors and update the URL accordingly to the reading progress.
      */
+    actual_animate() {
+        if(typeof this.id_on_focus === "string") {
+            window.history.replaceState(window.location.pathname, "", window.location.pathname + "#" + this.id_on_focus);
+            this.id_on_focus = undefined;
+        }
+    }
+
+    /**
+     * Find the current anchor. The actual refresh is throttled with setTimeout()
+     * in order to avoid a Safari security error which is:
+     * "SecurityError: Attempt to use history.replaceState() more than 100 times per 30 seconds"
+     * More info about the scroll event in the MDN doc:
+     * https://developer.mozilla.org/en-US/docs/Web/API/Element/scroll_event
+     */
     animate() {
         var my_toc = this;
-
         $("#content-book .title-anchor").each(function() {
-            return my_toc.animate_elem($(this));
+            return my_toc.get_elem($(this));
         });
+        if(typeof this.scroll_timeout !== "number") {
+            this.actual_animate();
+            this.scroll_timeout = window.setTimeout(function() {
+                my_toc.actual_animate(); // move end
+                my_toc.scroll_timeout = undefined;
+            }, 400); // 400 ms is less than 100 times per 30 seconds
+        }
     }
 }
 
@@ -1469,21 +1496,33 @@ $(window).resize(function() {
 
 /**
  * When the user scrolls the web page: fetch new thumbnails one row in advance.
+ * But not too often as detailed in the MDN web doc:
+ * https://developer.mozilla.org/en-US/docs/Web/API/Element/scroll_event
  */
 $(window).scroll(function() {
-    if($("#main").length) {
-        $("#onclick-scroll-down").show();
-        if(($(window).scrollTop() + $(window).height() + get_thumbnail_height()) >= $(document).height()) {
-            if(!no_more_photos) {
-                fetch_thumbnails(total_new_photos);
+    let last_known_scroll_position = $(window).scrollTop();
+    let scroll_timeout = undefined;
+    if(!scroll_ticking) {
+        window.requestAnimationFrame(function() {
+            if($("#main").length) {
+                $("#onclick-scroll-down").show();
+                if((last_known_scroll_position + $(window).height() + get_thumbnail_height()) >= $(document).height()) {
+                    if(!no_more_photos) {
+                        fetch_thumbnails(total_new_photos);
+                    }
+                    else {
+                        $("#onclick-scroll-down").hide();
+                    }
+                }
             }
-            else {
-                $("#onclick-scroll-down").hide();
+
+            if($("#content-book").length) {
+                toc.animate();
             }
-        }
-    }
-    if($("#content-book").length) {
-        toc.animate();
+
+            scroll_ticking = false;
+        });
+        scroll_ticking = true;
     }
 });
 
