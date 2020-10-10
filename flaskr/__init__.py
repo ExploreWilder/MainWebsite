@@ -73,6 +73,7 @@ def create_app(is_testing: bool = False) -> Flask:
     if not is_debug and not is_testing:
         sentry_sdk.init(
             dsn=app.config["SENTRY_DSN"],
+            release=app.config["GIT_COMMIT"],
             integrations=[FlaskIntegration()])
 
     app.config["CSP_NONCE"] = csp_nonce()

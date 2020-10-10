@@ -170,7 +170,8 @@ gulp.task('styles', function () {
 gulp.watch('./app/styles/*.less', gulp.series('styles'));
 
 gulp.task('sentry', function() {
-    return gulp.src('./node_modules/@sentry/browser/build/bundle.min.js')
+    // includes both @sentry/browser and @sentry/tracing
+    return gulp.src('./node_modules/@sentry/tracing/build/bundle.tracing.min.js')
         .pipe(rename("sentry.js"))
         .pipe(changed(js_dest))
         .pipe(gulp.dest(js_dest));

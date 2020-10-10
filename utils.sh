@@ -3,9 +3,19 @@
 prod_db_user="UNDISCLOSED"
 prod_db_name="UNDISCLOSED"
 prod_db_backup_dir=UNDISCLOSED
+export SENTRY_AUTH_TOKEN=UNDISCLOSED
+export SENTRY_ORG=UNDISCLOSED
 
+shopt -s expand_aliases
+alias sentry-cli="./flaskr/static/node_modules/.bin/sentry-cli"
 tool="${1}"
 case ${tool} in
+    sentry-release)
+        VERSION=$(sentry-cli releases propose-version)
+        echo "Release version: $VERSION"
+        sentry-cli releases new --finalize -p flask $VERSION # Create a release
+        sentry-cli releases set-commits --auto $VERSION # Associate commits with the release
+        ;;
     init-db-localhost)
         source venv/bin/activate
         export FLASK_APP=flaskr
@@ -80,9 +90,10 @@ case ${tool} in
         deactivate
         ;;
     *)
-        echo "`basename ${0}`:usage: [init-db-localhost]" \
+        echo "`basename ${0}`:usage: [sentry-release]" \
+            "| [init-db-localhost]" \
             "| [backup-db-prod]" \
-            "| [run-gulp]" \
+            "| [run-gulp (run-all)]" \
             "| [cloc]" \
             "| [doc-localhost]" \
             "| [run-app-localhost]" \

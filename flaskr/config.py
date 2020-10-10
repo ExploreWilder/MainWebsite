@@ -194,7 +194,7 @@ class Config(object):
         ],
         "connect-src": [
             "'self'",
-            "https://*.sentry.io", # for error reporting
+            "https://*.sentry.io", # for error reporting and perf monitoring (tracing)
             "https://*.tiles.mapbox.com", # Mapbox GL JS
             "https://api.mapbox.com", # Mapbox GL JS
             "https://cdn.melown.com", # map viewer (3D only)
@@ -238,8 +238,10 @@ class Production_config(Config):
     DEBUG=False
     #: Not testing.
     TESTING=False
+    #: Git SHA1 commit as Sentry release ID.
+    GIT_COMMIT="UNDISCLOSED"
     #: Sentry Data Source Name found from the Sentry web app.
-    SENTRY_DSN="https://UNDISCLOSED@sentry.io/UNDISCLOSED"
+    SENTRY_DSN="https://UNDISCLOSED@oUNDISCLOSED.ingest.sentry.io/UNDISCLOSED"
     #: Browsers will only send cookies with requests over HTTPS if the cookie is marked *secure*.
     SESSION_COOKIE_SECURE=True
     #: Browsers will only send the remember me cookie with requests over HTTPS.
