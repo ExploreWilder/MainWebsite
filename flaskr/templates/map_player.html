@@ -1,114 +1,196 @@
 {% extends "layout.html" %}
 {% block title %}Map Player{% endblock %}
-{% block extra_header_items %}
-    <div class="dropdown map-player-interface">
-        <button class="btn btn-success dropdown-toggle btn-sm"
-                type="button"
-                id="dropdownMenuBoundLayer"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false">
-            <i class="fas fa-layer-group"></i> Layer Selection
-        </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuBoundLayer">
-            <a class="dropdown-item active text-sm"
-               href="#"
-               data-boundlayer="default-satellite">
-                World aerial (medium res)
-            </a>
-            <a class="dropdown-item"
-               href="#"
-               data-boundlayer="world-satellite-mapbox">
-                World aerial (high res from Mapbox)
-            </a>
-            <a class="dropdown-item"
-               href="#"
-               data-boundlayer="world-satellite-bing">
-                World aerial (high res from Bing)
-            </a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item"
-               href="#"
-               data-boundlayer="world-topo-otm"
-               title="My recommendation">
-                World topo (OpenTopoMap)
-            </a>
-            <a class="dropdown-item"
-               href="#"
-               data-boundlayer="world-topo-thunderforest-outdoors"
-               title="Emphasise hiking routes, ski runs and many useful points of interest">
-                World topo (Thunderforest Outdoor)
-            </a>
-            <a class="dropdown-item"
-               href="#"
-               data-boundlayer="world-topo-thunderforest-landscape"
-               title="Emphasises natural features">
-                World topo (Thunderforest Landscape)
-            </a>
-            {% if country == "FR" %}
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item"
-                   href="#"
-                   data-boundlayer="fr-satellite">
-                    Government aerial (IGN)
-                </a>
-                <a class="dropdown-item"
-                   href="#"
-                   data-boundlayer="fr-topo">
-                    Government topo (IGN)
-                </a>
-            {% elif country == "NZ" %}
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item"
-                   href="#"
-                   data-boundlayer="nz-satellite">
-                    Government aerial (LINZ)
-                </a>
-                <a class="dropdown-item"
-                   href="#"
-                   data-boundlayer="nz-topo">
-                    Government topo (LINZ)
-                </a>
-            {% elif country == "CH" %}
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item"
-                   href="#"
-                   data-boundlayer="ch-satellite">
-                    Government aerial (Swisstopo)
-                </a>
-                <a class="dropdown-item"
-                   href="#"
-                   data-boundlayer="ch-topo">
-                    Government topo (Swisstopo)
-                </a>
-            {% elif country == "NO" %}
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item"
-                   href="#"
-                   data-boundlayer="no-topo">
-                    Government topo (Kartverket)
-                </a>
-            {% elif country == "CA" %}
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item"
-                   href="#"
-                   data-boundlayer="ca-topo">
-                    Government topo (Canvec)
-                </a>
-            {% endif %}
-        </div>
-    </div>
-    <a href="{{ url_topo_map }}" class="ml-3 mr-2 btn btn-success btn-sm" role="button"><i class="fas fa-map"></i> Switch to 2D View</a>
-{% endblock %}
 {% block extra_tags %}
     <link href="https://cdn.melown.com/" rel="preconnect" crossorigin>
     <link href="https://cdn.melown.com/" rel="dns-prefetch" />
+    <link href="https://api.mapbox.com/" rel="dns-prefetch" />
     <link href="/static/dist-{{ config.STATIC_PACKAGE.version }}/css/vts-browser.min.css" rel="stylesheet" />
     <link href="/static/dist-{{ config.STATIC_PACKAGE.version }}/css/map_player.css" rel="stylesheet" />
 {% endblock %}
 {% block body %}
+    <nav id="subnav"
+         class="navbar navbar-expand-md navbar-dark fixed-top py-3"
+         role="navigation">
+        <button class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#subNavbarNav"
+            aria-controls="subNavbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="subNavbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="{{ url_topo_map }}"
+                       data-toggle="tooltip"
+                       class="btn btn-info"
+                       title="Load the 2D map viewer"
+                       role="button">
+                        <i class="fas fa-map"></i>
+                        Switch to 2D view
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#"
+                       id="goto-gpx-info"
+                       data-toggle="tooltip"
+                       class="btn btn-info ml-3"
+                       title="Track Information"
+                       role="button"
+                       aria-controls="#gpxInfo">
+                        <i class="fas fa-chart-area"></i>
+                        Track Info
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#"
+                       id="goto-download-gpx"
+                       data-toggle="tooltip"
+                       class="btn btn-info ml-3"
+                       title="Download Raw GPX File"
+                       role="button"
+                       aria-controls="#downloadGPX">
+                        <i class="fas fa-download"></i>
+                        Download GPX
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#"
+                       data-toggle="tooltip"
+                       class="btn btn-info ml-3"
+                       title="Layer selection"
+                       role="button"
+                       aria-controls="#dropdownMenuBoundLayer">
+                        <i class="fas fa-layer-group"></i>
+                        Layers
+                    </a>
+                    <div class="dropdown-menu" id="dropdownMenuBoundLayer">
+                        <a class="dropdown-item active"
+                           href="#"
+                           data-boundlayer="default-satellite">
+                            World aerial (medium res from EOxCloudless)
+                            <abbr data-toggle="tooltip"
+                                  title="Probably the most recent satellite imagery (from Sentinel-2 Cloudless)"
+                                  class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                        </a>
+                        <a class="dropdown-item"
+                           href="#"
+                           data-boundlayer="world-satellite-mapbox">
+                            World aerial (high res from Mapbox)
+                            <abbr data-toggle="tooltip"
+                                  title="Best coverage and super high resolution"
+                                  class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                        </a>
+                        <a class="dropdown-item"
+                           href="#"
+                           data-boundlayer="world-satellite-bing">
+                            World aerial (high res from Bing)
+                            <abbr data-toggle="tooltip"
+                                  title="High quality and high contrast aerial imagery from the best suppliers"
+                                  class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item"
+                           href="#"
+                           data-boundlayer="world-topo-otm"
+                           title="My recommendation">
+                            World topo (OpenTopoMap)
+                            <abbr data-toggle="tooltip"
+                                  title="My recommendation for hiking on several countries (available for Garmin GPS)"
+                                  class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                        </a>
+                        <a class="dropdown-item"
+                           href="#"
+                           data-boundlayer="world-topo-thunderforest-outdoors"
+                           title="Emphasise hiking routes, ski runs and many useful points of interest">
+                            World topo (Thunderforest Outdoor)
+                            <abbr data-toggle="tooltip"
+                                  title="Emphasise hiking routes, ski runs and many useful points of interest"
+                                  class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                        </a>
+                        <a class="dropdown-item"
+                           href="#"
+                           data-boundlayer="world-topo-thunderforest-landscape"
+                           title="Emphasises natural features">
+                            World topo (Thunderforest Landscape)
+                            <abbr data-toggle="tooltip"
+                                  title="Emphasises natural features"
+                                  class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                        </a>
+                        {% if country == "FR" %}
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item"
+                               href="#"
+                               data-boundlayer="fr-satellite">
+                                Government aerial (IGN)
+                                <abbr data-toggle="tooltip"
+                                      title="Official aerial view made available by the French government"
+                                      class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                            </a>
+                            <a class="dropdown-item"
+                               href="#"
+                               data-boundlayer="fr-topo">
+                                Government topo (IGN)
+                                <abbr data-toggle="tooltip"
+                                      title="Like the hard copies available in local stores"
+                                      class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                            </a>
+                        {% elif country == "NZ" %}
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item"
+                               href="#"
+                               data-boundlayer="nz-satellite">
+                                Government aerial (LINZ)
+                                <abbr data-toggle="tooltip"
+                                      title="Official aerial view made available by the New Zealand government"
+                                      class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                            </a>
+                            <a class="dropdown-item"
+                               href="#"
+                               data-boundlayer="nz-topo">
+                                Government topo (LINZ)
+                                <abbr data-toggle="tooltip"
+                                      title="Like the hard copies available in local stores"
+                                      class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                            </a>
+                        {% elif country == "CH" %}
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item"
+                               href="#"
+                               data-boundlayer="ch-satellite">
+                                Government aerial (Swisstopo)
+                            </a>
+                            <a class="dropdown-item"
+                               href="#"
+                               data-boundlayer="ch-topo">
+                                Government topo (Swisstopo)
+                            </a>
+                        {% elif country == "NO" %}
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item"
+                               href="#"
+                               data-boundlayer="no-topo">
+                                Government topo (Kartverket)
+                            </a>
+                        {% elif country == "CA" %}
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item"
+                               href="#"
+                               data-boundlayer="ca-topo">
+                                Government topo (Canvec)
+                            </a>
+                        {% endif %}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="below2navs map-viewer-interface mr-3">
+        {% include "map_dialog_gpx_info.html" %}
+    </div>
     <div id="map-player"></div>
-    {% include "map_dialog_gpx_info.html" %}
     {% include "map_dialog_download_gpx.html" %}
     {% if not "subscribed" in session %}
         {% include "subscribe_newsletter.html" %}

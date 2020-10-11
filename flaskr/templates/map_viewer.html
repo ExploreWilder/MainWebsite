@@ -1,78 +1,167 @@
 {% extends "layout.html" %}
 {% block title %}Map Viewer, {{ country }} version{% endblock %}
-{% block extra_header_items %}
-    <a href="{{ url_player_map }}" class="btn btn-success btn-sm mr-2" role="button"><i class="fas fa-globe"></i> Switch to 3D view</a>
-{% endblock %}
 {% block extra_tags %}
-    <link href="https://opentopomap.org/" rel="dns-prefetch" />
     <link href="https://api.mapbox.com/" rel="dns-prefetch" />
+    <link href="https://tiles.maps.eox.at" rel="dns-prefetch" />
     <link href="/static/dist-{{ config.STATIC_PACKAGE.version }}/css/map_viewer.css" rel="stylesheet" />
 {% endblock %}
 {% block body %}
+    <nav id="subnav"
+         class="navbar navbar-expand-md navbar-dark fixed-top py-3"
+         role="navigation">
+        <button class="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target="#subNavbarNav"
+                aria-controls="subNavbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="subNavbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="{{ url_player_map }}"
+                       data-toggle="tooltip"
+                       class="btn btn-info ml-3"
+                       title="Load the real 3D map player"
+                       role="button">
+                        <i class="fas fa-globe"></i>
+                        Switch to 3D view
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#"
+                       id="goto-gpx-info"
+                       data-toggle="tooltip"
+                       class="btn btn-info ml-3"
+                       title="Track Information"
+                       role="button"
+                       aria-controls="#gpxInfo">
+                        <i class="fas fa-chart-area"></i>
+                        Track Info
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#"
+                       id="goto-download-gpx"
+                       data-toggle="tooltip"
+                       class="btn btn-info ml-3"
+                       title="Download Raw GPX File"
+                       role="button"
+                       aria-controls="#downloadGPX">
+                        <i class="fas fa-download"></i>
+                        Download GPX
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#"
+                       id="goto-menu"
+                       data-toggle="tooltip"
+                       class="btn btn-info ml-3"
+                       title="Layers Settings &amp; Attributions"
+                       role="button"
+                       aria-controls="#menuLayers">
+                        <i class="fas fa-layer-group"></i>
+                        Layers
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="below2navs map-viewer-interface mr-3">
+        <div id="menuLayers" class="card card-menu">
+            <div class="card-header">
+                <i class="fas fa-layer-group"></i>
+                Layers
+                <button type="button" class="close" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="card-body">
+                <fieldset id="basemap-selection">
+                    <legend>Basemap</legend>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-6 p-0">
+                                <input type="radio" name="layer" id="country-specific-layers" checked />
+                                <label for="country-specific-layers">Country Specific</label>
+                                <abbr data-toggle="tooltip"
+                                    title="Government maps (like the hard copies available in local stores)"
+                                    class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                            </div>
+                            <div class="col-lg-6 p-0">
+                                <input type="radio" name="layer" id="worldwide-layers" />
+                                <label for="worldwide-layers">Worldwide</label>
+                                <abbr data-toggle="tooltip"
+                                    title="Harmonised maps with global coverage"
+                                    class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6 p-0">
+                            <fieldset id="topo-layer-selection" class="mr-lg-2">
+                                <legend>Topo Layer</legend>
+                                <input type="radio" name="topo-layer" id="topo-otm" checked />
+                                <label for="topo-otm">OpenTopoMap</label>
+                                <abbr data-toggle="tooltip"
+                                      title="My recommendation for hiking on several countries (available for Garmin GPS)"
+                                      class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                                <br />
+                                <input type="radio" name="topo-layer" id="topo-thunderforest-outdoors" />
+                                <label for="topo-thunderforest-outdoors">Thunderforest Outdoors</label>
+                                <abbr data-toggle="tooltip"
+                                    title="Emphasise hiking routes, ski runs and many useful points of interest"
+                                    class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                                <br />
+                                <input type="radio" name="topo-layer" id="topo-thunderforest-landscape" />
+                                <label for="topo-thunderforest-landscape">Thunderforest Landscape</label>
+                                <abbr data-toggle="tooltip"
+                                      title="Emphasises natural features"
+                                      class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                            </fieldset>
+                        </div>
+                        <div class="col-lg-6 p-0">
+                            <fieldset id="aerial-layer-selection" class="ml-lg-3">
+                                <legend>Aerial Layer</legend>
+                                <input type="radio" name="aerial-layer" id="aerial-eox" checked />
+                                <label for="aerial-eox">EOxCloudless (2019)</label>
+                                <abbr data-toggle="tooltip"
+                                    title="Probably the most recent satellite imagery (from Sentinel-2 Cloudless)"
+                                    class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                                <br />
+                                <input type="radio" name="aerial-layer" id="aerial-mapbox" />
+                                <label for="aerial-mapbox">Mapbox</label>
+                                <abbr data-toggle="tooltip"
+                                    title="Best coverage and super high resolution"
+                                    class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                                <br />
+                                <input type="radio" name="aerial-layer" id="aerial-bing" />
+                                <label for="aerial-bing">Bing</label>
+                                <abbr data-toggle="tooltip"
+                                    title="High quality and high contrast aerial imagery from the best suppliers"
+                                    class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="my-2 text-center">
+                    <label for="opacity-slider">
+                        Aerial Imagery Basemap Opacity (<span id="opacity-slider-value">50</span>%):
+                    </label><br />
+                    <input type="range" id="opacity-slider" name="opacity-slider" min="0" max="100" />
+                </div>
+            </div>
+        </div>
+        {% include "map_dialog_gpx_info.html" %}
+    </div>
+
     <div id="map"></div>
 
-    <div id="menu" title="Menu">
-        <fieldset>
-            <legend>Basemap:</legend>
-            <label
-                for="country-specific-layers"
-                title="Official government data">Country Specific</label>
-            <input type="radio" name="layer" id="country-specific-layers" checked /><br />
-            <label
-                for="worldwide-layers"
-                title="Worldwide harmonised data">Worldwide</label>
-            <input type="radio" name="layer" id="worldwide-layers" />
-        </fieldset>
-        <fieldset id="topo-layer-selection">
-            <legend>Topo Layer:</legend>
-            <label
-                for="topo-otm"
-                title="My recommendation">OpenTopoMap</label>
-            <input type="radio" name="topo-layer" id="topo-otm" checked /><br />
-            <label
-                for="topo-thunderforest-outdoors"
-                title="Emphasise hiking routes, ski runs and many useful points of interest">Thunderforest Outdoors</label>
-            <input type="radio" name="topo-layer" id="topo-thunderforest-outdoors" /><br />
-            <label
-                for="topo-thunderforest-landscape"
-                title="Emphasises natural features">Thunderforest Landscape</label>
-            <input type="radio" name="topo-layer" id="topo-thunderforest-landscape" />
-        </fieldset>
-        <p>
-            Aerial Imagery Basemap Opacity (<span id="opacity-slider-value">50</span>%):
-        </p>
-        <div id="opacity-slider"></div>
-        <p>Zoom:
-            <button id="zoom-in">Zoom in</button>
-            <button id="zoom-out">Zoom out</button>
-        </p>
-        <p class="attribution">
-            Application © <a href="/about" target="_blank" title="Read the copyright notice">{{ config.LEGAL_NAME }}</a><br />
-            Country specific tiles
-            {% if country == "NZ" %}
-                © <a href="http://data.linz.govt.nz" target="_blank" title="Find out more">LINZ</a>
-                (<a href="https://creativecommons.org/licenses/by/3.0/"
-                    target="_blank"
-                    title="Read the copyright notice">CC-BY 3.0</a>) (topo + satellite)
-            {% elif country == "FR" %}
-                © IGN (topo + satellite)
-            {% elif country == "CA" %}
-                © <a href="https://open.canada.ca/en/open-government-licence-canada" title="Find out more">Open Government Licence - Canada</a> (topo)
-            {% elif country == "CH" %}
-                © <a href="https://www.swisstopo.admin.ch/en/home.html" title="Find out more">geodata swisstopo</a> (topo),
-                © <a href="https://www.swisstopo.admin.ch/en/home.html" title="Find out more">ESA / Eurimage / swisstopo, NPOC</a> (satellite)
-            {% elif country == "NO" %}
-                © <a href="http://www.kartverket.no/" title="Find out more">Kartverket</a> (topo)
-            {% endif %}<br />
-            Worldwide tiles ©
-            <a href="https://opentopomap.org" title="Find out more">OpenTopoMap</a>
-            (<a href="https://creativecommons.org/licenses/by-sa/3.0/" title="Read the copyright notice">CC-BY-SA 3.0</a>) (topo),
-            © <a href="https://www.mapbox.com/about/maps/" title="Find out more">Mapbox</a> (satellite)
-        </p>
-    </div>
-    <button id="goto-menu" title="Open Settings &amp; Attributions">Menu</button>
-
-    {% include "map_dialog_gpx_info.html" %}
     {% include "map_dialog_download_gpx.html" %}
 
     <div id="tooltip-waypoint" title=""></div>

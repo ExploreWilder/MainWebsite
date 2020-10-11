@@ -1,12 +1,11 @@
 Map Utils
 ---------
 
+.. js:autoattribute:: current_menu_on_focus
 .. js:autofunction:: label_elevation
 .. js:autofunction:: map_utils.number_with_commas
 .. js:autofunction:: track_info
-.. js:autofunction:: unfocus_menu
-.. js:autofunction:: create_gpx_info_dialog
-.. js:autofunction:: create_download_gpx_dialog
 .. js:autofunction:: create_elevation_chart
 .. js:autofunction:: get_webtrack_url
-.. js:autofunction:: fit_breadcrumb
+.. js:autofunction:: display_gpx_buttons
+.. js:autofunction:: manage_subnav_click

@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#header {
-    opacity: 0.85;
+#header, #subnav, #menuLayers, #gpxInfo {
+    opacity: 0.83;
     transition: opacity 0.3s ease-out;
     -webkit-transition: opacity 0.3s ease-out;
     -moz-transition: opacity 0.3s ease-out;
@@ -42,36 +42,24 @@
     }
 }
 
-.ui-dialog {
-    z-index: 2000 !important; /* above navbar */
-}
-
-#opacity-slider {
-    margin-bottom: 1em;
-}
-
-#goto-menu {
-    position: absolute;
-    top: calc(10px + @nav-bar-height);
-    right: 10px;
-}
-
 #gpx-info-list {
     margin: 0;
 }
 
-#goto-gpx-info {
-    position: absolute;
-    top: calc(10px + @nav-bar-height);
-    left: 10px;
+.layer-info {
+    cursor: help;
+    &:hover {
+        transition: color 0.3s ease-in-out;
+    }
 }
 
-#goto-download-gpx {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
+.below2navs {
+    position: fixed;
+    right: 0;
+    z-index: 990;
+    top: calc(2 * @nav-bar-height + 1.5em) !important;
 }
 
-#gpx-info, #menu, #goto-gpx-info, #goto-download-gpx, #download-gpx {
+#menuLayers {
     display: none;
 }

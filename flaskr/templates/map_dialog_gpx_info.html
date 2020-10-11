@@ -1,8 +1,31 @@
-<div id="gpx-info" title="Track Info">
-    <ul id="gpx-info-list"></ul>
-    <!-- https://www.chartjs.org/docs/latest/general/responsive.html -->
-    <div id="elevation-chart-container" style="position: relative; width: calc(600px - 2em); min-height: 300px;">
-        <canvas id="elevation-chart"></canvas>
+<div id="gpxInfo" class="card card-menu">
+    <div class="card-header">
+        <i class="fas fa-chart-area"></i>
+        Track Info
+        <button type="button" class="close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="card-body">
+
+        {%if header_breadcrumbs %}
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    {% for item in header_breadcrumbs %}
+                        {% if "url" in item %}
+                            <li class="breadcrumb-item"><a href="{{ item.url }}">{{ item.title }}</a></li>
+                        {% else %}
+                            <li class="breadcrumb-item active" aria-current="page" title="{{ item.title }}" data-toggle="tooltip">{{ item.title }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ol>
+            </nav>
+        {% endif %}
+
+        <ul id="gpx-info-list"></ul>
+        <!-- https://www.chartjs.org/docs/latest/general/responsive.html -->
+        <div id="elevation-chart-container" style="position: relative; width: calc(600px - 2em); min-height: 300px;">
+            <canvas id="elevation-chart"></canvas>
+        </div>
     </div>
 </div>
-<button id="goto-gpx-info" title="Open Track Info">Track Info</button>

@@ -1,18 +1,50 @@
-<div id="download-gpx" title="Download GPX">
-    {% if gpx_download_path %}
-        <p>
-            The GPX file is just for you and <a href="/about" target="_blank" title="Read the copyright notice">copyright {{ config.LEGAL_NAME }}</a>.
-        </p>
-        <p>
-            <a class="ui-button ui-widget ui-corner-all" href="{{ gpx_download_path }}">Download Raw GPX File</a>
-        </p>
-    {% else %}
-        <p>
-            Only members can download GPX files.
-        </p>
-        <p>
-            <a class="ui-button ui-widget ui-corner-all" href="/login" target="_blank">Sign in</a>
-        </p>
-    {% endif %}
+<div class="modal fade" id="downloadGPX" tabindex="-1" role="dialog" aria-labelledby="downloadGPX" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Download GPX</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                {% if gpx_download_path %}
+                    The GPX file is just for you and <a href="/about" target="_blank" title="Read the copyright notice">copyright {{ config.LEGAL_NAME }}</a>.
+                {% else %}
+                    Only members can download GPX files.
+                {% endif %}
+            </div>
+            
+            <div class="modal-footer">
+                {% if gpx_download_path %}
+                    <a href="{{ gpx_download_path }}"
+                       class="btn btn-outline-secondary"
+                       role="button">
+                        <i class="fas fa-download"></i>
+                        Download Raw GPX File
+                    </a>
+                {% else %}
+                    <a href="/login"
+                       class="btn btn-outline-secondary"
+                       role="button">
+                        <i class="fas fa-lock"></i>
+                        Login
+                    </a>
+                    <a href="/about"
+                       class="btn btn-outline-secondary"
+                       role="button">
+                        <i class="far fa-envelope"></i>
+                        Contact me
+                    </a>
+                {% endif %}
+                <button type="button"
+                        class="btn btn-outline-secondary"
+                        data-dismiss="modal">
+                    <i class="fas fa-times"></i>
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
-<button id="goto-download-gpx" title="Download Raw GPX File">Download GPX</button>

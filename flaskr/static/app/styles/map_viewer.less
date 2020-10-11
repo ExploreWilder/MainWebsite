@@ -1,4 +1,3 @@
-@import (inline) "vendor/jquery-ui-1.12.1/jquery-ui.min.css";
 @import (inline) "vendor/ol-6.4.3.css";
 @import "defines";
 @import "map";
@@ -44,22 +43,47 @@ html, body {
     height: 100%;
 }
 
-.attribution {
-    color: grey;
-    font-size: 12px;
-}
-
-#menu {
+#menuLayers {
+    min-width: 650px;
+    .card-body {
+        max-height: calc(100vh - (2 * @nav-bar-height + 1.5em + 6.5em));
+        overflow-y: auto;
+    }
     fieldset {
-        padding: 1em !important;
+        padding: 0.5em 1em !important;
         border: 1px solid green !important;
         border-radius: 5px;
         margin-bottom: 1em;
+        legend {
+            font-size: 1em !important;
+            width: auto !important;
+            padding: 0 10px !important;
+            margin: 0 !important;
+            color: darkgreen;
+        }
+        .layer-info {
+            color: grey;
+            &:hover {
+                color: darkgreen;
+            }
+        }
     }
-    legend {
-        font-size: 1em !important;
-        width: auto !important;
-        padding: 0 10px !important;
-        margin: 0 !important;
+}
+
+.ol-attribution {
+    bottom: 0.7em;
+    ul {
+        font-size: 0.8em !important;
+    }
+}
+
+.ol-overviewmap {
+    bottom: 3em; /* above scale line */
+    .ol-overviewmap-map {
+        width: 15vw;
+        min-width: 150px;
+        height: 20vh;
+        min-height: 200px;
+        margin: 5px;
     }
 }

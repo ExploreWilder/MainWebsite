@@ -1655,14 +1655,14 @@ $(function() {
 
     // xs screen is a smartphone with no useful onmouseover to display a tooltip
     if (window.matchMedia("(min-width: 768px)").matches) {
-        $('#header [data-toggle="tooltip"]').tooltip({
+        $('#header [data-toggle="tooltip"], #subNavbarNav [data-toggle="tooltip"]').tooltip({
             animation: true,
             placement: "bottom",
             delay: { "show": 100, "hide": 0 },
             container: "#header",
             trigger: "hover"
         });
-        $('#full-screen [data-toggle="tooltip"]').tooltip({
+        $('#full-screen [data-toggle="tooltip"], #subNavbarNav [data-toggle="tooltip"]').tooltip({
             animation: true,
             placement: "left",
             delay: { "show": 100, "hide": 0 },

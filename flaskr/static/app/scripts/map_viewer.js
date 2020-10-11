@@ -64,6 +64,11 @@ const resolutions = [
 const matrix_ids = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"];
 
 /**
+ * Current aerial layer selected.
+ */
+let selected_aerial;
+
+/**
  * Returns a formatted link to the New Zealand tiles.
  */
 function get_nz_tiles_link(layer) {
@@ -84,7 +89,9 @@ function get_ch_tiles_link(layer) {
 var raster = {
     "nz": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: get_nz_tiles_link("set=2")
+            url: get_nz_tiles_link("set=2"),
+            attributions: ' | Aerial tiles © <a href="http://data.linz.govt.nz" '
+                + 'target="_blank">LINZ</a> (CC-BY 3.0)' + more_attributions
         }),
         opacity: default_opacity / 100.
     }),
@@ -99,31 +106,57 @@ var raster = {
                 origin: [-20037508,20037508],
                 resolutions: resolutions,
                 matrixIds: matrix_ids
-            })
+            }),
+            attributions: " | Aerial tiles © IGN" + more_attributions
         }),
         opacity: default_opacity / 100.
     }),
     "no": new ol.layer.Tile({
         source : new ol.source.XYZ({
-            url: middleware_url["satellite"]
+            url: middleware_url["aerial-eox"],
+            attributions: ' | Aerial tiles © <a href="https://www.microsoft.com/en-us/maps" '
+                + 'target="_blank">Microsoft Corporation</a>' + more_attributions
         }),
         opacity: default_opacity / 100.
     }),
     "ca": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: middleware_url["satellite"]
+            url: middleware_url["aerial-eox"],
+            attributions: ' | Aerial tiles © <a href="https://www.microsoft.com/en-us/maps" '
+                + 'target="_blank">Microsoft Corporation</a>' + more_attributions
         }),
         opacity: default_opacity / 100.
     }),
-    "satellite": new ol.layer.Tile({
+    "aerial-bing": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: middleware_url["satellite"]
+            url: middleware_url["aerial-bing"],
+            attributions: ' | Aerial tiles © <a href="https://www.microsoft.com/en-us/maps" '
+                + 'target="_blank">Microsoft Corporation</a>' + more_attributions
+        }),
+        opacity: default_opacity / 100.
+    }),
+    "aerial-mapbox": new ol.layer.Tile({
+        source: new ol.source.XYZ({
+            url: middleware_url["aerial-mapbox"],
+            attributions: ' | Aerial tiles © <a href="https://www.mapbox.com/about/maps/" '
+                + 'target="_blank">Mapbox</a>' + more_attributions
+        }),
+        opacity: default_opacity / 100.
+    }),
+    "aerial-eox": new ol.layer.Tile({
+        source: new ol.source.XYZ({
+            url: middleware_url["aerial-eox"],
+            attributions: ' | Aerial tiles <a href="https://s2maps.eu" target="_blank">Sentinel-2 cloudless</a> '
+                + 'by © <a href="https://eox.at" target="_blank">EOX IT Services GmbH</a> '
+                + '(CC-BY-NC-SA 4.0)' + more_attributions
         }),
         opacity: default_opacity / 100.
     }),
     "ch": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: get_ch_tiles_link("ch.swisstopo.swissimage")
+            url: get_ch_tiles_link("ch.swisstopo.swissimage"),
+            attributions: ' | <a href="https://www.swisstopo.admin.ch/en/home.html" '
+                + 'target="_blank">Aerial tiles © ESA / Eurimage / swisstopo, NPOC</a>' + more_attributions
         }),
         opacity: default_opacity / 100.
     })
@@ -135,7 +168,8 @@ var raster = {
 var raster_topo50 = {
     "nz": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: get_nz_tiles_link("layer=767")
+            url: get_nz_tiles_link("layer=767"),
+            attributions: 'Topo tiles © <a href="http://data.linz.govt.nz" target="_blank">LINZ</a> (CC-BY 3.0)'
         })
     }),
     "fr": new ol.layer.Tile({
@@ -149,7 +183,8 @@ var raster_topo50 = {
                 origin: [-20037508,20037508],
                 resolutions: resolutions,
                 matrixIds: matrix_ids
-            })
+            }),
+            attributions: "Topo tiles © IGN"
         })
     }),
     "ca": new ol.layer.Tile({
@@ -158,35 +193,58 @@ var raster_topo50 = {
             params: {
                 LAYERS: "canvec",
                 TRANSPARENT: "false"
-            }
+            },
+            attributions: 'Topo tiles © Canada (<a href="https://open.canada.ca/en/open-government-licence-canada" '
+                + 'target="_blank">Open Government Licence</a>)'
         })
     }),
     "no": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: middleware_url["no"]
+            url: middleware_url["no"],
+            attributions: 'Topo tiles © <a href="http://www.kartverket.no/" '
+                + 'target="_blank">Kartverket</a>'
         })
     }),
     "topo-otm": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: middleware_url["topo-otm"]
+            url: middleware_url["topo-otm"],
+            attributions: 'Topo tiles ' + osm_attributions
+                + ' + © <a href="https://opentopomap.org/" target="_blank">OpenTopoMap</a> (CC-BY-SA 3.0)'
         })
     }),
     "topo-thunderforest-outdoors": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: middleware_url["topo-thunderforest"] + "outdoors/{z}/{x}/{y}.png"
+            url: middleware_url["topo-thunderforest"] + "outdoors/{z}/{x}/{y}.png",
+            attributions: 'Topo tiles ' + osm_attributions
+                + ' + © <a href="https://www.thunderforest.com" target="_blank">Thunderforest</a> (CC-BY-SA 2.0)'
         })
     }),
     "topo-thunderforest-landscape": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: middleware_url["topo-thunderforest"] + "landscape/{z}/{x}/{y}.png"
+            url: middleware_url["topo-thunderforest"] + "landscape/{z}/{x}/{y}.png",
+            attributions: 'Topo tiles ' + osm_attributions
+                + ' + © <a href="https://www.thunderforest.com" target="_blank">Thunderforest</a> (CC-BY-SA 2.0)'
         })
     }),
     "ch": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: get_ch_tiles_link("ch.swisstopo.pixelkarte-farbe")
+            url: get_ch_tiles_link("ch.swisstopo.pixelkarte-farbe"),
+            attributions: 'Topo tiles © <a href="https://www.swisstopo.admin.ch/en/home.html" '
+                + 'target="_blank">geodata swisstopo</a>'
         })
     })
 };
+
+/**
+ * OpenLayers control: Overview map.
+ * https://openlayers.org/en/latest/examples/overviewmap.html
+ */
+var overviewMapControl = new ol.control.OverviewMap({
+  layers: [
+    new ol.layer.Tile({
+      source: new ol.source.OSM()
+    }) ],
+});
 
 /**
  * Style of the track. Define all used types (waypoint, line, and multi line).
@@ -330,7 +388,7 @@ var track_vector = new ol.layer.Vector({
  * Refresh the opacity of the aerial view according to the slider.
  */
 function refresh_opacity() {
-    var opacity = Number($("#opacity-slider").slider("value"));
+    var opacity = Number($("#opacity-slider").val());
 
     if(opacity > 100) {
         opacity = 100;
@@ -341,7 +399,7 @@ function refresh_opacity() {
 
     $("#opacity-slider-value").html(opacity);
     raster[country_code].setOpacity(opacity / 100.);
-    raster["satellite"].setOpacity(opacity / 100.);
+    raster[selected_aerial].setOpacity(opacity / 100.);
 }
 
 /**
@@ -356,10 +414,10 @@ function display_tooltip(evt) {
     if(feature && feature.getGeometry().getType() == "Point") {
         overlay.setPosition(evt.coordinate);
         tooltip.prop("title", feature.get("name"));
-        tooltip.tooltip("open");
+        tooltip.tooltip("show");
     }
     else {
-        tooltip.tooltip("close");
+        tooltip.tooltip("hide");
     }
 }
 
@@ -462,10 +520,7 @@ function fetch_data() {
         console.log("Center: " + center);
 
         track_info(data);
-
-        // display the "Track Info" button only when information are available
-        $("#goto-gpx-info").show();
-        $("#goto-download-gpx").show();
+        display_gpx_buttons();
     };
     oReq.send();
 }
@@ -478,22 +533,31 @@ function select_basemap() {
     var is_country_specific = $("#country-specific-layers").is(":checked");
     raster_topo50[country_code].setVisible(is_country_specific);
     raster[country_code].setVisible(is_country_specific);
-    raster["satellite"].setVisible(!is_country_specific);
 
     if(is_country_specific) {
-        $("#topo-layer-selection").hide();
+        $("#topo-layer-selection, #aerial-layer-selection").hide();
         world_topo.forEach((layer) => {
             raster_topo50[layer].setVisible(false);
         });
+        world_aerial.forEach((layer) => {
+            raster[layer].setVisible(false);
+        });
+        selected_aerial = country_code;
     }
     else {
-        $("#topo-layer-selection").show();
+        $("#topo-layer-selection, #aerial-layer-selection").show();
         world_topo.forEach((layer) => {
             raster_topo50[layer].setVisible($("#" + layer).is(":checked"));
         });
+        world_aerial.forEach((layer) => {
+            let is_checked = $("#" + layer).is(":checked");
+            if(is_checked) {
+                selected_aerial = layer;
+            }
+            raster[layer].setVisible(is_checked);
+        });
     }
 
-    console.log("Layer selection: " + ((is_country_specific) ? "Country specific" : "Worldwide"));
     refresh_opacity();
 }
 
@@ -502,10 +566,15 @@ function select_basemap() {
  * basemap is selected by default.
  */
 function init_basemap_selection() {
-    $("input[type=radio]").checkboxradio({
-        icon: false
-    }).change(select_basemap);
+    $("input[type=radio]").change(select_basemap);
     $("#topo-layer-selection").hide();
+    $('abbr[data-toggle="tooltip"].layer-info').tooltip({
+        animation: true,
+        placement: "bottom",
+        delay: { "show": 100, "hide": 0 },
+        container: "#menuLayers",
+        trigger: "hover"
+    });
     select_basemap();
 }
 
@@ -518,7 +587,7 @@ function init_basemap_selection() {
  *
  */
 $(function() {
-    var url = new RegExp("/([^/]*)/([^/]*)/([^/]*)/([^/]*)$", "g").exec(window.location.href);
+    var url = new RegExp("/([^/]*)/([^/]*)/([^/]*)/([^/#]*)#*$", "g").exec(window.location.href);
 
     if(url == null) {
         return;
@@ -528,26 +597,15 @@ $(function() {
     book_url = url[2].toLowerCase();
     gpx_name = url[3];
     country_code = url[4].toLowerCase();
-    offset_top = parseInt($("#goto-menu").offset().top);
-
-    dialog = $("#menu").dialog({
-        autoOpen: false,
-        width: 600,
-        minWidth: 500,
-        position: { my: "right top", at: "right-10 top+" + offset_top},
-        open: unfocus_menu,
-        close: function() {
-            $("#goto-menu").show();
-        }
-    });
-
-    gpx_info = create_gpx_info_dialog();
-    download_gpx = create_download_gpx_dialog();
 
     let all_raster_world_topo = [];
     world_topo.forEach((layer) => {
         all_raster_world_topo.push(raster_topo50[layer]);
-    })
+    });
+    let all_raster_world_aerial = [];
+    world_aerial.forEach((layer) => {
+        all_raster_world_aerial.push(raster[layer]);
+    });
 
     map = new ol.Map({
         target: document.getElementById("map"),
@@ -555,10 +613,14 @@ $(function() {
             raster_topo50[country_code],
             ...all_raster_world_topo,
             raster[country_code],
-            raster["satellite"],
+            ...all_raster_world_aerial,
             track_vector
         ],
-        controls: [],
+        controls: [
+            new ol.control.Attribution(),
+            new ol.control.ZoomSlider(),
+            overviewMapControl,
+        ],
         view: new ol.View({
             center: ol.proj.transform(default_gps_position, "EPSG:4326", "EPSG:3857"),
             zoom: default_zoom,
@@ -579,40 +641,14 @@ $(function() {
     
     fetch_data();
 
-    $("#goto-menu").button({
-        icon: "ui-icon-newwin"
-    }).on("click", function() {
-        dialog.dialog("open");
-        $("#goto-menu").hide();
-    });
+    $("#opacity-slider").val(default_opacity);
+    $("#opacity-slider").on("input", refresh_opacity);
 
-    $("#opacity-slider").slider({
-        max: 100,
-        value: default_opacity,
-        change: refresh_opacity,
-        slide: refresh_opacity
-    });
-
-    $("#zoom-in").button({
-        icon: "ui-icon-zoomin",
-        showLabel: false
-    }).on("click", function() {
-        zoom(1);
-    });
-
-    $("#zoom-out").button({
-        icon: "ui-icon-zoomout",
-        showLabel: false
-    }).on("click", function() {
-        zoom(-1);
-    });
-
-    $(document).tooltip();
     init_basemap_selection();
-
-    fit_breadcrumb();
-});
-
-$(window).resize(function() {
-    fit_breadcrumb();
+    manage_subnav_click();
+    $("#menuLayers .close, #gpxInfo .close").click(function() {
+        current_menu_on_focus = null;
+        $(this).closest(".card-menu").fadeOut();
+        return false;
+    });
 });

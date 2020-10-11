@@ -207,7 +207,8 @@ class Config(object):
             "https://api.mapbox.com", # map viewer (2D only)
             "https://*.geo.admin.ch", # map viewer (2D only)
             "https://opencache.statkart.no", # map viewers (2D+3D)
-            "https://maps.geogratis.gc.ca" # map viewer (2D only)
+            "https://maps.geogratis.gc.ca", # map viewer (2D only)
+            "https://*.tile.openstreetmap.org" # map viewer (2D only)
         ],
         "style-src": [
             "'self'",

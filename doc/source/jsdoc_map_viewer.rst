@@ -7,6 +7,9 @@ Configuration
 .. js:autoattribute:: default_opacity
 .. js:autoattribute:: duration_zoom_animation
 .. js:autoattribute:: middleware_url
+.. js:autoattribute:: osm_attributions
+.. js:autoattribute:: more_attributions
+.. js:autoattribute:: world_aerial
 .. js:autoattribute:: world_topo
 .. js:autoattribute:: track_padding
 .. js:autoattribute:: default_gps_position
@@ -20,8 +23,10 @@ Interface
 
 .. js:autoattribute:: resolutions
 .. js:autoattribute:: matrix_ids
+.. js:autoattribute:: selected_aerial
 .. js:autoattribute:: raster
 .. js:autoattribute:: raster_topo50
+.. js:autoattribute:: overviewMapControl
 .. js:autoattribute:: track_style
 .. js:autoattribute:: track_vector
 .. js:autoattribute:: hiker

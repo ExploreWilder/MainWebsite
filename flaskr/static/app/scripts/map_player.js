@@ -81,7 +81,7 @@ function update_hiker_pos(tooltip_item, data) {
  * Setup the entire interface.
  */
 (function startMapPlayerInterface() {
-    var url = new RegExp("/([^/]*)/([^/]*)/([^/]*)/([^/]*)$", "g").exec(window.location.href);
+    var url = new RegExp("/([^/]*)/([^/]*)/([^/]*)/([^/#]*)#*$", "g").exec(window.location.href);
 
     if(url == null) {
         return;
@@ -132,11 +132,27 @@ function update_hiker_pos(tooltip_item, data) {
 
     loadTexture();
 
-    $('.map-player-interface .dropdown-item').on('click', function (event) {
+    $('#dropdownMenuBoundLayer .dropdown-item').on('click', function (event) {
         event.preventDefault();
-        $('.map-player-interface .dropdown-menu .active').removeClass("active");
+        $('#dropdownMenuBoundLayer .active').removeClass("active");
         $(this).addClass("active");
         onSwitchView($(this).attr("data-boundlayer"));
+    });
+
+    manage_subnav_click();
+
+    $("#gpxInfo .close").click(function() {
+        current_menu_on_focus = null;
+        $(this).closest(".card-menu").fadeOut();
+        return false;
+    });
+
+    $('abbr[data-toggle="tooltip"].layer-info').tooltip({
+        animation: true,
+        placement: "bottom",
+        delay: { "show": 100, "hide": 0 },
+        container: "#subNavbarNav",
+        trigger: "hover"
     });
 })();
 
@@ -159,8 +175,6 @@ function onMapLoaded() {
     map = browser.map;
     map.addRenderSlot('custom-render', onCustomRender, true);
     map.moveRenderSlotAfter('after-map-render', 'custom-render');
-    fit_breadcrumb();
-
     loadTrack();
 }
 
@@ -188,13 +202,7 @@ function loadTrack() {
             points: webtrack.getTrack()[0].points
         }
         track_info(data);
-
-        // show the button before the dialog to get the button offset
-        $("#goto-gpx-info").show();
-        $("#goto-download-gpx").show();
-
-        gpx_info = create_gpx_info_dialog();
-        download_gpx = create_download_gpx_dialog();
+        display_gpx_buttons();
     };
     
     oReq.send();
@@ -499,7 +507,3 @@ function onSwitchView(newBoundLayer) {
         }); 
     }
 }
-
-$(window).resize(function() {
-    fit_breadcrumb();
-});

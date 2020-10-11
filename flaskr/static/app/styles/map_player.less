@@ -54,7 +54,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-@import (inline) "vendor/jquery-ui-1.12.1/jquery-ui.min.css";
 @import "defines";
 @import "map";
 
@@ -68,26 +67,16 @@
     }
 }
 
-.dropdown {
-    .dropdown-item {
-        font-size: 0.9rem !important;
+#subNavbarNav {
+    .dropdown-menu {
+        left: unset !important;
+        right: 1em;
     }
 }
 
 .vts-loading {
     background-color: @gray-background !important;
     z-index: 100 !important;
-}
-
-.pointer-div2 {
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    width: 2px;
-    height : 120px;
-    display: none;
-    background-color: rgba(255,0,0,0.5);
-    z-index: 990 !important;
 }
 
 .distance-div {
@@ -104,6 +93,21 @@
     font-size: 12px;
     font-weight: bold;
     z-index: 1000 !important;
+}
+
+a.dropdown-item {
+    &.active .layer-info {
+        color: white;
+        &:hover {
+            color: lightgreen;
+        }
+    }
+    &:not(.active) .layer-info {
+        color: grey;
+        &:hover {
+            color: darkgreen;
+        }
+    }
 }
 
 .tooltip-arrow:after, .tooltip-arrow:before {
@@ -128,42 +132,4 @@
     border-top-color: #000000;
     border-width: calc(7px + @tooltip-border);
     margin-left: calc(-7px - @tooltip-border);
-}
-
-.profile-div {
-    font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
-    position: absolute;
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-    height: 122px;
-    background-color: rgba(255,255,255,0.47);
-    padding: 10px 20px;
-    border-radius: 5px;
-}
-
-.profile-canvas-holder {
-    position: absolute;
-    left: 2px;
-    top: 2px;
-    right: 2px;
-    bottom: 2px;
-    background-color: rgba(255,255,255,0.60);
-}
-
-.profile-canvas {
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    width: 100%;
-    height: 100%;
-}
-
-#height-div {
-    min-width: 5em;
-    text-align: center;
-}
-
-#goto-download-gpx {
-    bottom: 42px !important;
 }

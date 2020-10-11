@@ -33,6 +33,11 @@
  */
 
 /**
+ * Current block in focus.
+ */
+let current_menu_on_focus = "#gpxInfo";
+
+/**
  * Returns the content of the tooltip used in the elevation chart.
  */
 function label_elevation(tooltip_item, data) {
@@ -67,75 +72,6 @@ function track_info(source) {
     
     ul.append(lis);
     create_elevation_chart(source.points);
-}
-
-/**
- * Blur the close button tooltip when the window is open.
- */
-function unfocus_menu() {
-    $(this).parents(".ui-dialog").attr("tabindex", -1)[0].focus();
-}
-
-/**
- * Create a jQuery UI dialog containing GPX information (statistics + chart).
- */
-function create_gpx_info_dialog() {
-    let offset_top = 0;
-    if($("#goto-menu").length) {
-        offset_top = parseInt($("#goto-menu").offset().top);
-    }
-    else if($("#goto-gpx-info").length) {
-        offset_top = parseInt($("#goto-gpx-info").offset().top);
-    }
-
-    let gpx_info = $("#gpx-info").dialog({
-        autoOpen: false,
-        width: 600,
-        minWidth: 500,
-        position: { my: "left top", at: "left+10 top+" + offset_top},
-        open: unfocus_menu,
-        resize: function(event, ui) {
-            $("#elevation-chart-container").height($("#gpx-info").height() - $("#gpx-info-list").height());
-            $("#elevation-chart-container").width($("#gpx-info").width());
-        },
-        close: function() {
-            $("#goto-gpx-info").show();
-        }
-    });
-
-    $("#goto-gpx-info").button({
-        icon: "ui-icon-newwin"
-    }).on("click", function() {
-        gpx_info.dialog("open");
-            $("#goto-gpx-info").hide();
-    });
-
-    return gpx_info;
-}
-
-/**
- * Create a jQuery UI dialog containing the button to download the GPX (or sign in).
- */
-function create_download_gpx_dialog() {
-    let download_gpx = $("#download-gpx").dialog({
-        autoOpen: false,
-        width: 600,
-        minWidth: 500,
-        position: { my: "right bottom", at: "right-10 bottom-" + parseInt($("#goto-download-gpx").css("bottom"))},
-        open: unfocus_menu,
-        close: function() {
-            $("#goto-download-gpx").show();
-        }
-    });
-
-    $("#goto-download-gpx").button({
-        icon: "ui-icon-newwin"
-    }).on("click", function() {
-        download_gpx.dialog("open");
-            $("#goto-download-gpx").hide();
-    });
-
-    return download_gpx;
 }
 
 /**
@@ -214,19 +150,34 @@ function get_webtrack_url(book_id, book_url, gpx_name) {
 }
 
 /**
- * Change the breadcrumb maximum width to fit the navbar.
- * The breadcrumb is like the flexible item of the bar.
+ * Display the buttons only when the track information are available.
  */
-function fit_breadcrumb() {
-    $("#header .breadcrumb").css(
-        "max-width",
-        $(window).width() -
-        (
-            $("#header .navbar-brand").width() +
-            $("#header .btn").width() +
-            ($("#header .map-player-interface").length ? $("#header .map-player-interface").width() : 0) +
-            $("#header .navbar-nav").width() +
-            110
-        )
-    );
+function display_gpx_buttons() {
+    $("#goto-gpx-info").css("display", "inline-block");
+    $("#goto-download-gpx").css("display", "inline-block");
+}
+
+/**
+ * GPX info OR layer selection but not both menus at the same time.
+ */
+function manage_subnav_click() {
+    $('#subNavbarNav a[aria-controls]').click(function() {
+        let new_menu_on_focus = $(this).attr("aria-controls");
+        $(".map-viewer-interface .card-menu, #dropdownMenuBoundLayer").hide();
+        if(current_menu_on_focus != new_menu_on_focus) {
+            current_menu_on_focus = new_menu_on_focus;
+            $(current_menu_on_focus).show();
+        }
+        else {
+            current_menu_on_focus = null;
+        }
+        $(this).blur();
+        return false;
+    });
+
+    $("#goto-download-gpx").click(function() {
+        $($(this).attr("aria-controls")).modal("show");
+        $(this).blur();
+        return true;
+    });
 }
