@@ -1,9 +1,13 @@
 {% extends "layout.html" %}
 {% block title %}Map Player{% endblock %}
 {% block extra_tags %}
+    <!-- preconnect to the default supplier: -->
     <link href="https://cdn.melown.com/" rel="preconnect" crossorigin>
     <link href="https://cdn.melown.com/" rel="dns-prefetch" />
+
+    <!-- prefetch a well used supplier: -->
     <link href="https://api.mapbox.com/" rel="dns-prefetch" />
+
     <link href="/static/dist-{{ config.STATIC_PACKAGE.version }}/css/vts-browser.min.css" rel="stylesheet" />
     <link href="/static/dist-{{ config.STATIC_PACKAGE.version }}/css/map_player.css" rel="stylesheet" />
 {% endblock %}
@@ -94,8 +98,7 @@
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item"
                            href="#"
-                           data-boundlayer="world-topo-otm"
-                           title="My recommendation">
+                           data-boundlayer="world-topo-otm">
                             World topo (OpenTopoMap)
                             <abbr data-toggle="tooltip"
                                   title="My recommendation for hiking on several countries (available for Garmin GPS)"
@@ -103,8 +106,7 @@
                         </a>
                         <a class="dropdown-item"
                            href="#"
-                           data-boundlayer="world-topo-thunderforest-outdoors"
-                           title="Emphasise hiking routes, ski runs and many useful points of interest">
+                           data-boundlayer="world-topo-thunderforest-outdoors">
                             World topo (Thunderforest Outdoor)
                             <abbr data-toggle="tooltip"
                                   title="Emphasise hiking routes, ski runs and many useful points of interest"
@@ -112,8 +114,7 @@
                         </a>
                         <a class="dropdown-item"
                            href="#"
-                           data-boundlayer="world-topo-thunderforest-landscape"
-                           title="Emphasises natural features">
+                           data-boundlayer="world-topo-thunderforest-landscape">
                             World topo (Thunderforest Landscape)
                             <abbr data-toggle="tooltip"
                                   title="Emphasises natural features"
@@ -182,6 +183,47 @@
                                 Government topo (Canvec)
                             </a>
                         {% endif %}
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item"
+                           href="#"
+                           data-boundlayer="world-satellite-night">
+                            World by night
+                            <abbr data-toggle="tooltip"
+                                  title="Satellite nighttime"
+                                  class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                        </a>
+                        <!--<a class="dropdown-item"
+                           href="#"
+                           data-boundlayer="world-gebco-shaded">
+                            World'oceans (shaded)
+                            <abbr data-toggle="tooltip"
+                                  title="Global terrain models for ocean and land (shaded relief)"
+                                  class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                        </a>
+                        <a class="dropdown-item"
+                           href="#"
+                           data-boundlayer="world-gebco-flat">
+                            World'oceans (flat)
+                            <abbr data-toggle="tooltip"
+                                  title="Global terrain models for ocean and land (colour-coded for elevation)"
+                                  class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                        </a>
+                        <a class="dropdown-item"
+                           href="#"
+                           data-boundlayer="world-street-osm">
+                            Streets
+                            <abbr data-toggle="tooltip"
+                                  title="The best open street map for city navigation"
+                                  class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                        </a>-->
+                        <a class="dropdown-item"
+                           href="#"
+                           data-boundlayer="world-street-stamen-toner,world-eumetsat-meteosat-iodc-mpe,world-eumetsat-meteosat-0deg-h0b3">
+                           Near-real-time precipitation
+                            <abbr data-toggle="tooltip"
+                                  title="Meteosat image by EUMETSAT covering Europe, Africa, western Asia"
+                                  class="layer-info"><i class="fas fa-info-circle"></i></abbr>
+                        </a>
                     </div>
                 </li>
             </ul>

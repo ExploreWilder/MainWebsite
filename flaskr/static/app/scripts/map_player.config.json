@@ -28,8 +28,8 @@
 			{
 				"eox-it" : 
 				{
-					"id" : 125,
-					"notice" : "Datasource: [https://s2maps.eu s2maps.eu] by EOX IT Services GmbH"
+					"id" : 990,
+					"notice" : "Datasource: {copy} [https://s2maps.eu EOX IT Services GmbH]"
 				}
 			},
 			"lodRange" : [ 1, 15 ],
@@ -47,8 +47,8 @@
 			{
 				"mapbox" : 
 				{
-					"id" : 125,
-					"notice" : "Datasource: [https://www.mapbox.com/about/maps/ mapbox.com] by Mapbox"
+					"id" : 980,
+					"notice" : "Datasource: {copy} [https://www.mapbox.com/about/maps/ Mapbox]"
 				}
 			},
 			"lodRange" : [ 1, 15 ],
@@ -65,7 +65,7 @@
 			{
 				"bing" : 
 				{
-					"id" : 125,
+					"id" : 970,
 					"notice" : "Datasource: [https://www.microsoft.com/en-us/maps Bing Maps] {copy}{Y} Microsoft Corporation"
 				}
 			},
@@ -78,20 +78,53 @@
 			"type" : "raster",
 			"url" : "/map/vts_proxy/world/satellite/bing/{loclod}/{locx}/{locy}.jpeg"
 		},
-		"world-topo-otm" : {
+		"world-satellite-night" : {
 			"credits" : 
 			{
-				"osm" :
+				"black-marble" : 
 				{
-					"id" : 100,
-					"notice" : "Datasource: [http://www.openstreetmap.org/copyright OpenStreetMap contributors] (ODbL)"
+					"id" : 960,
+					"notice" : "Datasource: {copy} Black Marble {copy} NASA's Earth Observatory"
 				},
-				"opentopomap" : 
+				"eox" :
 				{
-					"id" : 125,
-					"notice" : "Datasource: [https://opentopomap.org/ opentopomap.org] by OpenTopoMap (CC-BY-SA 3.0)"
+					"id" : 950,
+					"notice" : "Rendering: {copy} [http://eox.at/ OEX]"
 				}
 			},
+			"lodRange" : [ 1, 15 ],
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "https://tiles.maps.eox.at/wmts/1.0.0/blackmarble_3857/default/g/{loclod}/{locy}/{locx}.jpg"
+		},
+		"world-street-osm" : {
+			"credits" : [ "osm" ],
+			"lodRange" : [ 1, 15 ],
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "https://{alt(a,b,c)}.tile.openstreetmap.org/{loclod}/{locx}/{locy}.png"
+		},
+		"world-street-stamen-toner" : {
+			"credits" : [ "stamen-toner", "osm" ],
+			"lodRange" : [ 1, 15 ],
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "https://stamen-tiles-{alt(a,b,c,d)}.a.ssl.fastly.net/toner/{loclod}/{locx}/{locy}.png"
+		},
+		"world-topo-otm" : {
+			"credits" : [ "opentopomap", "osm" ],
 			"lodRange" : [ 1, 15 ],
 			"tileRange" : 
 			[
@@ -102,19 +135,7 @@
 			"url" : "/map/vts_proxy/world/topo/otm/{loclod}/{locx}/{locy}.png"
 		},
 		"world-topo-thunderforest-outdoors" : {
-			"credits" : 
-			{
-				"osm" :
-				{
-					"id" : 100,
-					"notice" : "Datasource: [http://www.openstreetmap.org/copyright OpenStreetMap contributors] (ODbL)"
-				},
-				"thunderforest" : 
-				{
-					"id" : 125,
-					"notice" : "Datasource: [https://www.thunderforest.com thunderforest.com] by Thunderforest (CC-BY-SA 2.0)"
-				}
-			},
+			"credits" : [ "thunderforest", "osm" ],
 			"lodRange" : [ 1, 15 ],
 			"tileRange" : 
 			[
@@ -125,19 +146,7 @@
 			"url" : "/map/vts_proxy/world/topo/thunderforest/outdoors/{loclod}/{locx}/{locy}.png"
 		},
 		"world-topo-thunderforest-landscape" : {
-			"credits" : 
-			{
-				"osm" :
-				{
-					"id" : 100,
-					"notice" : "Datasource: [http://www.openstreetmap.org/copyright OpenStreetMap contributors] (ODbL)"
-				},
-				"thunderforest" : 
-				{
-					"id" : 125,
-					"notice" : "Datasource: [https://www.thunderforest.com thunderforest.com] by Thunderforest (CC-BY-SA 2.0)"
-				}
-			},
+			"credits" : [ "thunderforest", "osm" ],
 			"lodRange" : [ 1, 15 ],
 			"tileRange" : 
 			[
@@ -148,14 +157,7 @@
 			"url" : "/map/vts_proxy/world/topo/thunderforest/landscape/{loclod}/{locx}/{locy}.png"
 		},
 		"fr-satellite" : {
-			"credits" : 
-			{
-				"ign" : 
-				{
-					"id" : 125,
-					"notice" : "Datasource: IGN"
-				}
-			},
+			"credits" : [ "ign" ],
 			"lodRange" : [ 1, 15 ],
 			"tileRange" : 
 			[
@@ -166,14 +168,7 @@
 			"url" : "/map/vts_proxy/fr/satellite/{loclod}/{locx}/{locy}.jpg"
 		},
 		"fr-topo" : {
-			"credits" : 
-			{
-				"ign" : 
-				{
-					"id" : 125,
-					"notice" : "Datasource: IGN"
-				}
-			},
+			"credits" : [ "ign" ],
 			"lodRange" : [ 1, 15 ],
 			"tileRange" : 
 			[
@@ -184,14 +179,7 @@
 			"url" : "/map/vts_proxy/fr/topo/{loclod}/{locx}/{locy}.jpg"
 		},
 		"nz-satellite" : {
-			"credits" : 
-			{
-				"linz" : 
-				{
-					"id" : 125,
-					"notice" : "Datasource: [http://data.linz.govt.nz data.linz.govt.nz] by LINZ (CC-BY 4.0)"
-				}
-			},
+			"credits" : [ "linz" ],
 			"lodRange" : [ 1, 15 ],
 			"tileRange" : 
 			[
@@ -202,14 +190,7 @@
 			"url" : "/map/vts_proxy/nz/satellite/{loclod}/{locx}/{locy}.png"
 		},
 		"nz-topo" : {
-			"credits" : 
-			{
-				"linz" : 
-				{
-					"id" : 125,
-					"notice" : "Datasource: [http://data.linz.govt.nz data.linz.govt.nz] by LINZ (CC-BY 4.0)"
-				}
-			},
+			"credits" : [ "linz" ],
 			"lodRange" : [ 1, 15 ],
 			"tileRange" : 
 			[
@@ -224,8 +205,8 @@
 			{
 				"kartverket" : 
 				{
-					"id" : 125,
-					"notice" : "Datasource: [http://www.kartverket.no/ kartverket.no] by Kartverket"
+					"id" : 840,
+					"notice" : "Datasource: {copy} [http://www.kartverket.no/ Kartverket]"
 				}
 			},
 			"lodRange" : [ 1, 15 ],
@@ -242,8 +223,8 @@
 			{
 				"canada" : 
 				{
-					"id" : 125,
-					"notice" : "Datasource: [https://open.canada.ca/en/open-government-licence-canada open.canada.ca] by Canada - Open Government Licence"
+					"id" : 830,
+					"notice" : "Datasource: {copy} Canada, under [https://open.canada.ca/en/open-government-licence-canada Open Government Licence]"
 				}
 			},
 			"lodRange" : [ 1, 15 ],
@@ -260,8 +241,8 @@
 			{
 				"swisstopo" : 
 				{
-					"id" : 125,
-					"notice" : "Datasource: [https://www.swisstopo.admin.ch/en/home.html geodata swisstopo]"
+					"id" : 820,
+					"notice" : "Datasource: {copy} [https://www.swisstopo.admin.ch/en/home.html geodata swisstopo]"
 				}
 			},
 			"lodRange" : [ 1, 15 ],
@@ -276,10 +257,10 @@
 		"ch-satellite" : {
 			"credits" : 
 			{
-				"swisstopo" : 
+				"swisstopo-eu" : 
 				{
-					"id" : 125,
-					"notice" : "Datasource: [https://www.swisstopo.admin.ch/en/home.html ESA / Eurimage / swisstopo, NPOC]"
+					"id" : 810,
+					"notice" : "Datasource: {copy} [https://www.swisstopo.admin.ch/en/home.html ESA / Eurimage / swisstopo, NPOC]"
 				}
 			},
 			"lodRange" : [ 1, 15 ],
@@ -290,6 +271,52 @@
 			],
 			"type" : "raster",
 			"url" : "https://wmts{alt(10,20)}.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{loclod}/{locx}/{locy}.jpeg"
+		},
+		"world-gebco-shaded" : {
+			"credits" : [ "gebco" ],
+			"lodRange" : [ 1, 15 ],
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "/map/vts_proxy/world/gebco/shaded/{loclod}/{locx}/{locy}.jpeg"
+		},
+		"world-gebco-flat" : {
+			"credits" : [ "gebco" ],
+			"lodRange" : [ 1, 15 ],
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "/map/vts_proxy/world/gebco/flat/{loclod}/{locx}/{locy}.jpeg"
+		},
+		"world-eumetsat-meteosat-iodc-mpe" : {
+			"credits" : [ "eumetsat" ],
+			"lodRange" : [ 1, 15 ],
+			"isTransparent" : true,
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "/map/vts_proxy/eumetsat/meteosat_iodc_mpe/{loclod}/{locx}/{locy}.png"
+		},
+		"world-eumetsat-meteosat-0deg-h0b3" : {
+			"credits" : [ "eumetsat" ],
+			"lodRange" : [ 1, 15 ],
+			"isTransparent" : true,
+			"tileRange" : 
+			[
+				[ 0, 0 ],
+				[ 1, 1 ]
+			],
+			"type" : "raster",
+			"url" : "/map/vts_proxy/eumetsat/meteosat_iodc_mpe/{loclod}/{locx}/{locy}.png"
 		}
 	},
 	"browserOptions" : 
@@ -310,6 +337,46 @@
 		{
 			"id" : 109,
 			"notice" : "{copy}{Y} Melown Technologies SE"
+		},
+		"osm" : 
+		{
+			"id" : 120,
+			"notice" : "Datasource: {copy} [http://openstreetmap.org/ OpenStreetMap], under [http://www.openstreetmap.org/copyright ODbL]"
+		},
+		"stamen-toner" : 
+		{
+			"id" : 130,
+			"notice" : "Datasource: {copy} [http://stamen.com/ Stamen Design], under [http://creativecommons.org/licenses/by/3.0 CC BY 3.0]"
+		},
+		"opentopomap" : 
+		{
+			"id" : 140,
+			"notice" : "Datasource: {copy} [https://opentopomap.org/ OpenTopoMap], under CC-BY-SA 3.0"
+		},
+		"thunderforest" : 
+		{
+			"id" : 150,
+			"notice" : "Datasource: {copy} [https://www.thunderforest.com Thunderforest], under CC-BY-SA 2.0"
+		},
+		"ign" : 
+		{
+			"id" : 160,
+			"notice" : "Datasource: {copy} IGN"
+		},
+		"linz" : 
+		{
+			"id" : 170,
+			"notice" : "Datasource: {copy} [http://data.linz.govt.nz LINZ], under CC-BY 4.0"
+		},
+		"gebco" : 
+		{
+			"id" : 180,
+			"notice" : "Datasource: {copy} [https://www.gebco.net/ GEBCO Compilation Group] (2019) GEBCO 2019 Grid"
+		},
+		"eumetsat" : 
+		{
+			"id" : 190,
+			"notice" : "Datasource: {copy} [https://www.eumetsat.int European Organisation for the Exploitation of Meteorological Satellites (EUMETSAT)]"
 		}
 	},
 	"freeLayers" : {},
@@ -530,15 +597,9 @@
 	"version" : 1,
 	"view" : 
 	{
-		"description" : "",
-		"freeLayers" : 
-		{
-			"osm-tilehosting-v1" : {}
-		},
 		"surfaces" : 
 		{
 			"melown-viewfinder-world" : [ "default-satellite" ]
 		}
-	},
-	"virtualSurfaces" : []
+	}
 }

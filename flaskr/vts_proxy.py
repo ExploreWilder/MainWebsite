@@ -61,31 +61,63 @@ CANVEC_PARAMS = {
     "STYLES": ""
 }
 
+#: GEBCO parameters for the WMS service.
+GEBCO_SHADED_PARAMS = {
+    "request": "getmap",
+    "service": "wms",
+    "crs": "EPSG:4326",
+    "format": "image/jpeg",
+    "width": "256",
+    "height": "256",
+    "version": "1.3.0"
+}
+
+#: EUMETSAT parameters for the WMS service (specific to some layers).
+EUMETSAT_PARAMS = {
+    "TRANSPARENT": "TRUE",
+    "FORMAT": "image/png8",
+    "VERSION": "1.3.0",
+    "TILED": "true",
+    "EXCEPTIONS": "INIMAGE",
+    "SERVICE": "WMS",
+    "REQUEST": "GetMap",
+    "CRS": "EPSG:4326",
+    "WIDTH": "256",
+    "HEIGHT": "256"
+}
+
 @vts_proxy_app.route("/world/topo/otm/<int:z>/<int:x>/<int:y>.png", methods=("GET",))
 @same_site
 def vts_proxy_world_topo_otm(z: int, x: int, y: int) -> FlaskResponse:
     """
     Tunneling map requests to the OpenTopoMap servers.
-    To use only with VTS Browser JS. Use proxy_ign() for OpenLayers.
-    Notice: an offset of 1 on the Z index has been applied.
     Caching request is not forbidden by OpenTopoMap, so tiles are cached
-    for better performance.
-
-    Raises:
-        404: in case of OpenTopoMap error or if the request comes from another website and not in testing mode.
+    for better performance but re-downloaded and overwritten in older than
+    a week for complying the HTTP Expires value.
     """
-    cache_filename = "{}.{}.{}.png".format(z, x, y)
+    mimetype = "image/png"
+    cache_filename = tilesystem.tile_to_quadkey((x, y), z) + ".png"
     cache_path = os.path.join(OTM_CACHE, cache_filename)
+    goto_cache = False
     if not os.path.isfile(cache_path):
+        goto_cache = True
+    else:
+        time_cached_tile = datetime.datetime.fromtimestamp(os.path.getmtime(cache_path))
+        time_now = datetime.datetime.now()
+        if (time_cached_tile + datetime.timedelta(days=7)) < time_now:
+            goto_cache = True
+    if goto_cache:
         url = "https://opentopomap.org/{}/{}/{}.png".format(z, x, y)
         try:
             r = requests.get(url)
+            # do not raise 404 error because the map coverage is global and the tile may be cached
         except:
-            abort(404)
-        with open(cache_path, "wb") as tile:
-            tile.write(r.content)
-        return Response(r.content, mimetype="image/png")
-    return send_from_directory(OTM_CACHE, cache_filename, mimetype="image/png")
+            return tile_not_found(mimetype)
+        if r.status_code == 200:
+            with open(cache_path, "wb") as tile:
+                tile.write(r.content)
+        return Response(r.content, mimetype=mimetype)
+    return send_from_directory(OTM_CACHE, cache_filename, mimetype=mimetype)
 
 @vts_proxy_app.route("/world/topo/thunderforest/<string:layer>/<int:z>/<int:x>/<int:y>.png", methods=("GET",))
 @same_site
@@ -95,15 +127,13 @@ def vts_proxy_world_topo_thunderforest(layer: str, z: int, x: int, y: int) -> Fl
     Other tile layer URLs:
     https://manage.thunderforest.com/dashboard
 
-    Raises:
-        404: in case of Thunderforest error (such as ConnectionError).
-
     Args:
         layer (str): Tile layer.
         z (int): Z parameter of the XYZ request.
         x (int): X parameter of the XYZ request.
         y (int): Y parameter of the XYZ request.
     """
+    mimetype = "image/png"
     layer = escape(layer)
     if not layer in (
         'cycle',
@@ -115,7 +145,7 @@ def vts_proxy_world_topo_thunderforest(layer: str, z: int, x: int, y: int) -> Fl
         'pioneer',
         'mobile-atlas',
         'neighbourhood'):
-        abort(404)
+        return tile_not_found(mimetype)
     url = "https://tile.thunderforest.com/{}/{}/{}/{}.png?apikey={}".format(
         layer,
         z,
@@ -124,28 +154,25 @@ def vts_proxy_world_topo_thunderforest(layer: str, z: int, x: int, y: int) -> Fl
         current_app.config["THUNDERFOREST_API_KEY"])
     try:
         r = requests.get(url)
+        r.raise_for_status() # raise for not found tiles
     except:
-        abort(404)
-    return Response(r.content, mimetype="image/png")
+        return tile_not_found(mimetype)
+    return Response(r.content, mimetype=mimetype)
 
 @vts_proxy_app.route("/fr/<string:layer>/<int:z>/<int:x>/<int:y>.jpg", methods=("GET",))
 @same_site
 def vts_proxy_ign(layer: str, z: int, x: int, y: int) -> FlaskResponse:
     """
     Tunneling map requests to the IGN servers in order to hide the API key.
-    To use only with VTS Browser JS. Use proxy_ign() for OpenLayers.
-    Notice: an offset of 1 on the Z index has been applied.
-
-    Raises:
-        404: in case of IGN error or if the request comes from another website and not in testing mode.
     """
     layer = escape(layer)
+    mimetype = "image/jpeg"
     if layer == "satellite":
         layer = "ORTHOIMAGERY.ORTHOPHOTOS"
     elif layer == "topo":
         layer = "GEOGRAPHICALGRIDSYSTEMS.MAPS"
     else:
-        abort(404)
+        return tile_not_found(mimetype)
     
     url = "https://{}:{}@wxs.ign.fr/{}/geoportail/wmts?layer={}&{}&TileMatrix={}&TileCol={}&TileRow={}".format(
         current_app.config["IGN"]["username"],
@@ -158,10 +185,11 @@ def vts_proxy_ign(layer: str, z: int, x: int, y: int) -> FlaskResponse:
         y)
     
     try:
-        r = requests.get(url)
+        r = requests.get(url, timeout=12) # timeout to avoid freezing the map
+        r.raise_for_status() # raise for not found tiles
     except:
-        abort(404)
-    return Response(r.content, mimetype="image/jpeg")
+        return tile_not_found(mimetype)
+    return Response(r.content, mimetype=mimetype)
 
 def get_subdomain(x: int, y:int, subdomains: Union[str, Tuple[str]] = "abc") -> str:
     """
@@ -191,22 +219,20 @@ def vts_proxy_lds(layer: str, z: int, x: int, y: int) -> FlaskResponse:
     Help using LDS with OpenLayers:
     https://www.linz.govt.nz/data/linz-data-service/guides-and-documentation/using-lds-xyz-services-in-openlayers
 
-    Raises:
-        404: in case of LDS error (such as ConnectionError).
-
     Args:
         layer (str): satellite or topo. The layer type is replaced to the actual tile name.
         z (int): Z parameter of the XYZ request.
         x (int): X parameter of the XYZ request.
         y (int): Y parameter of the XYZ request.
     """
+    mimetype = "image/png"
     layer = escape(layer)
     if layer == "satellite":
         layer = "set=2"
     elif layer == "topo":
         layer = "layer=767"
     else:
-        abort(404)
+        return tile_not_found(mimetype)
     
     # https://www.linz.govt.nz/data/linz-data-service/guides-and-documentation/using-lds-xyz-services-in-leaflet
     subdomains = "abcd"
@@ -220,9 +246,10 @@ def vts_proxy_lds(layer: str, z: int, x: int, y: int) -> FlaskResponse:
         y)
     try:
         r = requests.get(url)
+        r.raise_for_status() # raise for not found tiles
     except:
-        abort(404)
-    return Response(r.content, mimetype="image/png")
+        return tile_not_found(mimetype)
+    return Response(r.content, mimetype=mimetype)
 
 @vts_proxy_app.route("/ca/topo/<int:z>/<int:x>/<int:y>.png", methods=("GET",))
 @same_site
@@ -232,19 +259,81 @@ def vts_proxy_canvec(z: int, x: int, y: int) -> FlaskResponse:
     Only the WMS service is available so the XYZ position used
     for a WMTS service is converted to a BBOX used for the
     WMS service.
-
-    Raises:
-        404: in case of server error or if the request comes from another website and not in testing mode.
     """
-
+    mimetype = "image/png"
     s,w,n,e = tileLatLonEdges(x,y,z)
     url = "https://maps.geogratis.gc.ca/wms/canvec_en?{}&BBOX={},{},{},{}".format(
         params_urlencode(CANVEC_PARAMS), s, w, n, e)
     try:
         r = requests.get(url)
+        r.raise_for_status() # raise for not found tiles
     except:
-        abort(404)
-    return Response(r.content, mimetype="image/png")
+        return tile_not_found(mimetype)
+    return Response(r.content, mimetype=mimetype)
+
+@vts_proxy_app.route("/world/gebco/<string:layer>/<int:z>/<int:x>/<int:y>.jpeg", methods=("GET",))
+@same_site
+def vts_proxy_gebco(layer: str, z: int, x: int, y: int) -> FlaskResponse:
+    """
+    Tunneling map requests to the GEBCO servers.
+    Only the WMS service is available so the XYZ position used
+    for a WMTS service is converted to a BBOX used for the
+    WMS service.
+    """
+    mimetype = "image/jpeg"
+    layer = escape(layer)
+    if layer == "shaded":
+        layer = "gebco_2019_grid"
+    elif layer == "flat":
+        layer = "gebco_2019_grid_2"
+    else:
+        return tile_not_found(mimetype)
+    s,w,n,e = tileLatLonEdges(x,y,z)
+    url = "https://www.gebco.net/data_and_products/gebco_web_services/2019/mapserv?{}&layers={}&BBOX={},{},{},{}".format(
+        params_urlencode(GEBCO_SHADED_PARAMS), layer, s, w, n, e)
+    try:
+        r = requests.get(url)
+        r.raise_for_status() # raise for not found tiles
+    except:
+        return tile_not_found(mimetype)
+    return Response(r.content, mimetype=mimetype)
+
+@vts_proxy_app.route("/eumetsat/<string:layer>/<int:z>/<int:x>/<int:y>.png", methods=("GET",))
+@same_site
+def vts_proxy_eumetsat(layer: str, z: int, x: int, y: int) -> FlaskResponse:
+    """
+    Tunneling map requests to the EUMETSAT servers.
+    Only the WMS service is available so the XYZ position used
+    for a WMTS service is converted to a BBOX used for the
+    WMS service.
+    """
+    mimetype = "image/png"
+    layer = escape(layer)
+    if layer == "meteosat_iodc_mpe":
+        layer = "msgiodc:msgiodc_mpe"
+        style = "style_msg_mpe"
+    elif layer == "meteosat_0deg_h0b3":
+        layer = "meteosat:msg_h03B"
+        style = "style_h03B"
+    else:
+        return tile_not_found(mimetype)
+    
+    current_utc_time = datetime.datetime.utcnow()
+    last_weather_update = current_utc_time - datetime.timedelta(hours=1)
+    to_quarter = last_weather_update.minute % 15
+    if to_quarter:
+        last_weather_update += datetime.timedelta(minutes=15-to_quarter)
+    str_time = last_weather_update.strftime("%Y-%m-%dT%H:%M:00.000Z")
+    
+    s,w,n,e = tileLatLonEdges(x,y,z)
+    url = "https://eumetview.eumetsat.int/geoserv/wms?{}&LAYERS={}&STYLES={}&TIME={}&BBOX={},{},{},{}".format(
+        params_urlencode(EUMETSAT_PARAMS), layer, style, str_time, s, w, n, e)
+    try:
+        r = requests.get(url)
+        r.raise_for_status() # raise for not found tiles
+    except:
+        return tile_not_found(mimetype)
+    return Response(r.content, mimetype=mimetype)
 
 def download_bing_metadata(bing_key: str, imagery_set: str = "Aerial", timeout: int = 10) -> Tuple[str, List[str]]:
     """
@@ -278,12 +367,14 @@ def download_bing_metadata(bing_key: str, imagery_set: str = "Aerial", timeout: 
     
     try:
         metadata = json.loads(r.content)
-        if metadata["authenticationResultCode"] != "ValidCredentials":
-            raise Exception("Invalid Bing Maps credentials")
-        if metadata["statusCode"] >= 400: # 400, 401, 404, 429, 500, 503
-            raise Exception("Bing Maps error status code " + metadata["statusCode"])
     except:
-        raise Exception("Bad metadata")
+        raise Exception("Failed to parse JSON metadata")
+    if not all(x in metadata for x in ["authenticationResultCode", "statusCode"]):
+        raise Exception("Missing result or status code")
+    if metadata["authenticationResultCode"] != "ValidCredentials":
+        raise Exception("Invalid Bing Maps credentials")
+    if metadata["statusCode"] >= 400: # 400, 401, 404, 429, 500, 503
+        raise Exception("Bing Maps error status code " + metadata["statusCode"])
     try:
         resource = metadata["resourceSets"][0]["resources"][0]
         image_url = resource["imageUrl"]

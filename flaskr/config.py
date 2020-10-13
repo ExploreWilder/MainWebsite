@@ -196,19 +196,28 @@ class Config(object):
             "'self'",
             "https://*.sentry.io", # for error reporting and perf monitoring (tracing)
             "https://*.tiles.mapbox.com", # Mapbox GL JS
-            "https://api.mapbox.com", # Mapbox GL JS
-            "https://cdn.melown.com", # map viewer (3D only)
-            "https://*.geo.admin.ch" # map viewer (3D only)
+            "https://api.mapbox.com", # Mapbox GL JS + 3D map viewer
+            "https://cdn.melown.com", # 3D map viewer
+            "https://*.geo.admin.ch", # 3D map viewer
+            "https://opencache.statkart.no", # 3D map viewer
+            "https://tiles.maps.eox.at", # 3D map viewer
+            "https://*.tile.openstreetmap.org", # 3D map viewer
+            # specify all subdomains since fastly is a shared domain:
+            "https://stamen-tiles-a.a.ssl.fastly.net", # 3D map viewer
+            "https://stamen-tiles-b.a.ssl.fastly.net", # 3D map viewer
+            "https://stamen-tiles-c.a.ssl.fastly.net", # 3D map viewer
+            "https://stamen-tiles-d.a.ssl.fastly.net" # 3D map viewer
         ],
         "img-src": [
             "'self'",
             "data:",
             "blob:", # Mapbox GL JS
-            "https://api.mapbox.com", # map viewer (2D only)
-            "https://*.geo.admin.ch", # map viewer (2D only)
-            "https://opencache.statkart.no", # map viewers (2D+3D)
-            "https://maps.geogratis.gc.ca", # map viewer (2D only)
-            "https://*.tile.openstreetmap.org" # map viewer (2D only)
+            "https://api.mapbox.com", # 2D map viewer
+            "https://*.geo.admin.ch", # 2D map viewer
+            "https://opencache.statkart.no", # 2D map viewer
+            "https://maps.geogratis.gc.ca", # 2D map viewer
+            "https://*.tile.openstreetmap.org", # 2D map viewer
+            "https://tiles.maps.eox.at" # 2D map viewer
         ],
         "style-src": [
             "'self'",

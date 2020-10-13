@@ -46,15 +46,19 @@ import pytest
     ("/map/vts_proxy/ca/topo/0/0/0.png"),
     ("/map/vts_proxy/fr/satellite/0/0/0.jpg"),
     ("/map/vts_proxy/fr/topo/0/0/0.jpg"),
+    ("/map/vts_proxy/world/gebco/shaded/0/0/0.jpeg"),
+    ("/map/vts_proxy/world/gebco/flat/0/0/0.jpeg"),
+    ("/map/vts_proxy/eumetsat/meteosat_iodc_mpe/0/0/0.png"),
+    ("/map/vts_proxy/eumetsat/meteosat_0deg_h0b3/0/0/0.png"),
     ("/map/vts_proxy/world/satellite/bing/3/3/5.jpeg")
 ))
 def test_vts_proxy_link_ok(client, path):
-    """ Ckeck the links availability. """
+    """ Ckeck internal links availability. """
     rv = client.get(path)
     assert rv.status_code == 200
 
 @pytest.mark.parametrize("path", (
-    ("/map/vts_proxy/fr/underground/0/0/0.jpg"),
+    ("/map/vts_proxy/fr/underground/0/0/0"),
 ))
 def test_vts_proxy_bad_link(client, path):
     """ Ckeck the links inavailability. """

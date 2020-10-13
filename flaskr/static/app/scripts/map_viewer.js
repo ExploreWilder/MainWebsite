@@ -619,6 +619,7 @@ $(function() {
         controls: [
             new ol.control.Attribution(),
             new ol.control.ZoomSlider(),
+            new ol.control.ScaleLine(),
             overviewMapControl,
         ],
         view: new ol.View({
@@ -637,7 +638,6 @@ $(function() {
 
     map.addOverlay(overlay);
     map.on("pointermove", display_tooltip);
-    map.addControl(new ol.control.ScaleLine());
     
     fetch_data();
 

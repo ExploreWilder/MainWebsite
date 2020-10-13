@@ -490,6 +490,7 @@ function onCustomRender() {
 
 /**
  * Change the active bound layer on the surface.
+ * It could be a composition of layers if separated by commas.
  * 
  * Based on the 'VTS Browser API Examples'
  * https://github.com/melowntech/vts-browser-js/wiki/Examples
@@ -501,7 +502,7 @@ function onSwitchView(newBoundLayer) {
         var existingFreeLayers = map.getView().freeLayers;
         map.setView({
             surfaces: {
-                'melown-viewfinder-world': [newBoundLayer]
+                'melown-viewfinder-world': newBoundLayer.split(",").map(s => s.trim())
             },
             freeLayers: existingFreeLayers
         }); 

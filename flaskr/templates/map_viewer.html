@@ -1,8 +1,13 @@
 {% extends "layout.html" %}
 {% block title %}Map Viewer, {{ country }} version{% endblock %}
 {% block extra_tags %}
-    <link href="https://api.mapbox.com/" rel="dns-prefetch" />
+    <!-- preconnect to the default supplier: -->
+    <link href="https://tiles.maps.eox.at" rel="preconnect" crossorigin>
     <link href="https://tiles.maps.eox.at" rel="dns-prefetch" />
+
+    <!-- prefetch a well used supplier: -->
+    <link href="https://api.mapbox.com/" rel="dns-prefetch" />
+
     <link href="/static/dist-{{ config.STATIC_PACKAGE.version }}/css/map_viewer.css" rel="stylesheet" />
 {% endblock %}
 {% block body %}

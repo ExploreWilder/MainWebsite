@@ -521,6 +521,9 @@ def same_site(view: Any) -> Any:
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
+            ext = file_extension(str(request.url_rule))
+            if ext in ["jpg", "jpeg", "png"]:
+                return tile_not_found("image/" + ext)
             abort(404)
         return view(**kwargs)
     return wrapped_view
@@ -538,3 +541,13 @@ def replace_extension(filename_src: str, new_ext: str) -> str:
     """
     pre, ext = os.path.splitext(filename_src)
     return ".".join([pre, new_ext])
+
+def tile_not_found(mimetype: str) -> FlaskResponse:
+    """
+    Send an image error instead of the 404 error page.
+
+    Args:
+        mimetype (str): image/[jp(e)g|png]
+    """
+    ext = mimetype.split("/")[-1]
+    return send_from_directory("static/images", "tile404." + ext, mimetype=mimetype)
