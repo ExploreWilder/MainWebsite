@@ -68,6 +68,18 @@ var distancePointer;
 var pathDistance = 0;
 
 /**
+ * Add extra height to be sure the track is above the terrain.
+ * https://github.com/melowntech/vts-browser-js/issues/201
+ */
+var extra_height = 40;
+
+/**
+ * Z-buffer OpenGL. There is no optimal value, it needs some tuning.
+ * https://github.com/melowntech/vts-browser-js/issues/201
+ */
+var zbuffer_offset = -0.05;
+
+/**
  * Add or move the position pointed by the user on the map along the track.
  */
 function update_hiker_pos(tooltip_item, data) {
@@ -222,7 +234,7 @@ function webtrack_to_geodata(webtrack) {
         point = [
             trk[i][0], // longitude
             trk[i][1], // latitude
-            trk[i][3] // elevation
+            trk[i][3] + extra_height // elevation
         ];
         coords.push(point);
         geodata.addPoint(point, 'fix', {}, '', "EPSG:3857");
@@ -239,7 +251,7 @@ function webtrack_to_geodata(webtrack) {
                 geodata.addPoint([
                     wpt[i].lon,
                     wpt[i].lat,
-                    wpt[i].ele
+                    wpt[i].ele + extra_height
                 ], 'fix', {title: wpt[i].name}, 'way-points', "EPSG:3857");
                 break;
         }
@@ -276,7 +288,7 @@ function onHeightProcessed() {
                 "line": true,
                 "line-width" : 6,
                 "line-color": [255,0,0,255],
-                "zbuffer-offset" : [-5,0,0],
+                "zbuffer-offset" : [zbuffer_offset,0,0],
                 "z-index" : -1
             },
 
@@ -285,7 +297,7 @@ function onHeightProcessed() {
                 "line": true,
                 "line-width" : 20,
                 "line-color": [255,255,255,60],
-                "zbuffer-offset" : [-5,0,0],
+                "zbuffer-offset" : [zbuffer_offset,0,0], // same as track-line
                 "hover-event" : true,
                 "advanced-hit" : true
             },
@@ -297,7 +309,7 @@ function onHeightProcessed() {
                 "icon-color": [255,255,0,255], // yellow
                 "icon-scale": 2,
                 "icon-origin": "center-center",
-                "zbuffer-offset" : [-6,0,0],
+                "zbuffer-offset" : [zbuffer_offset - 0.1,0,0],
                 "label": true,
                 "label-size": 18,
                 "label-source": "$title",
@@ -309,6 +321,17 @@ function onHeightProcessed() {
 
     //make free layer
     var freeLayer = geodata.makeFreeLayer(style);
+
+    // self-attribution.
+    // The {Y} VTS macro is not used because only 2 digits are desired.
+    // The Markdown-style link is not used because relative.
+    const current_year = new Date().getFullYear();
+    freeLayer.credits = {
+        clement: {
+			id: 10,
+			notice: `{copy}2015-${("" + current_year).slice(-2)} <a href="/about" target="_blank">Clement</a>`
+		}
+    };
 
     //add free layer to the map
     map.addFreeLayer('gpxgeodata', freeLayer);
@@ -351,7 +374,6 @@ function centerPositonToGeometry(geometry) {
         midPoint[1] += coords[1];
         midPoint[2] += coords[2];
     };
-
 
     midPoint[0] /= li;
     midPoint[1] /= li;

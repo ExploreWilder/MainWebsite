@@ -379,7 +379,9 @@
 			"notice" : "Datasource: {copy} [https://www.eumetsat.int European Organisation for the Exploitation of Meteorological Satellites (EUMETSAT)]"
 		}
 	},
-	"freeLayers" : {},
+	"freeLayers" : {
+		"peaklist-org-ultras" : "peaklist.json"
+	},
 	"glue" : [],
 	"namedViews" : {},
 	"params" : {},
@@ -597,6 +599,13 @@
 	"version" : 1,
 	"view" : 
 	{
+		"freeLayers" : 
+		{
+			"peaklist-org-ultras" : 
+			{
+				"style" : "peaklist.style.json"
+			}
+		},
 		"surfaces" : 
 		{
 			"melown-viewfinder-world" : [ "default-satellite" ]

@@ -21,8 +21,8 @@ const fonts_dest = `${dist_dir}/webfonts/`;
 /** Directory of the images used in prod by jQuery UI. */
 const jquery_ui_icons_dest = `${dist_dir}/css/images/`;
 
-/** Location of the VTS Browser JS mapConfig file. */
-const vts_config = './app/scripts/map_player.config.json';
+/** Location of the VTS Browser JS config files. */
+const vts_config = './app/scripts/map_player_config/*';
 
 var vendor_scripts = [
     {
@@ -177,8 +177,7 @@ gulp.task('sentry', function() {
 
 gulp.task('vts_config', function() {
     return gulp.src(vts_config)
-        .pipe(changed(js_dest))
-        .pipe(gulp.dest(js_dest));
+        .pipe(gulp.dest(js_dest + "map_player_config/"));
 });
 gulp.watch(vts_config, gulp.series('vts_config'));
 

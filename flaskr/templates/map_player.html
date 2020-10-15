@@ -241,7 +241,7 @@
 {% block extra_scripts %}
     <script nonce="{{ csp_nonce() }}" src="/static/dist-{{ config.STATIC_PACKAGE.version }}/js/map_player.vendor.bundle.js"></script>
     <script nonce="{{ csp_nonce() }}" type="text/javascript">
-        VTS_BROWSER_CONFIG="/static/dist-{{ config.STATIC_PACKAGE.version }}/js/map_player.config.json";
+        VTS_BROWSER_CONFIG="/static/dist-{{ config.STATIC_PACKAGE.version }}/js/map_player_config/main_config.json";
     </script>
     <script nonce="{{ csp_nonce() }}" src="/static/dist-{{ config.STATIC_PACKAGE.version }}/js/map_player.app.bundle.js"></script>
 {% endblock %}

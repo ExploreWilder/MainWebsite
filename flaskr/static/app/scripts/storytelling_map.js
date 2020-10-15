@@ -405,11 +405,6 @@ class StorytellingMap {
                 this.update_location_helper(this.map);
             }
         });
-
-        // setup resize event
-        window.addEventListener('resize', () => {
-            scroller.resize();
-        });
     }
 
     /**
@@ -442,6 +437,11 @@ class StorytellingMap {
         })
         .onStepExit((response) => {
             this.on_step_exit(response);
+        });
+
+        // setup resize event
+        window.addEventListener('resize', () => {
+            scroller.resize();
         });
 
         console.log("Scrollytelling map ready");
