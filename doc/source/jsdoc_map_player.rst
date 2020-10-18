@@ -30,6 +30,9 @@ Module
 
 .. js:autoattribute:: extra_height
 .. js:autoattribute:: zbuffer_offset
+.. js:autoattribute:: timeoutHideMapPointerID
+.. js:autoattribute:: timeoutHideMap
+.. js:autoattribute:: partialRedraw
 
 .. js:autofunction:: map_player.update_hiker_pos
 .. js:autofunction:: loadTexture

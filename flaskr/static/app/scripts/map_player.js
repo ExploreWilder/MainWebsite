@@ -71,7 +71,7 @@ var pathDistance = 0;
  * Add extra height to be sure the track is above the terrain.
  * https://github.com/melowntech/vts-browser-js/issues/201
  */
-var extra_height = 40;
+var extra_height = 45;
 
 /**
  * Z-buffer OpenGL. There is no optimal value, it needs some tuning.
@@ -80,12 +80,30 @@ var extra_height = 40;
 var zbuffer_offset = -0.05;
 
 /**
+ * Identifier of the timeout used to hide the pointer on the map
+ * after being inactive for a while.
+ */
+var timeoutHideMapPointerID = null;
+
+/**
+ * Timeout in ms after which the tooltip and pointer are hidden
+ * after being inactive.
+ */
+var timeoutHideMap = 2000;
+
+/**
+ * True when the pointer and tooltip are not redrew on the map.
+ */
+var partialRedraw = false;
+
+/**
  * Add or move the position pointed by the user on the map along the track.
  */
 function update_hiker_pos(tooltip_item, data) {
     var el = data.datasets[tooltip_item.datasetIndex].data[tooltip_item.index];
     pathDistance = tooltip_item.xLabel * 1000;
     linePoint = lineGeometry.getPathPoint(pathDistance);
+    partialRedraw = false;
     map.redraw();
 }
 
@@ -474,6 +492,9 @@ function onFeatureHover(event) {
         //get point coodinates
         linePoint = lineGeometry.getPathPoint(pathDistance);
 
+        //will draw tooltip and pointer
+        partialRedraw = false;
+
         //force redraw map (we have to redraw track point)
         map.redraw();
 
@@ -483,22 +504,22 @@ function onFeatureHover(event) {
 }
 
 /**
- * Event handler.
+ * Event handler drawing the pointer and the tooltip on the map.
  */
 function onCustomRender() {
-    if (demoTexture && pathDistance && lineGeometry && linePoint) { //check whether texture is loaded
+    if (demoTexture && pathDistance && lineGeometry && linePoint && !partialRedraw) { //check whether texture is loaded
 
         //get canvas postion of the track point
         var p = map.convertCoordsFromPhysToCanvas(linePoint);
 
-        //display distance pointer in the track point coordiantes
+        //display distance pointer (tooltip) in the track point coordinates
         var rect = distancePointer.getRect();
         distancePointer.setStyle("display", "block");
         distancePointer.setStyle("left", (p[0]-(rect.width*0.5)) + "px");
         distancePointer.setStyle("top", (p[1]-50) + "px");
         distancePointer.setHtml((pathDistance*0.001).toFixed(1) + " km");
 
-        //draw point image at the last line point
+        //draw image (pointer) at the last line point
         renderer.drawImage({
             rect : [p[0]-12*1.5, p[1]-12*1.5, 24*1.5, 24*1.5],
             texture : demoTexture,
@@ -507,6 +528,18 @@ function onCustomRender() {
             depthTest : false,
             blend : true
             });
+        
+        if(timeoutHideMapPointerID !== null) {
+            window.clearTimeout(timeoutHideMapPointerID);
+            timeoutHideMapPointerID = null;
+        }
+        timeoutHideMapPointerID = window.setTimeout(function() {
+            var rect = distancePointer.getRect();
+            distancePointer.setStyle("display", "none");
+            partialRedraw = true;
+            //hide the tooltip and pointer on the map
+            map.redraw();
+        }, timeoutHideMap);
     }
 }
 

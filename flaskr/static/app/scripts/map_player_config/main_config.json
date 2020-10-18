@@ -341,12 +341,12 @@
 		"osm" : 
 		{
 			"id" : 120,
-			"notice" : "Datasource: {copy} [http://openstreetmap.org/ OpenStreetMap], under [http://www.openstreetmap.org/copyright ODbL]"
+			"notice" : "Datasource: {copy} [https://openstreetmap.org/ OpenStreetMap], under [https://www.openstreetmap.org/copyright ODbL]"
 		},
 		"stamen-toner" : 
 		{
 			"id" : 130,
-			"notice" : "Datasource: {copy} [http://stamen.com/ Stamen Design], under [http://creativecommons.org/licenses/by/3.0 CC BY 3.0]"
+			"notice" : "Datasource: {copy} [https://stamen.com/ Stamen Design], under [https://creativecommons.org/licenses/by/3.0 CC BY 3.0]"
 		},
 		"opentopomap" : 
 		{

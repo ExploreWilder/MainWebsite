@@ -337,7 +337,12 @@ def vts_proxy_eumetsat(layer: str, z: int, x: int, y: int) -> FlaskResponse:
 
 def download_bing_metadata(bing_key: str, imagery_set: str = "Aerial", timeout: int = 10) -> Tuple[str, List[str]]:
     """
-    Download the metadata URL from Bing Maps.
+    Download the imagery URLs (and metadata) from Bing Maps through the Microsoft API:
+
+    * API Type: REST Services
+    * API Category: RESTImagery-Metadata
+    * Billable: Yes
+    * Cost: free up to 125,000 calls per calendar year
 
     More information:
 
@@ -346,6 +351,9 @@ def download_bing_metadata(bing_key: str, imagery_set: str = "Aerial", timeout: 
     
     * The request configuration (timeout and Keep-Alive) is based on the VTS Mapproxy / TMS Bing:
       https://github.com/melowntech/vts-mapproxy/blob/master/mapproxy/src/mapproxy/generator/tms-bing.cpp#L105
+    
+    * Licensing Options (Microsoft):
+      https://www.microsoft.com/en-us/maps/licensing/licensing-options
     
     Args:
         bing_key (str): The Bing Maps private app key.

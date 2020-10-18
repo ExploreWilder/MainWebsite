@@ -24,6 +24,9 @@ const jquery_ui_icons_dest = `${dist_dir}/css/images/`;
 /** Location of the VTS Browser JS config files. */
 const vts_config = './app/scripts/map_player_config/*';
 
+/** Location of the VTS Browser JS stylesheet. */
+const vts_style = './vendor/vts-browser.min.css';
+
 var vendor_scripts = [
     {
         name: 'visitor_space',
@@ -181,14 +184,14 @@ gulp.task('vts_config', function() {
 });
 gulp.watch(vts_config, gulp.series('vts_config'));
 
-gulp.task('mapbox_style', function() {
-    return gulp.src('./node_modules/mapbox-gl/dist/mapbox-gl.css')
-        .pipe(changed(css_dest))
+gulp.task('vts_style', function() {
+    return gulp.src(vts_style)
         .pipe(gulp.dest(css_dest));
 });
+gulp.watch(vts_style, gulp.series('vts_style'));
 
-gulp.task('vts_style', function() {
-    return gulp.src('./vendor/vts-browser.min.css')
+gulp.task('mapbox_style', function() {
+    return gulp.src('./node_modules/mapbox-gl/dist/mapbox-gl.css')
         .pipe(changed(css_dest))
         .pipe(gulp.dest(css_dest));
 });
