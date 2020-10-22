@@ -207,7 +207,7 @@ const right_click_disabled_text = false;
  * The thumbnail height defined before it is dynamically guessed with get_thumbnail_height().
  * Default value is 300 px if the screen width > 768 px, otherwise 150 px.
  */
-const predefined_thumbnail_height = ($(window).width() > 768) ? 300 : 150;
+const predefined_thumbnail_height = $(window).width() > 768 ? 300 : 150;
 
 /**
  * The interval of time before displaying the next photo (if autoplay is enabled).
@@ -243,9 +243,9 @@ const url_mastodon_media = "/social_networks/mastodon/media/";
 /**
  * Mastodon name specified by `flaskr.config.MASTODON_ACCOUNT["name"]`.
  */
-const mastodon_name = "ExploreWilder"
+const mastodon_name = "ExploreWilder";
 
 /**
  * Link to my GitHub repository.
  */
-const my_github = "https://github.com/ExploreWilder/MainWebsite"
+const my_github = "https://github.com/ExploreWilder/MainWebsite";

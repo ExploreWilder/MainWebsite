@@ -42,7 +42,7 @@ let current_menu_on_focus = "#gpxInfo";
  */
 function label_elevation(tooltip_item, data) {
     var label = "Elevation: " + tooltip_item.yLabel + " m | ";
-    label += "Distance: " + (Math.round(tooltip_item.xLabel * 10.) / 10.) + " km";
+    label += "Distance: " + Math.round(tooltip_item.xLabel * 10) / 10 + " km";
     return label;
 }
 
@@ -61,15 +61,26 @@ function track_info(source) {
     var stats = source.statistics;
     var ul = $("#gpx-info-list");
     var lis = [
-        $('<li></li>').text("Total Length: " + (Math.round(stats.length / 10.) / 100.) + " km"),
-        $('<li></li>').text("Minimum Altitude: " + number_with_commas(stats.min) + " m"),
-        $('<li></li>').text("Maximum Altitude: " + number_with_commas(stats.max) + " m"),
-        $('<li></li>').html("<abbr title='Filtered radar data'>Total Elevation:</abbr> "
-            + number_with_commas(stats.gain + stats.loss) + " m (Gain: "
-            + number_with_commas(stats.gain) + " m, Loss: -"
-            + number_with_commas(stats.loss) + " m)")
-        ];
-    
+        $("<li></li>").text(
+            "Total Length: " + Math.round(stats.length / 10) / 100 + " km"
+        ),
+        $("<li></li>").text(
+            "Minimum Altitude: " + number_with_commas(stats.min) + " m"
+        ),
+        $("<li></li>").text(
+            "Maximum Altitude: " + number_with_commas(stats.max) + " m"
+        ),
+        $("<li></li>").html(
+            "<abbr title='Filtered radar data'>Total Elevation:</abbr> " +
+                number_with_commas(stats.gain + stats.loss) +
+                " m (Gain: " +
+                number_with_commas(stats.gain) +
+                " m, Loss: -" +
+                number_with_commas(stats.loss) +
+                " m)"
+        ),
+    ];
+
     ul.append(lis);
     create_elevation_chart(source.points);
 }
@@ -81,64 +92,75 @@ function track_info(source) {
 function create_elevation_chart(profile) {
     var ctx = $("#elevation-chart");
     var data = [];
-    for(var i = 0; i < profile.length; i++) {
-        data[i] = {x: profile[i][2] / 1000., y: profile[i][3], lon: profile[i][0], lat: profile[i][1]};
+    for (var i = 0; i < profile.length; i++) {
+        data[i] = {
+            x: profile[i][2] / 1000,
+            y: profile[i][3],
+            lon: profile[i][0],
+            lat: profile[i][1],
+        };
     }
     var distance = data[data.length - 1][1];
     var elevation_chart = new Chart.Scatter(ctx, {
         data: {
-            datasets: [{
-                data: data,
-                showLine: true,
-                pointRadius: 0,
-                borderColor: "black",
-                backgroundColor: "#3f3",
-                borderWidth: 1,
-                label: "Elevation",
-                fill: true
-            }]
+            datasets: [
+                {
+                    data: data,
+                    showLine: true,
+                    pointRadius: 0,
+                    borderColor: "black",
+                    backgroundColor: "#3f3",
+                    borderWidth: 1,
+                    label: "Elevation",
+                    fill: true,
+                },
+            ],
         },
         options: {
             title: {
                 display: true,
-                text: "Elevation Chart"
+                text: "Elevation Chart",
             },
             tooltips: {
-				mode: "index",
-				intersect: false,
+                mode: "index",
+                intersect: false,
                 callbacks: {
                     label: (tooltip_item, data) => {
                         update_hiker_pos(tooltip_item, data);
                         return label_elevation(tooltip_item, data);
-                    }
-                }
+                    },
+                },
             },
             scales: {
-                xAxes: [{
-                    type: "linear",
-                    position: "bottom",
-    				display: true,
-    				scaleLabel: {
-    					display: true,
-    					labelString: "Distance (km)"
-    				}
-    			}],
-    			yAxes: [{
-                    type: "linear",
-                    position: "left",
-    				display: true,
-    				scaleLabel: {
-    					display: true,
-    					labelString: "Elevation (m)"
-    				}
-    			}]
+                xAxes: [
+                    {
+                        type: "linear",
+                        position: "bottom",
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: "Distance (km)",
+                        },
+                    },
+                ],
+                yAxes: [
+                    {
+                        type: "linear",
+                        position: "left",
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: "Elevation (m)",
+                        },
+                    },
+                ],
             },
             legend: {
-                display: false
+                display: false,
             },
             responsive: true,
-            maintainAspectRatio: false
-        }
+            maintainAspectRatio: false,
+        },
     });
 }
 
@@ -161,21 +183,20 @@ function display_gpx_buttons() {
  * GPX info OR layer selection but not both menus at the same time.
  */
 function manage_subnav_click() {
-    $('#subNavbarNav a[aria-controls]').click(function() {
+    $("#subNavbarNav a[aria-controls]").click(function () {
         let new_menu_on_focus = $(this).attr("aria-controls");
         $(".map-viewer-interface .card-menu, #dropdownMenuBoundLayer").hide();
-        if(current_menu_on_focus != new_menu_on_focus) {
+        if (current_menu_on_focus != new_menu_on_focus) {
             current_menu_on_focus = new_menu_on_focus;
             $(current_menu_on_focus).show();
-        }
-        else {
+        } else {
             current_menu_on_focus = null;
         }
         $(this).blur();
         return false;
     });
 
-    $("#goto-download-gpx").click(function() {
+    $("#goto-download-gpx").click(function () {
         $($(this).attr("aria-controls")).modal("show");
         $(this).blur();
         return true;

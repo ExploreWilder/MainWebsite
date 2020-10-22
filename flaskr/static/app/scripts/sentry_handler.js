@@ -39,8 +39,14 @@
  * @param settings {PlainObject} - Settings object that was used in the creation of the request.
  * @param thrown_error {String} - Textual HTTP status, such as "Not Found" or "Internal Server Error."
  */
-$(document).ajaxError(function(event, jq_xhr, settings, thrown_error) {
-    info = "Error XHR to '" + settings.url + "' status " + jq_xhr.status + ": " + thrown_error;
+$(document).ajaxError(function (event, jq_xhr, settings, thrown_error) {
+    info =
+        "Error XHR to '" +
+        settings.url +
+        "' status " +
+        jq_xhr.status +
+        ": " +
+        thrown_error;
     console.log(info);
     Sentry.captureMessage(thrown_error || jq_xhr.statusText, {
         extra: {
@@ -49,11 +55,12 @@ $(document).ajaxError(function(event, jq_xhr, settings, thrown_error) {
             data: settings.data,
             status: jq_xhr.status,
             error: thrown_error || jq_xhr.statusText,
-            response: (typeof jq_xhr.responseText === "undefined")
-                      ? ((typeof jq_xhr.responseXML === "undefined")
-                          ? ""
-                          : jq_xhr.responseXML.substring(0, 100))
-                      : jq_xhr.responseText.substring(0, 100)
-        }
+            response:
+                typeof jq_xhr.responseText === "undefined"
+                    ? typeof jq_xhr.responseXML === "undefined"
+                        ? ""
+                        : jq_xhr.responseXML.substring(0, 100)
+                    : jq_xhr.responseText.substring(0, 100),
+        },
     });
 });

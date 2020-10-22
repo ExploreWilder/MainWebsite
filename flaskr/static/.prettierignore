@@ -1,0 +1,5 @@
+# Ignore compiled/minified code:
+dist-*
+vendor/*
+peaklist.geo.json
+*.min.*

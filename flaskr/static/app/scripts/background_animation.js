@@ -83,11 +83,13 @@ class BackgroundAnimation {
      * Download the background image and show it on load, and setup the color change events.
      */
     constructor() {
-        if($("#scroll-about-page").length) { // about page
+        if ($("#scroll-about-page").length) {
+            // about page
             this.scroll_config();
         }
 
-        if($(".trigger-bg-colors").length) { // the Patreon and the login buttons in the login page
+        if ($(".trigger-bg-colors").length) {
+            // the Patreon and the login buttons in the login page
             this.mouse_events_config();
         }
 
@@ -105,20 +107,23 @@ class BackgroundAnimation {
     scroll_config() {
         var scroller_about = scrollama();
         scroller_about
-        .setup({
-            step: "#scroll-about-page .step",
-            offset: this.#scrollama_offset
-        })
-        .onStepEnter((response) => {
-            if($(response.element).attr("data-step") == "contact") {
-                this.change_colors(false); // huray! the user may contact, follow, or support me!
-            }
-        })
-        .onStepExit((response) => {
-            if($(response.element).attr("data-step") == "contact" && response.direction == "up") {
-                this.change_colors(true); // oh no! the user go back to the boring "About Me" text.
-            }
-        });
+            .setup({
+                step: "#scroll-about-page .step",
+                offset: this.#scrollama_offset,
+            })
+            .onStepEnter((response) => {
+                if ($(response.element).attr("data-step") == "contact") {
+                    this.change_colors(false); // huray! the user may contact, follow, or support me!
+                }
+            })
+            .onStepExit((response) => {
+                if (
+                    $(response.element).attr("data-step") == "contact" &&
+                    response.direction == "up"
+                ) {
+                    this.change_colors(true); // oh no! the user go back to the boring "About Me" text.
+                }
+            });
         window.addEventListener("resize", scroller_about.resize);
     }
 
@@ -127,12 +132,12 @@ class BackgroundAnimation {
      */
     mouse_events_config() {
         $(".trigger-bg-colors")
-        .mouseenter(() => {
-            this.change_colors(false);
-        })
-        .mouseleave(() => {
-            this.change_colors(true);
-        });
+            .mouseenter(() => {
+                this.change_colors(false);
+            })
+            .mouseleave(() => {
+                this.change_colors(true);
+            });
     }
 
     /**
@@ -142,25 +147,30 @@ class BackgroundAnimation {
     change_colors(colors_to_bw) {
         clearInterval(this.#bw_interval);
         this.#bw_interval = setInterval(() => {
-            if(colors_to_bw) {
+            if (colors_to_bw) {
                 this.#current_bw += this.#bw_interval_inc;
-                $("#outer-bg-body").css("filter", `grayscale(${this.#current_bw}%)`);
-                if(this.#current_bw > 100) {
+                $("#outer-bg-body").css(
+                    "filter",
+                    `grayscale(${this.#current_bw}%)`
+                );
+                if (this.#current_bw > 100) {
                     this.#current_bw = 100;
                     clearInterval(this.#bw_interval);
                 }
-            }
-            else {
+            } else {
                 this.#current_bw -= this.#bw_interval_inc;
-                $("#outer-bg-body").css("filter", `grayscale(${this.#current_bw}%)`);
-                if(this.#current_bw < 0) {
+                $("#outer-bg-body").css(
+                    "filter",
+                    `grayscale(${this.#current_bw}%)`
+                );
+                if (this.#current_bw < 0) {
                     this.#current_bw = 0;
                     clearInterval(this.#bw_interval);
                 }
             }
         }, this.#bw_interval_period);
     }
-    
+
     /**
      * Display the downloaded background with a background color transition (white to image).
      */
@@ -168,20 +178,23 @@ class BackgroundAnimation {
         var opacity = 1; // start with a white background
         var opacity_interval = setInterval(() => {
             opacity -= this.#opacity_interval_inc;
-            $("#inner-bg-body").css("background-color", `rgba(255, 255, 255, ${opacity})`);
-            if(opacity < 0) {
+            $("#inner-bg-body").css(
+                "background-color",
+                `rgba(255, 255, 255, ${opacity})`
+            );
+            if (opacity < 0) {
                 clearInterval(opacity_interval);
             }
         }, this.#opacity_interval_period);
 
         $("#outer-bg-body").css({
-            "background-image": `url('${this.#image_src}')`
+            "background-image": `url('${this.#image_src}')`,
         });
     }
 }
 
-$(function() {
-    if($("#inner-bg-body").length && $("#outer-bg-body").length) {
+$(function () {
+    if ($("#inner-bg-body").length && $("#outer-bg-body").length) {
         bg = new BackgroundAnimation();
     }
 });

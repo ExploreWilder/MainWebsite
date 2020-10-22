@@ -48,27 +48,35 @@ const duration_zoom_animation = 300;
  * Notice: Update the Content Security Policy in case of external requests
  */
 const middleware_url = {
-    "nz": "/map/middleware/lds/",
-    "fr": "/map/middleware/ign",
+    nz: "/map/middleware/lds/",
+    fr: "/map/middleware/ign",
     "topo-otm": "/map/vts_proxy/world/topo/otm/{z}/{x}/{y}.png",
     "topo-thunderforest": "/map/vts_proxy/world/topo/thunderforest/",
     "aerial-bing": "/map/vts_proxy/world/satellite/bing/{z}/{x}/{y}.jpeg",
-    "aerial-mapbox": "https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90?access_token=" + MAPBOX_PUB_KEY,
-    "aerial-eox": "https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2019_3857/default/GoogleMapsCompatible/{z}/{y}/{x}.jpg",
-    "ca": "https://maps.geogratis.gc.ca/wms/canvec_en",
-    "no": "https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}",
-    "ch": "https://wmts10.geo.admin.ch/1.0.0/",
+    "aerial-mapbox":
+        "https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90?access_token=" +
+        MAPBOX_PUB_KEY,
+    "aerial-eox":
+        "https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2019_3857/default/GoogleMapsCompatible/{z}/{y}/{x}.jpg",
+    ca: "https://maps.geogratis.gc.ca/wms/canvec_en",
+    no:
+        "https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}",
+    ch: "https://wmts10.geo.admin.ch/1.0.0/",
 };
 
 /**
  * OpenStreetMap attribution.
  */
-const osm_attributions = '© <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> (ODbL)'
+const osm_attributions =
+    '© <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> (ODbL)';
 
 /**
  * Attributions in addition to the aerial and topo layers attributions.
  */
-const more_attributions = ' | Overview tiles ' + osm_attributions + ' | Map viewer © <a href="https://github.com/ExploreWilder/MainWebsite" target="_blank">Clement</a> (BSD-3-Clause)';
+const more_attributions =
+    " | Overview tiles " +
+    osm_attributions +
+    ' | Map viewer © <a href="https://github.com/ExploreWilder/MainWebsite" target="_blank">Clement</a> (BSD-3-Clause)';
 
 /**
  * List of world aerial layers.
@@ -78,7 +86,11 @@ const world_aerial = ["aerial-bing", "aerial-mapbox", "aerial-eox"];
 /**
  * List of world topo layers.
  */
-const world_topo = ["topo-otm", "topo-thunderforest-outdoors", "topo-thunderforest-landscape"];
+const world_topo = [
+    "topo-otm",
+    "topo-thunderforest-outdoors",
+    "topo-thunderforest-landscape",
+];
 
 /**
  * Minimum padding (in pixels) to be cleared inside the view, around the GPX track.

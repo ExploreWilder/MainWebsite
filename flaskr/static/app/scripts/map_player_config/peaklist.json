@@ -1,20 +1,17 @@
 {
-	"credits" : 
-	{
-		"peaklist-org" : 
-		{
-			"id" : 12,
-			"notice" : "{copy}2004-07 [http://www.peaklist.org/ultras.html peaklist.org]"
-		}
-	},
-	"displaySize" : 2048,
-	"extents" : 
-	{
-		"ll" : [ -6148519.2026110077, -6378104.7730843704, -6347343.1908062762 ],
-		"ur" : [ 6338551.8106086608, 6325205.3461546171, 6315390.4769231966 ]
-	},
-	"geodata" : "peaklist.geo.json?viewspec={viewspec}&r=10",
-	"label" : "Ultra-prominent peaks on earth, compiled by peaklist.org",
-	"style" : "peaklist.style.json",
-	"type" : "geodata"
+    "credits": {
+        "peaklist-org": {
+            "id": 12,
+            "notice": "{copy}2004-07 [http://www.peaklist.org/ultras.html peaklist.org]"
+        }
+    },
+    "displaySize": 2048,
+    "extents": {
+        "ll": [-6148519.2026110077, -6378104.7730843704, -6347343.1908062762],
+        "ur": [6338551.8106086608, 6325205.3461546171, 6315390.4769231966]
+    },
+    "geodata": "peaklist.geo.json?viewspec={viewspec}&r=10",
+    "label": "Ultra-prominent peaks on earth, compiled by peaklist.org",
+    "style": "peaklist.style.json",
+    "type": "geodata"
 }

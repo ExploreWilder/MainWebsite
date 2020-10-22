@@ -54,14 +54,35 @@ const resolutions = [
     0.5971642834779396,
     0.29858214173896974,
     0.14929107086948493,
-    0.07464553543474241
+    0.07464553543474241,
 ];
 
 /**
  * Matrix IDs.
  * Read the IGN documentation for further information.
  */
-const matrix_ids = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"];
+const matrix_ids = [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+];
 
 /**
  * Current aerial layer selected.
@@ -87,152 +108,180 @@ function get_ch_tiles_link(layer) {
  * Aerial Imagery tiles with a dynamic opacity. Those tiles are in the foreground.
  */
 var raster = {
-    "nz": new ol.layer.Tile({
+    nz: new ol.layer.Tile({
         source: new ol.source.XYZ({
             url: get_nz_tiles_link("set=2"),
-            attributions: ' | Aerial tiles © <a href="http://data.linz.govt.nz" '
-                + 'target="_blank">LINZ</a> (CC-BY 3.0)' + more_attributions
+            attributions:
+                ' | Aerial tiles © <a href="http://data.linz.govt.nz" ' +
+                'target="_blank">LINZ</a> (CC-BY 3.0)' +
+                more_attributions,
         }),
-        opacity: default_opacity / 100.
+        opacity: default_opacity / 100,
     }),
-    "fr": new ol.layer.Tile({
-        source : new ol.source.WMTS({
+    fr: new ol.layer.Tile({
+        source: new ol.source.WMTS({
             url: middleware_url["fr"],
             layer: "ORTHOIMAGERY.ORTHOPHOTOS",
             matrixSet: "PM",
             format: "image/jpeg",
             style: "normal",
-            tileGrid : new ol.tilegrid.WMTS({
-                origin: [-20037508,20037508],
+            tileGrid: new ol.tilegrid.WMTS({
+                origin: [-20037508, 20037508],
                 resolutions: resolutions,
-                matrixIds: matrix_ids
+                matrixIds: matrix_ids,
             }),
-            attributions: " | Aerial tiles © IGN" + more_attributions
+            attributions: " | Aerial tiles © IGN" + more_attributions,
         }),
-        opacity: default_opacity / 100.
+        opacity: default_opacity / 100,
     }),
-    "no": new ol.layer.Tile({
-        source : new ol.source.XYZ({
-            url: middleware_url["aerial-eox"],
-            attributions: ' | Aerial tiles © <a href="https://www.microsoft.com/en-us/maps" '
-                + 'target="_blank">Microsoft Corporation</a>' + more_attributions
-        }),
-        opacity: default_opacity / 100.
-    }),
-    "ca": new ol.layer.Tile({
+    no: new ol.layer.Tile({
         source: new ol.source.XYZ({
             url: middleware_url["aerial-eox"],
-            attributions: ' | Aerial tiles © <a href="https://www.microsoft.com/en-us/maps" '
-                + 'target="_blank">Microsoft Corporation</a>' + more_attributions
+            attributions:
+                ' | Aerial tiles © <a href="https://www.microsoft.com/en-us/maps" ' +
+                'target="_blank">Microsoft Corporation</a>' +
+                more_attributions,
         }),
-        opacity: default_opacity / 100.
+        opacity: default_opacity / 100,
+    }),
+    ca: new ol.layer.Tile({
+        source: new ol.source.XYZ({
+            url: middleware_url["aerial-eox"],
+            attributions:
+                ' | Aerial tiles © <a href="https://www.microsoft.com/en-us/maps" ' +
+                'target="_blank">Microsoft Corporation</a>' +
+                more_attributions,
+        }),
+        opacity: default_opacity / 100,
     }),
     "aerial-bing": new ol.layer.Tile({
         source: new ol.source.XYZ({
             url: middleware_url["aerial-bing"],
-            attributions: ' | Aerial tiles © <a href="https://www.microsoft.com/en-us/maps" '
-                + 'target="_blank">Microsoft Corporation</a>' + more_attributions
+            attributions:
+                ' | Aerial tiles © <a href="https://www.microsoft.com/en-us/maps" ' +
+                'target="_blank">Microsoft Corporation</a>' +
+                more_attributions,
         }),
-        opacity: default_opacity / 100.
+        opacity: default_opacity / 100,
     }),
     "aerial-mapbox": new ol.layer.Tile({
         source: new ol.source.XYZ({
             url: middleware_url["aerial-mapbox"],
-            attributions: ' | Aerial tiles © <a href="https://www.mapbox.com/about/maps/" '
-                + 'target="_blank">Mapbox</a>' + more_attributions
+            attributions:
+                ' | Aerial tiles © <a href="https://www.mapbox.com/about/maps/" ' +
+                'target="_blank">Mapbox</a>' +
+                more_attributions,
         }),
-        opacity: default_opacity / 100.
+        opacity: default_opacity / 100,
     }),
     "aerial-eox": new ol.layer.Tile({
         source: new ol.source.XYZ({
             url: middleware_url["aerial-eox"],
-            attributions: ' | Aerial tiles <a href="https://s2maps.eu" target="_blank">Sentinel-2 cloudless</a> '
-                + 'by © <a href="https://eox.at" target="_blank">EOX IT Services GmbH</a> '
-                + '(CC-BY-NC-SA 4.0)' + more_attributions
+            attributions:
+                ' | Aerial tiles <a href="https://s2maps.eu" target="_blank">Sentinel-2 cloudless</a> ' +
+                'by © <a href="https://eox.at" target="_blank">EOX IT Services GmbH</a> ' +
+                "(CC-BY-NC-SA 4.0)" +
+                more_attributions,
         }),
-        opacity: default_opacity / 100.
+        opacity: default_opacity / 100,
     }),
-    "ch": new ol.layer.Tile({
+    ch: new ol.layer.Tile({
         source: new ol.source.XYZ({
             url: get_ch_tiles_link("ch.swisstopo.swissimage"),
-            attributions: ' | <a href="https://www.swisstopo.admin.ch/en/home.html" '
-                + 'target="_blank">Aerial tiles © ESA / Eurimage / swisstopo, NPOC</a>' + more_attributions
+            attributions:
+                ' | <a href="https://www.swisstopo.admin.ch/en/home.html" ' +
+                'target="_blank">Aerial tiles © ESA / Eurimage / swisstopo, NPOC</a>' +
+                more_attributions,
         }),
-        opacity: default_opacity / 100.
-    })
+        opacity: default_opacity / 100,
+    }),
 };
 
 /**
  * Topo50 tiles. Those tiles are in the background, behind the aerial view.
  */
 var raster_topo50 = {
-    "nz": new ol.layer.Tile({
+    nz: new ol.layer.Tile({
         source: new ol.source.XYZ({
             url: get_nz_tiles_link("layer=767"),
-            attributions: 'Topo tiles © <a href="http://data.linz.govt.nz" target="_blank">LINZ</a> (CC-BY 3.0)'
-        })
+            attributions:
+                'Topo tiles © <a href="http://data.linz.govt.nz" target="_blank">LINZ</a> (CC-BY 3.0)',
+        }),
     }),
-    "fr": new ol.layer.Tile({
-        source : new ol.source.WMTS({
+    fr: new ol.layer.Tile({
+        source: new ol.source.WMTS({
             url: middleware_url["fr"],
             layer: "GEOGRAPHICALGRIDSYSTEMS.MAPS",
             matrixSet: "PM",
             format: "image/jpeg",
             style: "normal",
-            tileGrid : new ol.tilegrid.WMTS({
-                origin: [-20037508,20037508],
+            tileGrid: new ol.tilegrid.WMTS({
+                origin: [-20037508, 20037508],
                 resolutions: resolutions,
-                matrixIds: matrix_ids
+                matrixIds: matrix_ids,
             }),
-            attributions: "Topo tiles © IGN"
-        })
+            attributions: "Topo tiles © IGN",
+        }),
     }),
-    "ca": new ol.layer.Tile({
-        source : new ol.source.TileWMS({
+    ca: new ol.layer.Tile({
+        source: new ol.source.TileWMS({
             url: middleware_url["ca"],
             params: {
                 LAYERS: "canvec",
-                TRANSPARENT: "false"
+                TRANSPARENT: "false",
             },
-            attributions: 'Topo tiles © Canada (<a href="https://open.canada.ca/en/open-government-licence-canada" '
-                + 'target="_blank">Open Government Licence</a>)'
-        })
+            attributions:
+                'Topo tiles © Canada (<a href="https://open.canada.ca/en/open-government-licence-canada" ' +
+                'target="_blank">Open Government Licence</a>)',
+        }),
     }),
-    "no": new ol.layer.Tile({
+    no: new ol.layer.Tile({
         source: new ol.source.XYZ({
             url: middleware_url["no"],
-            attributions: 'Topo tiles © <a href="http://www.kartverket.no/" '
-                + 'target="_blank">Kartverket</a>'
-        })
+            attributions:
+                'Topo tiles © <a href="http://www.kartverket.no/" ' +
+                'target="_blank">Kartverket</a>',
+        }),
     }),
     "topo-otm": new ol.layer.Tile({
         source: new ol.source.XYZ({
             url: middleware_url["topo-otm"],
-            attributions: 'Topo tiles ' + osm_attributions
-                + ' + © <a href="https://opentopomap.org/" target="_blank">OpenTopoMap</a> (CC-BY-SA 3.0)'
-        })
+            attributions:
+                "Topo tiles " +
+                osm_attributions +
+                ' + © <a href="https://opentopomap.org/" target="_blank">OpenTopoMap</a> (CC-BY-SA 3.0)',
+        }),
     }),
     "topo-thunderforest-outdoors": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: middleware_url["topo-thunderforest"] + "outdoors/{z}/{x}/{y}.png",
-            attributions: 'Topo tiles ' + osm_attributions
-                + ' + © <a href="https://www.thunderforest.com" target="_blank">Thunderforest</a> (CC-BY-SA 2.0)'
-        })
+            url:
+                middleware_url["topo-thunderforest"] +
+                "outdoors/{z}/{x}/{y}.png",
+            attributions:
+                "Topo tiles " +
+                osm_attributions +
+                ' + © <a href="https://www.thunderforest.com" target="_blank">Thunderforest</a> (CC-BY-SA 2.0)',
+        }),
     }),
     "topo-thunderforest-landscape": new ol.layer.Tile({
         source: new ol.source.XYZ({
-            url: middleware_url["topo-thunderforest"] + "landscape/{z}/{x}/{y}.png",
-            attributions: 'Topo tiles ' + osm_attributions
-                + ' + © <a href="https://www.thunderforest.com" target="_blank">Thunderforest</a> (CC-BY-SA 2.0)'
-        })
+            url:
+                middleware_url["topo-thunderforest"] +
+                "landscape/{z}/{x}/{y}.png",
+            attributions:
+                "Topo tiles " +
+                osm_attributions +
+                ' + © <a href="https://www.thunderforest.com" target="_blank">Thunderforest</a> (CC-BY-SA 2.0)',
+        }),
     }),
-    "ch": new ol.layer.Tile({
+    ch: new ol.layer.Tile({
         source: new ol.source.XYZ({
             url: get_ch_tiles_link("ch.swisstopo.pixelkarte-farbe"),
-            attributions: 'Topo tiles © <a href="https://www.swisstopo.admin.ch/en/home.html" '
-                + 'target="_blank">geodata swisstopo</a>'
-        })
-    })
+            attributions:
+                'Topo tiles © <a href="https://www.swisstopo.admin.ch/en/home.html" ' +
+                'target="_blank">geodata swisstopo</a>',
+        }),
+    }),
 };
 
 /**
@@ -240,10 +289,11 @@ var raster_topo50 = {
  * https://openlayers.org/en/latest/examples/overviewmap.html
  */
 var overviewMapControl = new ol.control.OverviewMap({
-  layers: [
-    new ol.layer.Tile({
-      source: new ol.source.OSM()
-    }) ],
+    layers: [
+        new ol.layer.Tile({
+            source: new ol.source.OSM(),
+        }),
+    ],
 });
 
 /**
@@ -251,116 +301,116 @@ var overviewMapControl = new ol.control.OverviewMap({
  */
 var track_style = {
     // default waypoint
-    "Point": new ol.style.Style({
+    Point: new ol.style.Style({
         image: new ol.style.Circle({
             fill: new ol.style.Fill({
-                color: "rgba(255, 255, 0, 0.8)"
+                color: "rgba(255, 255, 0, 0.8)",
             }),
             radius: 5,
             stroke: new ol.style.Stroke({
                 color: "rgba(0, 0, 255, 0.8)",
-                width: 3
-            })
-        })
+                width: 3,
+            }),
+        }),
     }),
     // Viking sym: Campground
-    "PointCampground": new ol.style.Style({
+    PointCampground: new ol.style.Style({
         text: new ol.style.Text({
-            text: '\uf6bb', // fas fa-campground
-            font: '900 ' + icon_size + ' "Font Awesome 5 Free"',
-            textBaseline: 'middle',
+            text: "\uf6bb", // fas fa-campground
+            font: "900 " + icon_size + ' "Font Awesome 5 Free"',
+            textBaseline: "middle",
             fill: new ol.style.Fill({
-                color: "rgba(255, 255, 0, 0.8)"
+                color: "rgba(255, 255, 0, 0.8)",
             }),
             stroke: new ol.style.Stroke({
                 color: "rgba(0, 0, 255, 0.8)",
-                width: 3
-            })
-        })
+                width: 3,
+            }),
+        }),
     }),
     // Viking sym: Fishing Hot Spot Facility used as hut
-    "PointFishingHotSpotFacility": new ol.style.Style({
+    PointFishingHotSpotFacility: new ol.style.Style({
         text: new ol.style.Text({
-            text: '\uf015', // fas fa-home
-            font: '900 ' + icon_size + ' "Font Awesome 5 Free"',
-            textBaseline: 'middle',
+            text: "\uf015", // fas fa-home
+            font: "900 " + icon_size + ' "Font Awesome 5 Free"',
+            textBaseline: "middle",
             fill: new ol.style.Fill({
-                color: "rgba(255, 255, 0, 0.8)"
+                color: "rgba(255, 255, 0, 0.8)",
             }),
             stroke: new ol.style.Stroke({
                 color: "rgba(0, 0, 255, 0.8)",
-                width: 3
-            })
-        })
+                width: 3,
+            }),
+        }),
     }),
     // Start point
-    "PointStart": new ol.style.Style({
+    PointStart: new ol.style.Style({
         text: new ol.style.Text({
-            text: '\uf3c5', // fas fa-map-marker-alt
-            font: '900 ' + icon_size + ' "Font Awesome 5 Free"',
-            textBaseline: 'middle',
+            text: "\uf3c5", // fas fa-map-marker-alt
+            font: "900 " + icon_size + ' "Font Awesome 5 Free"',
+            textBaseline: "middle",
             fill: new ol.style.Fill({
-                color: "rgba(255, 255, 0, 0.8)"
+                color: "rgba(255, 255, 0, 0.8)",
             }),
             stroke: new ol.style.Stroke({
                 color: "rgba(0, 0, 255, 0.8)",
-                width: 3
-            })
-        })
+                width: 3,
+            }),
+        }),
     }),
     // Progress
-    "PointHiker": new ol.style.Style({
+    PointHiker: new ol.style.Style({
         text: new ol.style.Text({
-            text: '\uf6ec', // fas fa-hiking
-            font: '900 ' + icon_size + ' "Font Awesome 5 Free"',
-            textBaseline: 'middle',
+            text: "\uf6ec", // fas fa-hiking
+            font: "900 " + icon_size + ' "Font Awesome 5 Free"',
+            textBaseline: "middle",
             fill: new ol.style.Fill({
-                color: "rgba(255, 255, 0, 0.8)"
+                color: "rgba(255, 255, 0, 0.8)",
             }),
             stroke: new ol.style.Stroke({
                 color: "rgba(0, 0, 255, 0.8)",
-                width: 3
-            })
-        })
+                width: 3,
+            }),
+        }),
     }),
     // Start point
-    "PointEnd": new ol.style.Style({
+    PointEnd: new ol.style.Style({
         text: new ol.style.Text({
-            text: '\uf787', // fas fa-carrot
-            font: '900 ' + icon_size + ' "Font Awesome 5 Free"',
-            textBaseline: 'middle',
+            text: "\uf787", // fas fa-carrot
+            font: "900 " + icon_size + ' "Font Awesome 5 Free"',
+            textBaseline: "middle",
             fill: new ol.style.Fill({
-                color: "rgba(255, 255, 0, 0.8)"
+                color: "rgba(255, 255, 0, 0.8)",
             }),
             stroke: new ol.style.Stroke({
                 color: "rgba(0, 0, 255, 0.8)",
-                width: 3
-            })
-        })
+                width: 3,
+            }),
+        }),
     }),
     // route
-    "LineString": new ol.style.Style({
+    LineString: new ol.style.Style({
         stroke: new ol.style.Stroke({
             color: "rgba(0, 0, 255, 0.7)",
-            width: 3
-        })
+            width: 3,
+        }),
     }),
     // track
-    "MultiLineString": new ol.style.Style({
+    MultiLineString: new ol.style.Style({
         stroke: new ol.style.Stroke({
             color: "rgba(255, 0, 0, 0.7)",
-            width: 3
-        })
-    })
+            width: 3,
+        }),
+    }),
 };
 
 /**
  * The moving feature on the map when the user moves on the elevation profile.
  */
 var hiker = new ol.Feature({
-    geometry: new ol.geom.Point([0,0]),
+    geometry: new ol.geom.Point([0, 0]),
     name: "Progress",
-    sym: "Hiker"
+    sym: "Hiker",
 });
 
 /**
@@ -376,12 +426,15 @@ var hiker_on_map = false;
  */
 var track_vector = new ol.layer.Vector({
     source: new ol.source.Vector({}),
-    style: function(feature) {
-        if(feature.getGeometry().getType() == "Point") {
-            return track_style[feature.getGeometry().getType() + feature.get("sym").replace(/\s+/g, "")];
+    style: function (feature) {
+        if (feature.getGeometry().getType() == "Point") {
+            return track_style[
+                feature.getGeometry().getType() +
+                    feature.get("sym").replace(/\s+/g, "")
+            ];
         }
         return track_style[feature.getGeometry().getType()];
-    }
+    },
 });
 
 /**
@@ -390,16 +443,15 @@ var track_vector = new ol.layer.Vector({
 function refresh_opacity() {
     var opacity = Number($("#opacity-slider").val());
 
-    if(opacity > 100) {
+    if (opacity > 100) {
         opacity = 100;
-    }
-    else if(opacity < 0) {
+    } else if (opacity < 0) {
         opacity = 0;
     }
 
     $("#opacity-slider-value").html(opacity);
-    raster[country_code].setOpacity(opacity / 100.);
-    raster[selected_aerial].setOpacity(opacity / 100.);
+    raster[country_code].setOpacity(opacity / 100);
+    raster[selected_aerial].setOpacity(opacity / 100);
 }
 
 /**
@@ -408,15 +460,14 @@ function refresh_opacity() {
 function display_tooltip(evt) {
     var pixel = evt.pixel;
     tooltip = $("#tooltip-waypoint").tooltip();
-    var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
+    var feature = map.forEachFeatureAtPixel(pixel, function (feature) {
         return feature;
     });
-    if(feature && feature.getGeometry().getType() == "Point") {
+    if (feature && feature.getGeometry().getType() == "Point") {
         overlay.setPosition(evt.coordinate);
         tooltip.prop("title", feature.get("name"));
         tooltip.tooltip("show");
-    }
-    else {
+    } else {
         tooltip.tooltip("hide");
     }
 }
@@ -428,7 +479,7 @@ function display_tooltip(evt) {
 function zoom(zoom_increment) {
     map.getView().animate({
         zoom: map.getView().getZoom() + zoom_increment,
-        duration: duration_zoom_animation
+        duration: duration_zoom_animation,
     });
 }
 
@@ -438,7 +489,7 @@ function zoom(zoom_increment) {
 function update_hiker_pos(tooltip_item, data) {
     var el = data.datasets[tooltip_item.datasetIndex].data[tooltip_item.index];
     hiker.getGeometry().setCoordinates([el.lon, el.lat]);
-    if(!hiker_on_map) {
+    if (!hiker_on_map) {
         var source = track_vector.getSource();
         source.addFeature(hiker);
         hiker_on_map = true;
@@ -455,34 +506,39 @@ function webtrack_to_source(data, source) {
     var trk = data.points;
     var coords = [];
     var features = [];
-    for(var i = 0; i < trk.length; i++) {
+    for (var i = 0; i < trk.length; i++) {
         coords.push([trk[i][0], trk[i][1]]);
     }
     var trk_feature = new ol.Feature({
-        geometry: new ol.geom.MultiLineString([coords], 'XY')
+        geometry: new ol.geom.MultiLineString([coords], "XY"),
     });
     features.push(trk_feature);
 
     var starting_point = new ol.Feature({
         geometry: new ol.geom.Point(coords[0]),
         name: "Start",
-        sym: "Start"
+        sym: "Start",
     });
     features.push(starting_point);
     var ending_point = new ol.Feature({
         geometry: new ol.geom.Point(coords[coords.length - 1]),
         name: "End",
-        sym: "End"
+        sym: "End",
     });
     features.push(ending_point);
 
     var waypoints = data.waypoints;
-    for(var i = 0; i < waypoints.length; i++) {
-        features.push(new ol.Feature({
-            geometry: new ol.geom.Point([waypoints[i].lon, waypoints[i].lat]),
-            name: waypoints[i].name,
-            sym: waypoints[i].sym
-        }));
+    for (var i = 0; i < waypoints.length; i++) {
+        features.push(
+            new ol.Feature({
+                geometry: new ol.geom.Point([
+                    waypoints[i].lon,
+                    waypoints[i].lat,
+                ]),
+                name: waypoints[i].name,
+                sym: waypoints[i].sym,
+            })
+        );
     }
     source.addFeatures(features);
 }
@@ -496,9 +552,12 @@ function fetch_data() {
     // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data
     oReq.responseType = "arraybuffer";
 
-    oReq.onload = function(oEvent) {
-        if(oReq.status == 500) { // exception raised in map.py:profile_file()
-            var response_str = new TextDecoder("utf-8").decode(new Uint8Array(oReq.response));
+    oReq.onload = function (oEvent) {
+        if (oReq.status == 500) {
+            // exception raised in map.py:profile_file()
+            var response_str = new TextDecoder("utf-8").decode(
+                new Uint8Array(oReq.response)
+            );
             window.alert("Failed to fetch the WebTrack: " + response_str);
             return;
         }
@@ -508,15 +567,24 @@ function fetch_data() {
         let data = {
             statistics: webtrack.getTrackInfo(),
             points: webtrack.getTrack()[0].points,
-            waypoints: webtrack.getWaypoints()
-        }
+            waypoints: webtrack.getWaypoints(),
+        };
         webtrack_to_source(data, source);
 
         map.getView().fit(source.getExtent(), {
             size: map.getSize(),
-            padding: [track_padding, track_padding, track_padding, track_padding]
+            padding: [
+                track_padding,
+                track_padding,
+                track_padding,
+                track_padding,
+            ],
         });
-        var center = ol.proj.transform(map.getView().getCenter(), "EPSG:3857", "EPSG:4326");
+        var center = ol.proj.transform(
+            map.getView().getCenter(),
+            "EPSG:3857",
+            "EPSG:4326"
+        );
         console.log("Center: " + center);
 
         track_info(data);
@@ -534,7 +602,7 @@ function select_basemap() {
     raster_topo50[country_code].setVisible(is_country_specific);
     raster[country_code].setVisible(is_country_specific);
 
-    if(is_country_specific) {
+    if (is_country_specific) {
         $("#topo-layer-selection, #aerial-layer-selection").hide();
         world_topo.forEach((layer) => {
             raster_topo50[layer].setVisible(false);
@@ -543,15 +611,14 @@ function select_basemap() {
             raster[layer].setVisible(false);
         });
         selected_aerial = country_code;
-    }
-    else {
+    } else {
         $("#topo-layer-selection, #aerial-layer-selection").show();
         world_topo.forEach((layer) => {
             raster_topo50[layer].setVisible($("#" + layer).is(":checked"));
         });
         world_aerial.forEach((layer) => {
             let is_checked = $("#" + layer).is(":checked");
-            if(is_checked) {
+            if (is_checked) {
                 selected_aerial = layer;
             }
             raster[layer].setVisible(is_checked);
@@ -571,9 +638,9 @@ function init_basemap_selection() {
     $('abbr[data-toggle="tooltip"].layer-info').tooltip({
         animation: true,
         placement: "bottom",
-        delay: { "show": 100, "hide": 0 },
+        delay: { show: 100, hide: 0 },
         container: "#menuLayers",
-        trigger: "hover"
+        trigger: "hover",
     });
     select_basemap();
 }
@@ -586,10 +653,12 @@ function init_basemap_selection() {
  * * Download the track and its profile.
  *
  */
-$(function() {
-    var url = new RegExp("/([^/]*)/([^/]*)/([^/]*)/([^/#]*)#*$", "g").exec(window.location.href);
+$(function () {
+    var url = new RegExp("/([^/]*)/([^/]*)/([^/]*)/([^/#]*)#*$", "g").exec(
+        window.location.href
+    );
 
-    if(url == null) {
+    if (url == null) {
         return;
     }
 
@@ -614,7 +683,7 @@ $(function() {
             ...all_raster_world_topo,
             raster[country_code],
             ...all_raster_world_aerial,
-            track_vector
+            track_vector,
         ],
         controls: [
             new ol.control.Attribution(),
@@ -623,22 +692,26 @@ $(function() {
             overviewMapControl,
         ],
         view: new ol.View({
-            center: ol.proj.transform(default_gps_position, "EPSG:4326", "EPSG:3857"),
+            center: ol.proj.transform(
+                default_gps_position,
+                "EPSG:4326",
+                "EPSG:3857"
+            ),
             zoom: default_zoom,
             minZoom: min_zoom,
-            maxZoom: max_zoom
-        })
+            maxZoom: max_zoom,
+        }),
     });
 
     overlay = new ol.Overlay({
         element: document.getElementById("tooltip-waypoint"),
         offset: [10, 0],
-        positioning: "bottom-left"
+        positioning: "bottom-left",
     });
 
     map.addOverlay(overlay);
     map.on("pointermove", display_tooltip);
-    
+
     fetch_data();
 
     $("#opacity-slider").val(default_opacity);
@@ -646,7 +719,7 @@ $(function() {
 
     init_basemap_selection();
     manage_subnav_click();
-    $("#menuLayers .close, #gpxInfo .close").click(function() {
+    $("#menuLayers .close, #gpxInfo .close").click(function () {
         current_menu_on_focus = null;
         $(this).closest(".card-menu").fadeOut();
         return false;

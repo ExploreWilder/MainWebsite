@@ -41,21 +41,21 @@
  */
 
 @font-face {
-	font-family: 'MainFont';
-	src: url('@{my-regular-font}.eot');
-	src: url('@{my-regular-font}.eot?iefix') format('eot'),
-	     url('@{my-regular-font}.woff') format('woff'),
-	     url('@{my-regular-font}.ttf') format('truetype'),
-	     url('@{my-regular-font}.svg#webfont') format('svg');
+    font-family: "MainFont";
+    src: url("@{my-regular-font}.eot");
+    src: url("@{my-regular-font}.eot?iefix") format("eot"),
+        url("@{my-regular-font}.woff") format("woff"),
+        url("@{my-regular-font}.ttf") format("truetype"),
+        url("@{my-regular-font}.svg#webfont") format("svg");
 }
 
 @font-face {
-	font-family: 'TitleFont';
-	src: url('@{my-title-font}.eot');
-	src: url('@{my-title-font}.eot?iefix') format('eot'),
-	     url('@{my-title-font}.woff') format('woff'),
-	     url('@{my-title-font}.ttf') format('truetype'),
-	     url('@{my-title-font}.svg#webfont') format('svg');
+    font-family: "TitleFont";
+    src: url("@{my-title-font}.eot");
+    src: url("@{my-title-font}.eot?iefix") format("eot"),
+        url("@{my-title-font}.woff") format("woff"),
+        url("@{my-title-font}.ttf") format("truetype"),
+        url("@{my-title-font}.svg#webfont") format("svg");
 }
 
 /*
@@ -83,25 +83,26 @@
     }
 }
 
-.nav-item, .navbar-brand {
+.nav-item,
+.navbar-brand {
     line-height: 1em;
 }
 
 .nav-item {
-    font-family: 'TitleFont';
+    font-family: "TitleFont";
     font-size: 1.3em;
     font-variant: small-caps !important;
 }
 
 .navbar-brand {
-    font-family: 'TitleFont' !important;
+    font-family: "TitleFont" !important;
     font-size: 2em;
     margin-top: -2px;
     img {
         opacity: 0.5;
     }
     .tld {
-        color: rgba(255,255,255,.5); /* same as nav-link */
+        color: rgba(255, 255, 255, 0.5); /* same as nav-link */
     }
 }
 
@@ -117,10 +118,10 @@
     top: @nav-bar-height;
     z-index: 1029 !important; /* below the main navbar */
     .breadcrumb {
-        @media (max-width:110px) {
+        @media (max-width: 110px) {
             display: none;
         }
-        @media (min-width:110px) {
+        @media (min-width: 110px) {
             display: block !important;
         }
         overflow: hidden;
@@ -154,15 +155,20 @@
     width: 1em;
 }
 
-p:not(.powered-by) a:not([class^='footnote-']):not(.btn):not(.ui-widget), .tab-pane a:not(.btn), label a, dd a,
-#content-book li a:not([class^='footnote-']),
-.modal-content li a:not([class^='footnote-']):not([class^='flag-']):not([class^='tooltip-networks']),
-#content-book td a:not([class^='footnote-']) {
+p:not(.powered-by) a:not([class^="footnote-"]):not(.btn):not(.ui-widget),
+.tab-pane a:not(.btn),
+label a,
+dd a,
+#content-book li a:not([class^="footnote-"]),
+.modal-content
+    li
+    a:not([class^="footnote-"]):not([class^="flag-"]):not([class^="tooltip-networks"]),
+#content-book td a:not([class^="footnote-"]) {
     box-shadow: inset 0 -3px 0 -1px @light-green;
-    transition: box-shadow .15s ease-in-out;
+    transition: box-shadow 0.15s ease-in-out;
     color: black !important;
     &:hover {
-        box-shadow:inset 0 -23px 0 -1px #7dda69;
+        box-shadow: inset 0 -23px 0 -1px #7dda69;
     }
 }
 
@@ -225,7 +231,9 @@ p:not(.powered-by) a:not([class^='footnote-']):not(.btn):not(.ui-widget), .tab-p
     -webkit-transform: perspective(1px) translateZ(0);
     transform: perspective(1px) translateZ(0);
     box-shadow: 0 0 1px rgba(0, 0, 0, 0);
-    &:hover, &:focus, &:active {
+    &:hover,
+    &:focus,
+    &:active {
         -webkit-animation-name: hvr-wobble-horizontal;
         animation-name: hvr-wobble-horizontal;
         -webkit-animation-duration: 1s;
@@ -282,16 +290,16 @@ button[type="submit"] {
 }
 
 .animate-shadow {
-    box-shadow: 0 0 4px rgba(0,0,0,0.3);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
     transition: box-shadow 0.2s ease-in-out;
     &:hover {
-        box-shadow: 0 0 9px rgba(0,0,0,0.7);
+        box-shadow: 0 0 9px rgba(0, 0, 0, 0.7);
     }
 }
 
 input {
     max-width: 300px;
-    &[id^='captcha'] {
+    &[id^="captcha"] {
         width: 6em;
     }
 }
@@ -312,37 +320,39 @@ input {
 body {
     padding-top: @nav-bar-height; /* the fixed navbar will not overlay the gallery */
     background: @body-background;
-    font-family: 'MainFont';
+    font-family: "MainFont";
 }
 
 .tooltip-inner {
-    font-family: 'MainFont';
+    font-family: "MainFont";
 }
 
 h1 {
     color: @title-light-color;
-    font-family: 'TitleFont';
+    font-family: "TitleFont";
     font-size: 2.2em;
     margin-top: 10px;
 }
 
 h4 {
     color: @title-light-color;
-    font-family: 'TitleFont';
+    font-family: "TitleFont";
     font-size: 1.6em;
 }
 
 h5 {
-    font-family: 'TitleFont';
+    font-family: "TitleFont";
     font-size: 1.6em;
 }
 
 a {
-    &, &:hover {
+    &,
+    &:hover {
         color: @light-green;
         text-decoration: none;
     }
-    &:active, &:focus {
+    &:active,
+    &:focus {
         outline: none; /* remove the dashed border on links */
     }
     &.disabled {
@@ -351,8 +361,9 @@ a {
     }
 }
 
-input[type^='checkbox'] {
-    &:active, &:focus {
+input[type^="checkbox"] {
+    &:active,
+    &:focus {
         outline: none;
     }
 }
@@ -361,15 +372,44 @@ hr {
     border: 0;
     height: 1px;
     /* same colour on sides than the background */
-    background-image: -webkit-linear-gradient(left, @body-background, #8c8b8b, @body-background);
-    background-image: -moz-linear-gradient(left, @body-background, #8c8b8b, @body-background);
-    background-image: -ms-linear-gradient(left, @body-background, #8c8b8b, @body-background);
-    background-image: -o-linear-gradient(left, @body-background, #8c8b8b, @body-background);
-    background-image: linear-gradient(to left, @body-background, #8c8b8b, @body-background);
+    background-image: -webkit-linear-gradient(
+        left,
+        @body-background,
+        #8c8b8b,
+        @body-background
+    );
+    background-image: -moz-linear-gradient(
+        left,
+        @body-background,
+        #8c8b8b,
+        @body-background
+    );
+    background-image: -ms-linear-gradient(
+        left,
+        @body-background,
+        #8c8b8b,
+        @body-background
+    );
+    background-image: -o-linear-gradient(
+        left,
+        @body-background,
+        #8c8b8b,
+        @body-background
+    );
+    background-image: linear-gradient(
+        to left,
+        @body-background,
+        #8c8b8b,
+        @body-background
+    );
 }
 
 #button- {
-    &close, &prev, &next, &love, &auto {
+    &close,
+    &prev,
+    &next,
+    &love,
+    &auto {
         color: @button-color;
         position: fixed; /* positioned relative to the window */
         &:hover {
@@ -391,33 +431,62 @@ hr {
 }
 
 @-webkit-keyframes animate-autoplay {
-    0% {transform: rotate(0);}
-    100% {transform: rotate(360deg);}
+    0% {
+        transform: rotate(0);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* do not merge with the similar block just above */
 @keyframes animate-autoplay {
-    0% {transform: rotate(0);}
-    100% {transform: rotate(360deg);}
+    0% {
+        transform: rotate(0);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 @-webkit-keyframes animate-heart {
-    0% {font-size: 2rem;padding: 0;}
-    10% {font-size: 0.5rem;padding: 0.75rem;}
-    20% {font-size: 2rem;padding: 0;}
-    100% {font-size: 2rem;}
+    0% {
+        font-size: 2rem;
+        padding: 0;
+    }
+    10% {
+        font-size: 0.5rem;
+        padding: 0.75rem;
+    }
+    20% {
+        font-size: 2rem;
+        padding: 0;
+    }
+    100% {
+        font-size: 2rem;
+    }
 }
 
 /* do not merge with the similar block just above */
 @keyframes animate-heart {
-    0% {font-size: 2rem;padding: 0;}
-    10% {font-size: 0.5rem;padding: 0.75rem;}
-    20% {font-size: 2rem;padding: 0;}
-    100% {font-size: 2rem;}
+    0% {
+        font-size: 2rem;
+        padding: 0;
+    }
+    10% {
+        font-size: 0.5rem;
+        padding: 0.75rem;
+    }
+    20% {
+        font-size: 2rem;
+        padding: 0;
+    }
+    100% {
+        font-size: 2rem;
+    }
 }
 
-#animated-download
-{
+#animated-download {
     position: fixed;
     color: black;
 }
@@ -435,14 +504,22 @@ hr {
 }
 
 @-webkit-keyframes animate-reload {
-    0% {transform: rotate(0);}
-    100% {transform: rotate(180deg);}
+    0% {
+        transform: rotate(0);
+    }
+    100% {
+        transform: rotate(180deg);
+    }
 }
 
 /* do not merge with the similar block just above */
 @keyframes animate-reload {
-    0% {transform: rotate(0);}
-    100% {transform: rotate(180deg);}
+    0% {
+        transform: rotate(0);
+    }
+    100% {
+        transform: rotate(180deg);
+    }
 }
 
 .desc-field-conf::first-line {
@@ -471,10 +548,11 @@ hr {
             font-weight: normal;
             line-height: 1.42857143;
             white-space: nowrap;
-            margin:0;
+            margin: 0;
             color: black;
-            transition: background-color .4s ease;
-            &:hover, &:focus {
+            transition: background-color 0.4s ease;
+            &:hover,
+            &:focus {
                 background-color: #f0f0f0;
             }
         }
@@ -486,7 +564,8 @@ hr {
         &.active label {
             background-color: var(--blue);
             color: white;
-            &:hover, &:focus {
+            &:hover,
+            &:focus {
                 background-color: var(--blue);
             }
         }
@@ -505,13 +584,14 @@ hr {
     background-size: cover;
 }
 
-#inner-bg-body, #outer-bg-body {
-    position:fixed;
-    left:0;
-    right:0;
-    top:0;
-    bottom:0;
-    z-index:-500;
+#inner-bg-body,
+#outer-bg-body {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -500;
 }
 
 /*
@@ -519,9 +599,9 @@ hr {
  */
 
 blockquote.tweetable {
-    border-left:6px solid #ccc;
+    border-left: 6px solid #ccc;
     padding: 0.5em 0em 0.5em 0.5em;
-    quotes:"\201C";
+    quotes: "\201C";
     text-justify: none;
     &::before {
         color: #ccc;
@@ -533,7 +613,7 @@ blockquote.tweetable {
         vertical-align: -0.4em;
     }
     p {
-        display:inline;
+        display: inline;
     }
     .tweetable-buttons {
         float: right;
@@ -560,7 +640,7 @@ blockquote.tweetable {
             }
         }
     }
-    @media (min-width:992px) {
+    @media (min-width: 992px) {
         dl {
             width: 100%;
             overflow: hidden;
@@ -654,8 +734,7 @@ blockquote.tweetable {
     }
 }
 
-#onclick-scroll-down
-{
+#onclick-scroll-down {
     color: @button-color;
     position: fixed;
     z-index: 1000; /* above the thumbnails */
@@ -691,7 +770,7 @@ blockquote.tweetable {
     overflow-x: auto;
     .tooltip-inner {
         min-width: 100px;
-        max-width: 100%; 
+        max-width: 100%;
     }
     @media (max-width: 320px) {
         .tooltip-inner {
@@ -702,14 +781,22 @@ blockquote.tweetable {
 }
 
 @-webkit-keyframes fade-in {
-    from {opacity: 0;}
-    to {opacity: 1;}
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 /* do not merge with the similar block just above */
 @keyframes fade-in {
-    from {opacity: 0;}
-    to {opacity: 1;}
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .around-spin {
@@ -719,11 +806,15 @@ blockquote.tweetable {
 
 .thumbnail-spin {
     position: absolute;
-    left: calc(150px + 1rem); /* #gallery->a->img->width + #gallery->a->img->margin */
-    top: calc(150px + 1rem); /* #gallery->a->img->width + #gallery->a->img->margin */
+    left: calc(
+        150px + 1rem
+    ); /* #gallery->a->img->width + #gallery->a->img->margin */
+    top: calc(
+        150px + 1rem
+    ); /* #gallery->a->img->width + #gallery->a->img->margin */
     @media (max-width: 768px) {
-        left: calc(150px/2 + 1rem/2);
-        top: calc(150px/2 + 1rem/2);
+        left: calc(150px / 2 + 1rem / 2);
+        top: calc(150px / 2 + 1rem / 2);
     }
     margin-left: -0.5em;
     margin-top: -0.5em;
@@ -732,16 +823,28 @@ blockquote.tweetable {
 }
 
 @-webkit-keyframes animate-download {
-    0% {right: 46%;}
-    50% {right: 54%;}
-    100% {right: 46%;}
+    0% {
+        right: 46%;
+    }
+    50% {
+        right: 54%;
+    }
+    100% {
+        right: 46%;
+    }
 }
 
 /* do not merge with the similar block just above */
 @keyframes animate-download {
-    0% {right: 46%;}
-    50% {right: 54%;}
-    100% {right: 46%;}
+    0% {
+        right: 46%;
+    }
+    50% {
+        right: 54%;
+    }
+    100% {
+        right: 46%;
+    }
 }
 
 .download-in-progress {
@@ -835,18 +938,34 @@ a.tooltip-networks i:hover {
 }
 
 @-webkit-keyframes animate-networks {
-    0% {transform: rotate(0);}
-    25% {transform: rotate(-20deg);}
-    75% {transform: rotate(20deg);}
-    100% {transform: rotate(0);}
+    0% {
+        transform: rotate(0);
+    }
+    25% {
+        transform: rotate(-20deg);
+    }
+    75% {
+        transform: rotate(20deg);
+    }
+    100% {
+        transform: rotate(0);
+    }
 }
 
 /* do not merge with the similar block just above */
 @keyframes animate-networks {
-    0% {transform: rotate(0);}
-    25% {transform: rotate(-20deg);}
-    75% {transform: rotate(20deg);}
-    100% {transform: rotate(0);}
+    0% {
+        transform: rotate(0);
+    }
+    25% {
+        transform: rotate(-20deg);
+    }
+    75% {
+        transform: rotate(20deg);
+    }
+    100% {
+        transform: rotate(0);
+    }
 }
 
 .alert {
@@ -861,12 +980,13 @@ a.tooltip-networks i:hover {
     .sticky-top {
         top: @nav-bar-height !important;
     }
-    #my-twitter-timeline, #my-mastodon-timeline {
+    #my-twitter-timeline,
+    #my-mastodon-timeline {
         a.media {
             margin-top: 1em;
             background-color: white;
             img {
-                margin-right: .5rem;
+                margin-right: 0.5rem;
             }
             .media-body {
                 h5 {
@@ -880,7 +1000,7 @@ a.tooltip-networks i:hover {
             .images img {
                 width: 100%;
                 object-fit: contain;
-                margin-top: .5rem;
+                margin-top: 0.5rem;
                 display: inline-block;
             }
         }
@@ -894,7 +1014,9 @@ a.tooltip-networks i:hover {
  * FEEDBACK
  */
 
-#engage-more-group, #hiden-form-group, #ask-subscription {
+#engage-more-group,
+#hiden-form-group,
+#ask-subscription {
     display: none;
 }
 
@@ -1017,7 +1139,7 @@ a.tooltip-networks i:hover {
         margin-bottom: 15px;
     }
     h2 {
-        font-family: 'TitleFont' !important;
+        font-family: "TitleFont" !important;
         font-size: 1.7em !important;
         color: grey;
     }
@@ -1028,14 +1150,17 @@ a.tooltip-networks i:hover {
     ul {
         text-align: left;
     }
-    .admonition { /* actually used for citations */
+    .admonition {
+        /* actually used for citations */
         text-align: right;
         margin: 20px;
-        p:not(.admonition-title) { /* citation from */
+        p:not(.admonition-title) {
+            /* citation from */
             font-size: 0.8em;
         }
     }
-    .admonition-title { /* citation quote */
+    .admonition-title {
+        /* citation quote */
         font-style: italic;
         font-weight: bold;
         font-size: 1em;
@@ -1077,12 +1202,12 @@ a.tooltip-networks i:hover {
     }
     > .section {
         background-color: white;
-        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
-        border-radius: .25rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        border-radius: 0.25rem;
         margin-top: 1rem;
         padding: 1rem;
     }
-    
+
     /* Anchor offset due to the fixed menu: */
     /* https://stackoverflow.com/questions/10732690/offsetting-an-html-anchor-to-adjust-for-fixed-header */
     div.title-anchor {
@@ -1091,7 +1216,7 @@ a.tooltip-networks i:hover {
     }
 
     .can-zoom-in {
-        border-radius: .25rem;
+        border-radius: 0.25rem;
     }
 }
 
@@ -1145,12 +1270,12 @@ each(range(0, 9), {
 
 /* https://docs.sentry.io/enriching-error-data/user-feedback/ */
 .sentry-error-embed {
-        margin-top: @nav-bar-height !important;
+    margin-top: @nav-bar-height !important;
     * {
-        font-family: 'MainFont' !important;
+        font-family: "MainFont" !important;
     }
     h2 {
-        font-family: 'TitleFont' !important;
+        font-family: "TitleFont" !important;
     }
     .form-submit .close {
         padding: 15px 0 !important;

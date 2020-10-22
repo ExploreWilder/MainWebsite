@@ -1,640 +1,546 @@
 {
-	"bodies" : 
-	{
-		"Earth" : 
-		{
-			"atmosphere" : 
-			{
-				"colorHorizon" : [ 158, 206, 255, 255 ],
-				"colorZenith" : [ 62, 120, 229, 255 ],
-				"thickness" : 100000,
-				"visibility" : 100000
-			},
-			"class" : "planet",
-			"comment" : "Earth, Sol III, M-class planet.",
-			"defaultGeoidGrid" : "egm96_15.gtx",
-			"parent" : "Sun"
-		},
-		"Sun" : 
-		{
-			"class" : "star",
-			"comment" : "Sol, G2V main-sequence star."
-		}
-	},
-	"boundLayers" : 
-	{
-		"default-satellite" : {
-			"credits" : 
-			{
-				"eox-it" : 
-				{
-					"id" : 990,
-					"notice" : "Datasource: {copy} [https://s2maps.eu EOX IT Services GmbH]"
-				}
-			},
-			"lodRange" : [ 1, 15 ],
-			"maskUrl" : "{lod}-{x}-{y}.mask",
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "https://cdn.melown.com/vts/melown2015/imagery/global/eox-it-sentinel2-cloudless/{lod}-{x}-{y}.jpg?r=2"
-		},
-		"world-satellite-mapbox" : {
-			"credits" : 
-			{
-				"mapbox" : 
-				{
-					"id" : 980,
-					"notice" : "Datasource: {copy} [https://www.mapbox.com/about/maps/ Mapbox]"
-				}
-			},
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "https://api.mapbox.com/v4/mapbox.satellite/{loclod}/{locx}/{locy}@2x.jpg90?access_token=pk.eyJ1Ijoib252Ymp6aGdodSIsImEiOiJjanh1cGJldXQwMzdkM2dtbnFoMDdydnpiIn0.nGLVthTXA3lrPVb8faDoAA"
-		},
-		"world-satellite-bing" : {
-			"credits" : 
-			{
-				"bing" : 
-				{
-					"id" : 970,
-					"notice" : "Datasource: [https://www.microsoft.com/en-us/maps Bing Maps] {copy}{Y} Microsoft Corporation"
-				}
-			},
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "/map/vts_proxy/world/satellite/bing/{loclod}/{locx}/{locy}.jpeg"
-		},
-		"world-satellite-night" : {
-			"credits" : 
-			{
-				"black-marble" : 
-				{
-					"id" : 960,
-					"notice" : "Datasource: {copy} Black Marble {copy} NASA's Earth Observatory"
-				},
-				"eox" :
-				{
-					"id" : 950,
-					"notice" : "Rendering: {copy} [http://eox.at/ OEX]"
-				}
-			},
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "https://tiles.maps.eox.at/wmts/1.0.0/blackmarble_3857/default/g/{loclod}/{locy}/{locx}.jpg"
-		},
-		"world-street-osm" : {
-			"credits" : [ "osm" ],
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "https://{alt(a,b,c)}.tile.openstreetmap.org/{loclod}/{locx}/{locy}.png"
-		},
-		"world-street-stamen-toner" : {
-			"credits" : [ "stamen-toner", "osm" ],
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "https://stamen-tiles-{alt(a,b,c,d)}.a.ssl.fastly.net/toner/{loclod}/{locx}/{locy}.png"
-		},
-		"world-topo-otm" : {
-			"credits" : [ "opentopomap", "osm" ],
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "/map/vts_proxy/world/topo/otm/{loclod}/{locx}/{locy}.png"
-		},
-		"world-topo-thunderforest-outdoors" : {
-			"credits" : [ "thunderforest", "osm" ],
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "/map/vts_proxy/world/topo/thunderforest/outdoors/{loclod}/{locx}/{locy}.png"
-		},
-		"world-topo-thunderforest-landscape" : {
-			"credits" : [ "thunderforest", "osm" ],
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "/map/vts_proxy/world/topo/thunderforest/landscape/{loclod}/{locx}/{locy}.png"
-		},
-		"fr-satellite" : {
-			"credits" : [ "ign" ],
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "/map/vts_proxy/fr/satellite/{loclod}/{locx}/{locy}.jpg"
-		},
-		"fr-topo" : {
-			"credits" : [ "ign" ],
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "/map/vts_proxy/fr/topo/{loclod}/{locx}/{locy}.jpg"
-		},
-		"nz-satellite" : {
-			"credits" : [ "linz" ],
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "/map/vts_proxy/nz/satellite/{loclod}/{locx}/{locy}.png"
-		},
-		"nz-topo" : {
-			"credits" : [ "linz" ],
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "/map/vts_proxy/nz/topo/{loclod}/{locx}/{locy}.png"
-		},
-		"no-topo" : {
-			"credits" : 
-			{
-				"kartverket" : 
-				{
-					"id" : 840,
-					"notice" : "Datasource: {copy} [http://www.kartverket.no/ Kartverket]"
-				}
-			},
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={loclod}&x={locx}&y={locy}"
-		},
-		"ca-topo" : {
-			"credits" : 
-			{
-				"canada" : 
-				{
-					"id" : 830,
-					"notice" : "Datasource: {copy} Canada, under [https://open.canada.ca/en/open-government-licence-canada Open Government Licence]"
-				}
-			},
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "/map/vts_proxy/ca/topo/{loclod}/{locx}/{locy}.png"
-		},
-		"ch-topo" : {
-			"credits" : 
-			{
-				"swisstopo" : 
-				{
-					"id" : 820,
-					"notice" : "Datasource: {copy} [https://www.swisstopo.admin.ch/en/home.html geodata swisstopo]"
-				}
-			},
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "https://wmts{alt(10,20)}.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{loclod}/{locx}/{locy}.jpeg"
-		},
-		"ch-satellite" : {
-			"credits" : 
-			{
-				"swisstopo-eu" : 
-				{
-					"id" : 810,
-					"notice" : "Datasource: {copy} [https://www.swisstopo.admin.ch/en/home.html ESA / Eurimage / swisstopo, NPOC]"
-				}
-			},
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "https://wmts{alt(10,20)}.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{loclod}/{locx}/{locy}.jpeg"
-		},
-		"world-gebco-shaded" : {
-			"credits" : [ "gebco" ],
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "/map/vts_proxy/world/gebco/shaded/{loclod}/{locx}/{locy}.jpeg"
-		},
-		"world-gebco-flat" : {
-			"credits" : [ "gebco" ],
-			"lodRange" : [ 1, 15 ],
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "/map/vts_proxy/world/gebco/flat/{loclod}/{locx}/{locy}.jpeg"
-		},
-		"world-eumetsat-meteosat-iodc-mpe" : {
-			"credits" : [ "eumetsat" ],
-			"lodRange" : [ 1, 15 ],
-			"isTransparent" : true,
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "/map/vts_proxy/eumetsat/meteosat_iodc_mpe/{loclod}/{locx}/{locy}.png"
-		},
-		"world-eumetsat-meteosat-0deg-h0b3" : {
-			"credits" : [ "eumetsat" ],
-			"lodRange" : [ 1, 15 ],
-			"isTransparent" : true,
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			],
-			"type" : "raster",
-			"url" : "/map/vts_proxy/eumetsat/meteosat_iodc_mpe/{loclod}/{locx}/{locy}.png"
-		}
-	},
-	"browserOptions" : 
-	{
-		"mario" : true,
-		"rotate" : 0,
-		"controlSearch" : false,
-		"controlSpace" : false,
-		"mapMetricUnits" : true,
-        "mapFeaturesReduceParams": [0.05,0.17,11,1,1000],
-		"mapFeaturesReduceMode": "margin",
-		"mapDefaultFont": "https://cdn.melown.com/libs/vtsjs/fonts/noto-basic/1.0.0/noto.fnt"
-	},
-	"credits" : 
-	{
-		"jonathan" : 
-		{
-			"id" : 110,
-			"notice" : "{copy}2005-16 Jonathan de Ferranti"
-		},
-		"melown" : 
-		{
-			"id" : 109,
-			"notice" : "{copy}{Y} Melown Technologies SE"
-		},
-		"klokantech" : 
-		{
-			"id" : 115,
-			"notice" : "[https://www.maptiler.com/copyright/ {copy} MapTiler]"
-		},
-		"osm" : 
-		{
-			"id" : 120,
-			"notice" : "Datasource: {copy} [https://openstreetmap.org/ OpenStreetMap], under [https://www.openstreetmap.org/copyright ODbL]"
-		},
-		"stamen-toner" : 
-		{
-			"id" : 130,
-			"notice" : "Datasource: {copy} [https://stamen.com/ Stamen Design], under [https://creativecommons.org/licenses/by/3.0 CC BY 3.0]"
-		},
-		"opentopomap" : 
-		{
-			"id" : 140,
-			"notice" : "Datasource: {copy} [https://opentopomap.org/ OpenTopoMap], under CC-BY-SA 3.0"
-		},
-		"thunderforest" : 
-		{
-			"id" : 150,
-			"notice" : "Datasource: {copy} [https://www.thunderforest.com Thunderforest], under CC-BY-SA 2.0"
-		},
-		"ign" : 
-		{
-			"id" : 160,
-			"notice" : "Datasource: {copy} IGN"
-		},
-		"linz" : 
-		{
-			"id" : 170,
-			"notice" : "Datasource: {copy} [http://data.linz.govt.nz LINZ], under CC-BY 4.0"
-		},
-		"gebco" : 
-		{
-			"id" : 180,
-			"notice" : "Datasource: {copy} [https://www.gebco.net/ GEBCO Compilation Group] (2019) GEBCO 2019 Grid"
-		},
-		"eumetsat" : 
-		{
-			"id" : 190,
-			"notice" : "Datasource: {copy} [https://www.eumetsat.int European Organisation for the Exploitation of Meteorological Satellites (EUMETSAT)]"
-		}
-	},
-	"freeLayers" : {
-		"peaklist-org-ultras" : "peaklist.json",
-		"osm-maptiler": "osm-maptiler.json"
-	},
-	"glue" : [],
-	"namedViews" : {},
-	"params" : {},
-	"position" : 
-	[
-		"obj",
-		25.885380721097476,
-		31.410024111450145,
-		"fixed",
-		130.83212500598529,
-		33.328215968154247,
-		-90,
-		310.56,
-		2339330.5800000001,
-		55
-	],
-	"referenceFrame" : 
-	{
-		"body" : "Earth",
-		"description" : "Earth, global geographic reference frame (Melown 2015)",
-		"division" : 
-		{
-			"extents" : 
-			{
-				"ll" : [ -7500000, -7500000, -7500000 ],
-				"ur" : [ 7500000, 7500000, 7500000 ]
-			},
-			"heightRange" : [ -12000, 9500 ],
-			"nodes" : 
-			[
-				{
-					"extents" : 
-					{
-						"ll" : [ -20037508.342789002, -10018754.171394 ],
-						"ur" : [ 20037508.342789002, 10018754.171394 ]
-					},
-					"id" : 
-					{
-						"lod" : 0,
-						"position" : [ 0, 0 ]
-					},
-					"partitioning" : 
-					{
-						"00" : 
-						{
-							"ll" : [ -20037508.342799999, -9467848.3472000007 ],
-							"ur" : [ 20037508.342799999, 9467848.3472000007 ]
-						},
-						"01" : 
-						{
-							"ll" : [ -20037508.342799999, 9467848.3471611794 ],
-							"ur" : [ 20037508.342799999, 10018754.171399999 ]
-						},
-						"10" : 
-						{
-							"ll" : [ -20037508.342799999, -10018754.171399999 ],
-							"ur" : [ 20037508.342799999, -9467848.3471611794 ]
-						}
-					},
-					"srs" : "eqc-wgs84"
-				},
-				{
-					"extents" : 
-					{
-						"ll" : [ -20037508.342789002, -20037508.342789002 ],
-						"ur" : [ 20037508.342789002, 20037508.342789002 ]
-					},
-					"externalTexture" : true,
-					"id" : 
-					{
-						"lod" : 1,
-						"position" : [ 0, 0 ]
-					},
-					"partitioning" : "bisection",
-					"srs" : "pseudomerc"
-				},
-				{
-					"extents" : 
-					{
-						"ll" : [ 278600, 278600 ],
-						"ur" : [ 3721400, 3721400 ]
-					},
-					"externalTexture" : true,
-					"id" : 
-					{
-						"lod" : 1,
-						"position" : [ 0, 1 ]
-					},
-					"partitioning" : "bisection",
-					"srs" : "steren-wgs84"
-				},
-				{
-					"extents" : 
-					{
-						"ll" : [ 278600, 278600 ],
-						"ur" : [ 3721400, 3721400 ]
-					},
-					"externalTexture" : true,
-					"id" : 
-					{
-						"lod" : 1,
-						"position" : [ 1, 0 ]
-					},
-					"partitioning" : "bisection",
-					"srs" : "steres-wgs84"
-				}
-			]
-		},
-		"id" : "melown2015",
-		"model" : 
-		{
-			"navigationSrs" : "geographic-wgs84",
-			"physicalSrs" : "geocentric-wgs84",
-			"publicSrs" : "geographic-wgs84-egm96"
-		},
-		"parameters" : 
-		{
-			"metaBinaryOrder" : 5
-		},
-		"version" : 1
-	},
-	"rois" : [],
-	"services" : 
-	{
-		"atmdensity" : 
-		{
-			"url" : "atmdensity.png?def={param(0)}"
-		}
-	},
-	"srses" : 
-	{
-		"eqc-wgs84" : 
-		{
-			"comment" : "Projected, wgs84 equidistant cylindrical (epsg:4087)",
-			"srsDef" : "+proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-			"type" : "projected"
-		},
-		"geocentric-wgs84" : 
-		{
-			"comment" : "Geocentric, WGS84 (epsg:4978)",
-			"srsDef" : "+proj=geocent +datum=WGS84 +units=m +no_defs",
-			"type" : "cartesian"
-		},
-		"geographic-wgs84" : 
-		{
-			"comment" : "Geographic, WGS84 (epsg:4326)",
-			"srsDef" : "+proj=longlat +datum=WGS84 +no_defs",
-			"type" : "geographic"
-		},
-		"geographic-wgs84-egm96" : 
-		{
-			"comment" : "Geographic, WGS84 with EGM96 vertical (epsg:4326+5773)",
-			"geoidGrid" : 
-			{
-				"definition" : "https://cdn.melown.com/mario/store/melown2015/map-config/melown/VTS-Tutorial-Map-4/geographic-wgs84-egm96-geoidgrid.jpg",
-				"extents" : 
-				{
-					"ll" : [ -180, -90 ],
-					"ur" : [ 180, 90 ]
-				},
-				"srsDefEllps" : "+proj=longlat +datum=WGS84 +no_defs",
-				"valueRange" : [ -107, 85.400000000000006 ]
-			},
-			"srsDef" : "+proj=longlat +datum=WGS84 +geoidgrids=egm96_15.gtx +vunits=m +no_defs",
-			"type" : "geographic"
-		},
-		"pseudomerc" : 
-		{
-			"comment" : "Projected, Web/Pseudo Mecator (epsg:3857)",
-			"periodicity" : 
-			{
-				"period" : 40075016.685578004,
-				"type" : "X"
-			},
-			"srsDef" : "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs",
-			"type" : "projected"
-		},
-		"steren-wgs84" : 
-		{
-			"comment" : "Projected, UPS north (epsg:32661)",
-			"srsDef" : "+proj=stere +lat_0=90 +lat_ts=90 +lon_0=0 +k=0.994 +x_0=2000000 +y_0=2000000 +datum=WGS84 +units=m +no_defs",
-			"type" : "projected"
-		},
-		"steres-wgs84" : 
-		{
-			"comment" : "Projected, UPS south (epsg:32761)",
-			"srsDef" : "+proj=stere +lat_0=-90 +lat_ts=-90 +lon_0=0 +k=0.994 +x_0=2000000 +y_0=2000000 +datum=WGS84 +units=m +no_defs",
-			"type" : "projected"
-		}
-	},
-	"surfaces" : 
-	[
-		{
-			"2d" : 
-			{
-				"creditsUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.credits?0",
-				"maskUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.mask?0",
-				"metaUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.2dmeta?0",
-				"orthoUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}-{sub}.ortho?0"
-			},
-			"id" : "melown-viewfinder-world",
-			"lodRange" : [ 1, 21 ],
-			"meshUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.bin?0",
-			"metaUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.meta?0",
-			"navUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.nav?0",
-			"textureUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}-{sub}.jpg?0",
-			"tileRange" : 
-			[
-				[ 0, 0 ],
-				[ 1, 1 ]
-			]
-		}
-	],
-	"textureAtlasReady" : false,
-	"version" : 1,
-	"view" : 
-	{
-		"freeLayers" : 
-		{
-			"peaklist-org-ultras" : 
-			{
-				"style" : "peaklist.style.json"
-			},
-			"osm-maptiler" : 
-			{
-				"style" : "osm-maptiler.style.json"
-			}
-		},
-		"options": { 
-			"superelevation" : [[0,4000],[1.5,1.3]]
-		},
-		"surfaces" : 
-		{
-			"melown-viewfinder-world" : 
-			[ 
-				{
-					"id" : "default-satellite",
-					"options": {
-						"shaderVarFlatShade" : true,
-						"shaderFilter" : "c.rgb = mix(vec3(1.0),mix(mix(vec3(0.0),c.rgb,flatShadeData.rgb),c.rgb,0.3),0.90);"
-					}
-				}
-			]
-		}
-	}
+    "bodies": {
+        "Earth": {
+            "atmosphere": {
+                "colorHorizon": [158, 206, 255, 255],
+                "colorZenith": [62, 120, 229, 255],
+                "thickness": 100000,
+                "visibility": 100000
+            },
+            "class": "planet",
+            "comment": "Earth, Sol III, M-class planet.",
+            "defaultGeoidGrid": "egm96_15.gtx",
+            "parent": "Sun"
+        },
+        "Sun": {
+            "class": "star",
+            "comment": "Sol, G2V main-sequence star."
+        }
+    },
+    "boundLayers": {
+        "default-satellite": {
+            "credits": {
+                "eox-it": {
+                    "id": 990,
+                    "notice": "Datasource: {copy} [https://s2maps.eu EOX IT Services GmbH]"
+                }
+            },
+            "lodRange": [1, 15],
+            "maskUrl": "{lod}-{x}-{y}.mask",
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "https://cdn.melown.com/vts/melown2015/imagery/global/eox-it-sentinel2-cloudless/{lod}-{x}-{y}.jpg?r=2"
+        },
+        "world-satellite-mapbox": {
+            "credits": {
+                "mapbox": {
+                    "id": 980,
+                    "notice": "Datasource: {copy} [https://www.mapbox.com/about/maps/ Mapbox]"
+                }
+            },
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "https://api.mapbox.com/v4/mapbox.satellite/{loclod}/{locx}/{locy}@2x.jpg90?access_token=pk.eyJ1Ijoib252Ymp6aGdodSIsImEiOiJjanh1cGJldXQwMzdkM2dtbnFoMDdydnpiIn0.nGLVthTXA3lrPVb8faDoAA"
+        },
+        "world-satellite-bing": {
+            "credits": {
+                "bing": {
+                    "id": 970,
+                    "notice": "Datasource: [https://www.microsoft.com/en-us/maps Bing Maps] {copy}{Y} Microsoft Corporation"
+                }
+            },
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "/map/vts_proxy/world/satellite/bing/{loclod}/{locx}/{locy}.jpeg"
+        },
+        "world-satellite-night": {
+            "credits": {
+                "black-marble": {
+                    "id": 960,
+                    "notice": "Datasource: {copy} Black Marble {copy} NASA's Earth Observatory"
+                },
+                "eox": {
+                    "id": 950,
+                    "notice": "Rendering: {copy} [http://eox.at/ OEX]"
+                }
+            },
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "https://tiles.maps.eox.at/wmts/1.0.0/blackmarble_3857/default/g/{loclod}/{locy}/{locx}.jpg"
+        },
+        "world-street-osm": {
+            "credits": ["osm"],
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "https://{alt(a,b,c)}.tile.openstreetmap.org/{loclod}/{locx}/{locy}.png"
+        },
+        "world-street-stamen-toner": {
+            "credits": ["stamen-toner", "osm"],
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "https://stamen-tiles-{alt(a,b,c,d)}.a.ssl.fastly.net/toner/{loclod}/{locx}/{locy}.png"
+        },
+        "world-topo-otm": {
+            "credits": ["opentopomap", "osm"],
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "/map/vts_proxy/world/topo/otm/{loclod}/{locx}/{locy}.png"
+        },
+        "world-topo-thunderforest-outdoors": {
+            "credits": ["thunderforest", "osm"],
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "/map/vts_proxy/world/topo/thunderforest/outdoors/{loclod}/{locx}/{locy}.png"
+        },
+        "world-topo-thunderforest-landscape": {
+            "credits": ["thunderforest", "osm"],
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "/map/vts_proxy/world/topo/thunderforest/landscape/{loclod}/{locx}/{locy}.png"
+        },
+        "fr-satellite": {
+            "credits": ["ign"],
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "/map/vts_proxy/fr/satellite/{loclod}/{locx}/{locy}.jpg"
+        },
+        "fr-topo": {
+            "credits": ["ign"],
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "/map/vts_proxy/fr/topo/{loclod}/{locx}/{locy}.jpg"
+        },
+        "nz-satellite": {
+            "credits": ["linz"],
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "/map/vts_proxy/nz/satellite/{loclod}/{locx}/{locy}.png"
+        },
+        "nz-topo": {
+            "credits": ["linz"],
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "/map/vts_proxy/nz/topo/{loclod}/{locx}/{locy}.png"
+        },
+        "no-topo": {
+            "credits": {
+                "kartverket": {
+                    "id": 840,
+                    "notice": "Datasource: {copy} [http://www.kartverket.no/ Kartverket]"
+                }
+            },
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={loclod}&x={locx}&y={locy}"
+        },
+        "ca-topo": {
+            "credits": {
+                "canada": {
+                    "id": 830,
+                    "notice": "Datasource: {copy} Canada, under [https://open.canada.ca/en/open-government-licence-canada Open Government Licence]"
+                }
+            },
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "/map/vts_proxy/ca/topo/{loclod}/{locx}/{locy}.png"
+        },
+        "ch-topo": {
+            "credits": {
+                "swisstopo": {
+                    "id": 820,
+                    "notice": "Datasource: {copy} [https://www.swisstopo.admin.ch/en/home.html geodata swisstopo]"
+                }
+            },
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "https://wmts{alt(10,20)}.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{loclod}/{locx}/{locy}.jpeg"
+        },
+        "ch-satellite": {
+            "credits": {
+                "swisstopo-eu": {
+                    "id": 810,
+                    "notice": "Datasource: {copy} [https://www.swisstopo.admin.ch/en/home.html ESA / Eurimage / swisstopo, NPOC]"
+                }
+            },
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "https://wmts{alt(10,20)}.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{loclod}/{locx}/{locy}.jpeg"
+        },
+        "world-gebco-shaded": {
+            "credits": ["gebco"],
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "/map/vts_proxy/world/gebco/shaded/{loclod}/{locx}/{locy}.jpeg"
+        },
+        "world-gebco-flat": {
+            "credits": ["gebco"],
+            "lodRange": [1, 15],
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "/map/vts_proxy/world/gebco/flat/{loclod}/{locx}/{locy}.jpeg"
+        },
+        "world-eumetsat-meteosat-iodc-mpe": {
+            "credits": ["eumetsat"],
+            "lodRange": [1, 15],
+            "isTransparent": true,
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "/map/vts_proxy/eumetsat/meteosat_iodc_mpe/{loclod}/{locx}/{locy}.png"
+        },
+        "world-eumetsat-meteosat-0deg-h0b3": {
+            "credits": ["eumetsat"],
+            "lodRange": [1, 15],
+            "isTransparent": true,
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ],
+            "type": "raster",
+            "url": "/map/vts_proxy/eumetsat/meteosat_iodc_mpe/{loclod}/{locx}/{locy}.png"
+        }
+    },
+    "browserOptions": {
+        "mario": true,
+        "rotate": 0,
+        "controlSearch": false,
+        "controlSpace": false,
+        "mapMetricUnits": true,
+        "mapFeaturesReduceParams": [0.05, 0.17, 11, 1, 1000],
+        "mapFeaturesReduceMode": "margin",
+        "mapDefaultFont": "https://cdn.melown.com/libs/vtsjs/fonts/noto-basic/1.0.0/noto.fnt"
+    },
+    "credits": {
+        "jonathan": {
+            "id": 110,
+            "notice": "{copy}2005-16 Jonathan de Ferranti"
+        },
+        "melown": {
+            "id": 109,
+            "notice": "{copy}{Y} Melown Technologies SE"
+        },
+        "klokantech": {
+            "id": 115,
+            "notice": "[https://www.maptiler.com/copyright/ {copy} MapTiler]"
+        },
+        "osm": {
+            "id": 120,
+            "notice": "Datasource: {copy} [https://openstreetmap.org/ OpenStreetMap], under [https://www.openstreetmap.org/copyright ODbL]"
+        },
+        "stamen-toner": {
+            "id": 130,
+            "notice": "Datasource: {copy} [https://stamen.com/ Stamen Design], under [https://creativecommons.org/licenses/by/3.0 CC BY 3.0]"
+        },
+        "opentopomap": {
+            "id": 140,
+            "notice": "Datasource: {copy} [https://opentopomap.org/ OpenTopoMap], under CC-BY-SA 3.0"
+        },
+        "thunderforest": {
+            "id": 150,
+            "notice": "Datasource: {copy} [https://www.thunderforest.com Thunderforest], under CC-BY-SA 2.0"
+        },
+        "ign": {
+            "id": 160,
+            "notice": "Datasource: {copy} IGN"
+        },
+        "linz": {
+            "id": 170,
+            "notice": "Datasource: {copy} [http://data.linz.govt.nz LINZ], under CC-BY 4.0"
+        },
+        "gebco": {
+            "id": 180,
+            "notice": "Datasource: {copy} [https://www.gebco.net/ GEBCO Compilation Group] (2019) GEBCO 2019 Grid"
+        },
+        "eumetsat": {
+            "id": 190,
+            "notice": "Datasource: {copy} [https://www.eumetsat.int European Organisation for the Exploitation of Meteorological Satellites (EUMETSAT)]"
+        }
+    },
+    "freeLayers": {
+        "peaklist-org-ultras": "peaklist.json",
+        "osm-maptiler": "osm-maptiler.json"
+    },
+    "glue": [],
+    "namedViews": {},
+    "params": {},
+    "position": [
+        "obj",
+        25.885380721097476,
+        31.410024111450145,
+        "fixed",
+        130.83212500598529,
+        33.328215968154247,
+        -90,
+        310.56,
+        2339330.5800000001,
+        55
+    ],
+    "referenceFrame": {
+        "body": "Earth",
+        "description": "Earth, global geographic reference frame (Melown 2015)",
+        "division": {
+            "extents": {
+                "ll": [-7500000, -7500000, -7500000],
+                "ur": [7500000, 7500000, 7500000]
+            },
+            "heightRange": [-12000, 9500],
+            "nodes": [
+                {
+                    "extents": {
+                        "ll": [-20037508.342789002, -10018754.171394],
+                        "ur": [20037508.342789002, 10018754.171394]
+                    },
+                    "id": {
+                        "lod": 0,
+                        "position": [0, 0]
+                    },
+                    "partitioning": {
+                        "00": {
+                            "ll": [-20037508.342799999, -9467848.3472000007],
+                            "ur": [20037508.342799999, 9467848.3472000007]
+                        },
+                        "01": {
+                            "ll": [-20037508.342799999, 9467848.3471611794],
+                            "ur": [20037508.342799999, 10018754.171399999]
+                        },
+                        "10": {
+                            "ll": [-20037508.342799999, -10018754.171399999],
+                            "ur": [20037508.342799999, -9467848.3471611794]
+                        }
+                    },
+                    "srs": "eqc-wgs84"
+                },
+                {
+                    "extents": {
+                        "ll": [-20037508.342789002, -20037508.342789002],
+                        "ur": [20037508.342789002, 20037508.342789002]
+                    },
+                    "externalTexture": true,
+                    "id": {
+                        "lod": 1,
+                        "position": [0, 0]
+                    },
+                    "partitioning": "bisection",
+                    "srs": "pseudomerc"
+                },
+                {
+                    "extents": {
+                        "ll": [278600, 278600],
+                        "ur": [3721400, 3721400]
+                    },
+                    "externalTexture": true,
+                    "id": {
+                        "lod": 1,
+                        "position": [0, 1]
+                    },
+                    "partitioning": "bisection",
+                    "srs": "steren-wgs84"
+                },
+                {
+                    "extents": {
+                        "ll": [278600, 278600],
+                        "ur": [3721400, 3721400]
+                    },
+                    "externalTexture": true,
+                    "id": {
+                        "lod": 1,
+                        "position": [1, 0]
+                    },
+                    "partitioning": "bisection",
+                    "srs": "steres-wgs84"
+                }
+            ]
+        },
+        "id": "melown2015",
+        "model": {
+            "navigationSrs": "geographic-wgs84",
+            "physicalSrs": "geocentric-wgs84",
+            "publicSrs": "geographic-wgs84-egm96"
+        },
+        "parameters": {
+            "metaBinaryOrder": 5
+        },
+        "version": 1
+    },
+    "rois": [],
+    "services": {
+        "atmdensity": {
+            "url": "atmdensity.png?def={param(0)}"
+        }
+    },
+    "srses": {
+        "eqc-wgs84": {
+            "comment": "Projected, wgs84 equidistant cylindrical (epsg:4087)",
+            "srsDef": "+proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+            "type": "projected"
+        },
+        "geocentric-wgs84": {
+            "comment": "Geocentric, WGS84 (epsg:4978)",
+            "srsDef": "+proj=geocent +datum=WGS84 +units=m +no_defs",
+            "type": "cartesian"
+        },
+        "geographic-wgs84": {
+            "comment": "Geographic, WGS84 (epsg:4326)",
+            "srsDef": "+proj=longlat +datum=WGS84 +no_defs",
+            "type": "geographic"
+        },
+        "geographic-wgs84-egm96": {
+            "comment": "Geographic, WGS84 with EGM96 vertical (epsg:4326+5773)",
+            "geoidGrid": {
+                "definition": "https://cdn.melown.com/mario/store/melown2015/map-config/melown/VTS-Tutorial-Map-4/geographic-wgs84-egm96-geoidgrid.jpg",
+                "extents": {
+                    "ll": [-180, -90],
+                    "ur": [180, 90]
+                },
+                "srsDefEllps": "+proj=longlat +datum=WGS84 +no_defs",
+                "valueRange": [-107, 85.400000000000006]
+            },
+            "srsDef": "+proj=longlat +datum=WGS84 +geoidgrids=egm96_15.gtx +vunits=m +no_defs",
+            "type": "geographic"
+        },
+        "pseudomerc": {
+            "comment": "Projected, Web/Pseudo Mecator (epsg:3857)",
+            "periodicity": {
+                "period": 40075016.685578004,
+                "type": "X"
+            },
+            "srsDef": "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs",
+            "type": "projected"
+        },
+        "steren-wgs84": {
+            "comment": "Projected, UPS north (epsg:32661)",
+            "srsDef": "+proj=stere +lat_0=90 +lat_ts=90 +lon_0=0 +k=0.994 +x_0=2000000 +y_0=2000000 +datum=WGS84 +units=m +no_defs",
+            "type": "projected"
+        },
+        "steres-wgs84": {
+            "comment": "Projected, UPS south (epsg:32761)",
+            "srsDef": "+proj=stere +lat_0=-90 +lat_ts=-90 +lon_0=0 +k=0.994 +x_0=2000000 +y_0=2000000 +datum=WGS84 +units=m +no_defs",
+            "type": "projected"
+        }
+    },
+    "surfaces": [
+        {
+            "2d": {
+                "creditsUrl": "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.credits?0",
+                "maskUrl": "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.mask?0",
+                "metaUrl": "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.2dmeta?0",
+                "orthoUrl": "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}-{sub}.ortho?0"
+            },
+            "id": "melown-viewfinder-world",
+            "lodRange": [1, 21],
+            "meshUrl": "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.bin?0",
+            "metaUrl": "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.meta?0",
+            "navUrl": "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.nav?0",
+            "textureUrl": "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}-{sub}.jpg?0",
+            "tileRange": [
+                [0, 0],
+                [1, 1]
+            ]
+        }
+    ],
+    "textureAtlasReady": false,
+    "version": 1,
+    "view": {
+        "freeLayers": {
+            "peaklist-org-ultras": {
+                "style": "peaklist.style.json"
+            },
+            "osm-maptiler": {
+                "style": "osm-maptiler.style.json"
+            }
+        },
+        "options": {
+            "superelevation": [
+                [0, 4000],
+                [1.5, 1.3]
+            ]
+        },
+        "surfaces": {
+            "melown-viewfinder-world": [
+                {
+                    "id": "default-satellite",
+                    "options": {
+                        "shaderVarFlatShade": true,
+                        "shaderFilter": "c.rgb = mix(vec3(1.0),mix(mix(vec3(0.0),c.rgb,flatShadeData.rgb),c.rgb,0.3),0.90);"
+                    }
+                }
+            ]
+        }
+    }
 }

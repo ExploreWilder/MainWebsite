@@ -58,13 +58,13 @@ class StorytellingMap {
 
     /** Used to add style capabilites (opacity) to Mapbox elements. */
     #layer_types = {
-        'fill': ['fill-opacity'],
-        'line': ['line-opacity'],
-        'circle': ['circle-opacity', 'circle-stroke-opacity'],
-        'symbol': ['icon-opacity', 'text-opacity'],
-        'raster': ['raster-opacity'],
-        'fill-extrusion': ['fill-extrusion-opacity']
-    }
+        fill: ["fill-opacity"],
+        line: ["line-opacity"],
+        circle: ["circle-opacity", "circle-stroke-opacity"],
+        symbol: ["icon-opacity", "text-opacity"],
+        raster: ["raster-opacity"],
+        "fill-extrusion": ["fill-extrusion-opacity"],
+    };
 
     /** The non-interactive MapboxGL map object. */
     map;
@@ -99,7 +99,7 @@ class StorytellingMap {
         this.#book_path = `/books/${book_id}/${book_dir}/`;
         this.#book_filename = book_filename;
         this.#debug_mode = debug_mode;
-        this.story = document.getElementById('storytelling-map-story');
+        this.story = document.getElementById("storytelling-map-story");
 
         $("#loading-progress-info").text("Downloading story...");
 
@@ -108,8 +108,8 @@ class StorytellingMap {
             this.kickoff();
         });
 
-        $("#map-on-top").change(function() {
-            $("#storytelling-map-map").css("z-index", (this.checked) ? 2 : -5); // above or below story
+        $("#map-on-top").change(function () {
+            $("#storytelling-map-map").css("z-index", this.checked ? 2 : -5); // above or below story
         });
     }
 
@@ -119,7 +119,7 @@ class StorytellingMap {
      * @return {Object} DOM element to be inserted in the chapter.
      */
     create_card(record_card) {
-        var card = document.createElement('div');
+        var card = document.createElement("div");
         card.className += "card-progress";
         card.innerText = record_card.curr + "/" + record_card.last;
         return card;
@@ -131,7 +131,7 @@ class StorytellingMap {
      * @return {Object} DOM element to be inserted in the chapter.
      */
     create_title(record_title) {
-        var title = document.createElement('h1');
+        var title = document.createElement("h1");
         title.innerText = record_title;
         return title;
     }
@@ -145,11 +145,15 @@ class StorytellingMap {
         var image = new Image();
 
         image.setAttribute("data-lazysrc", this.#book_path + record_image);
-        image.addEventListener("contextmenu", function(e){
-            e.preventDefault();
-        }, false);
+        image.addEventListener(
+            "contextmenu",
+            function (e) {
+                e.preventDefault();
+            },
+            false
+        );
 
-        var blockImage = document.createElement('div');
+        var blockImage = document.createElement("div");
         blockImage.className += "image-inside";
         blockImage.appendChild(image);
 
@@ -162,17 +166,21 @@ class StorytellingMap {
      * @return {Object} DOM element to be inserted in the chapter.
      */
     create_video(record_video) {
-        var video = document.createElement('video');
-        video.setAttribute('width', '100%');
-        video.setAttribute('controls', '');
-        video.setAttribute('preload', 'none');
+        var video = document.createElement("video");
+        video.setAttribute("width", "100%");
+        video.setAttribute("controls", "");
+        video.setAttribute("preload", "none");
 
-        var source = document.createElement('source');
+        var source = document.createElement("source");
         source.src = this.#book_path + record_video;
-        source.setAttribute('type', 'video/mp4');
+        source.setAttribute("type", "video/mp4");
 
         video.appendChild(source);
-        video.appendChild(document.createTextNode("Your browser does not support the video tag."));
+        video.appendChild(
+            document.createTextNode(
+                "Your browser does not support the video tag."
+            )
+        );
         return video;
     }
 
@@ -182,50 +190,66 @@ class StorytellingMap {
      * @return {Object} DOM element to be inserted in the chapter.
      */
     create_track_info(record_track_info) {
-        var trackInfoTitle = document.createElement('h4');
+        var trackInfoTitle = document.createElement("h4");
         trackInfoTitle.innerText = "Track info:";
-        
-        var trackData = document.createElement('ul');
 
-        if(record_track_info.period) {
-            var trackPeriod = document.createElement('li');
-            trackPeriod.innerHTML = "Period: " + record_track_info.period + " (<abbr title='Meteorological season'>" + record_track_info.season + "</abbr>)";
+        var trackData = document.createElement("ul");
+
+        if (record_track_info.period) {
+            var trackPeriod = document.createElement("li");
+            trackPeriod.innerHTML =
+                "Period: " +
+                record_track_info.period +
+                " (<abbr title='Meteorological season'>" +
+                record_track_info.season +
+                "</abbr>)";
             trackData.appendChild(trackPeriod);
         }
 
-        if(record_track_info.duration) {
-            var trackDuration = document.createElement('li');
-            trackDuration.innerHTML = "Duration: <abbr title='Excluding transport'>" + record_track_info.duration + "</abbr>";
+        if (record_track_info.duration) {
+            var trackDuration = document.createElement("li");
+            trackDuration.innerHTML =
+                "Duration: <abbr title='Excluding transport'>" +
+                record_track_info.duration +
+                "</abbr>";
             trackData.appendChild(trackDuration);
         }
-        
-        if(record_track_info.distance) {
-            var trackLength = document.createElement('li');
-            trackLength.innerText = "Distance: " + record_track_info.distance + " km";
+
+        if (record_track_info.distance) {
+            var trackLength = document.createElement("li");
+            trackLength.innerText =
+                "Distance: " + record_track_info.distance + " km";
             trackData.appendChild(trackLength);
         }
-        
-        if(record_track_info.totalElevation) {
-            var trackElevation = document.createElement('li');
-            trackElevation.innerHTML = "Total Elevation: <abbr title='Gain+loss, filtered radar data'>"
-                + number_with_commas(record_track_info.totalElevation)
-                + " m</abbr>";
+
+        if (record_track_info.totalElevation) {
+            var trackElevation = document.createElement("li");
+            trackElevation.innerHTML =
+                "Total Elevation: <abbr title='Gain+loss, filtered radar data'>" +
+                number_with_commas(record_track_info.totalElevation) +
+                " m</abbr>";
             trackData.appendChild(trackElevation);
         }
-        
-        var trackDetails = document.createElement('div');
-        trackDetails.className += 'more-info';
-        var buttonInfoMap = document.createElement('a');
-        buttonInfoMap.setAttribute('href', this.track_path(record_track_info.details));
-        buttonInfoMap.setAttribute('target', '_blank');
-        buttonInfoMap.setAttribute('title', 'Open map with track and topographic information');
-        var img_info = document.createElement('i');
-        img_info.className += 'fas fa-info-circle';
+
+        var trackDetails = document.createElement("div");
+        trackDetails.className += "more-info";
+        var buttonInfoMap = document.createElement("a");
+        buttonInfoMap.setAttribute(
+            "href",
+            this.track_path(record_track_info.details)
+        );
+        buttonInfoMap.setAttribute("target", "_blank");
+        buttonInfoMap.setAttribute(
+            "title",
+            "Open map with track and topographic information"
+        );
+        var img_info = document.createElement("i");
+        img_info.className += "fas fa-info-circle";
         buttonInfoMap.appendChild(img_info);
         trackDetails.appendChild(buttonInfoMap);
-        
-        var groupTrackInfo = document.createElement('div');
-        groupTrackInfo.className += 'group-info-track';
+
+        var groupTrackInfo = document.createElement("div");
+        groupTrackInfo.className += "group-info-track";
         groupTrackInfo.appendChild(trackDetails);
         groupTrackInfo.appendChild(trackInfoTitle);
         groupTrackInfo.appendChild(trackData);
@@ -238,7 +262,7 @@ class StorytellingMap {
      * @return {Object} DOM element to be inserted in the chapter.
      */
     create_description(record_description) {
-        var story = document.createElement('div');
+        var story = document.createElement("div");
         story.innerHTML = record_description;
         return story;
     }
@@ -249,62 +273,71 @@ class StorytellingMap {
      * @return {Object} DOM element to be inserted in the chapter.
      */
     create_detailed_track(record_detailed_track) {
-        var buttonTopoMap = document.createElement('a');
-        buttonTopoMap.className += 'btn btn-success';
-        buttonTopoMap.setAttribute('href', this.track_path(record_detailed_track));
-        buttonTopoMap.setAttribute('target', '_blank');
-        buttonTopoMap.setAttribute('role', 'button');
-        buttonTopoMap.setAttribute('title', 'Open map with track and topographic information');
-        buttonTopoMap.innerHTML = '<i class="fas fa-map-marked-alt"></i> Detailed track';
-        var blockButton = document.createElement('p');
+        var buttonTopoMap = document.createElement("a");
+        buttonTopoMap.className += "btn btn-success";
+        buttonTopoMap.setAttribute(
+            "href",
+            this.track_path(record_detailed_track)
+        );
+        buttonTopoMap.setAttribute("target", "_blank");
+        buttonTopoMap.setAttribute("role", "button");
+        buttonTopoMap.setAttribute(
+            "title",
+            "Open map with track and topographic information"
+        );
+        buttonTopoMap.innerHTML =
+            '<i class="fas fa-map-marked-alt"></i> Detailed track';
+        var blockButton = document.createElement("p");
         blockButton.appendChild(buttonTopoMap);
-        blockButton.className += 'text-center';
+        blockButton.className += "text-center";
         return blockButton;
     }
 
     /**
      * Create a div block and populate with the chapter `record`.
-     * 
+     *
      * @param record {Object} - The JSON chapter.
      * @param idx {Number} - The chapter identifier (first chapter is 0).
      * @return {Object} DOM object of the created chapter to be appended to the story.
      */
     create_chapter(record, idx) {
-        var container = document.createElement('div');
-        var chapter = document.createElement('div');
-        
+        var container = document.createElement("div");
+        var chapter = document.createElement("div");
+
         if (record.card) {
             chapter.appendChild(this.create_card(record.card));
         }
-        
+
         if (record.title) {
             chapter.appendChild(this.create_title(record.title));
         }
-        
+
         if (record.image) {
             chapter.appendChild(this.create_image(record.image));
         }
-        
+
         if (record.video) {
             chapter.appendChild(this.create_video(record.video));
         }
-        
+
         if (record.trackInfo) {
             chapter.appendChild(this.create_track_info(record.trackInfo));
         }
-        
+
         if (record.description) {
             chapter.appendChild(this.create_description(record.description));
         }
-        
+
         if (record.detailedTrack) {
-            chapter.appendChild(this.create_detailed_track(record.detailedTrack));
+            chapter.appendChild(
+                this.create_detailed_track(record.detailedTrack)
+            );
         }
 
-        container.setAttribute('id', record.id);
-        container.classList.add('step');
+        container.setAttribute("id", record.id);
+        container.classList.add("step");
         if (idx === 0) {
-            container.classList.add('active');
+            container.classList.add("active");
         }
 
         chapter.classList.add(this.config.theme);
@@ -317,16 +350,16 @@ class StorytellingMap {
      */
     story_processor() {
         const alignments = {
-            'left': 'lefty',
-            'center': 'centered',
-            'right': 'righty'
-        }
+            left: "lefty",
+            center: "centered",
+            right: "righty",
+        };
 
-        var features = document.createElement('div');
+        var features = document.createElement("div");
         features.classList.add(alignments[this.config.alignment]);
-        features.setAttribute('id', 'storytelling-map-features');
+        features.setAttribute("id", "storytelling-map-features");
 
-        var header = document.getElementById('storytelling-map-header');
+        var header = document.getElementById("storytelling-map-header");
 
         if (header.innerText.length > 0) {
             header.classList.add(this.config.theme); // overwrite static CSS
@@ -338,7 +371,7 @@ class StorytellingMap {
 
         this.story.appendChild(features);
 
-        this.footer = document.getElementById('storytelling-map-footer');
+        this.footer = document.getElementById("storytelling-map-footer");
 
         if (this.footer.innerText.length > 0) {
             this.footer.classList.add(this.config.theme);
@@ -354,17 +387,19 @@ class StorytellingMap {
 
         const scale = new mapboxgl.ScaleControl({
             maxWidth: 300,
-            unit: 'metric'
+            unit: "metric",
         });
 
         const compass = new mapboxgl.NavigationControl({
-            showZoom: false
+            showZoom: false,
         });
-        
-        this.start_location = this.computeZoom(this.config.chapters[0].location);
+
+        this.start_location = this.computeZoom(
+            this.config.chapters[0].location
+        );
 
         this.map = new mapboxgl.Map({
-            container: 'storytelling-map-map',
+            container: "storytelling-map-map",
             style: this.config.style,
             center: this.start_location.center,
             zoom: this.start_location.zoom,
@@ -373,15 +408,17 @@ class StorytellingMap {
             scrollZoom: this.#debug_mode,
             dragPan: this.#debug_mode,
             dragRotate: this.#debug_mode,
-            attributionControl: false
+            attributionControl: false,
         });
 
         this.map.addControl(scale);
-        this.map.addControl(compass, 'bottom-left');
+        this.map.addControl(compass, "bottom-left");
 
         if (this.config.showMarkers) {
             this.map_marker = new mapboxgl.Marker();
-            this.map_marker.setLngLat(this.start_location.center).addTo(this.map);
+            this.map_marker
+                .setLngLat(this.start_location.center)
+                .addTo(this.map);
         }
     }
 
@@ -391,20 +428,21 @@ class StorytellingMap {
     kickoff() {
         $("#loading-progress-info").text("Processing story...");
         this.story_processor();
-        
+
         $("#loading-progress-info").text("Initialising interface...");
         this.init_map();
         this.init_contextual_map();
 
         $("#loading-progress-info").text("Loading map...");
-        this.map.on("load", () => {
+        this.map
+            .on("load", () => {
                 this.on_map_load();
-        })
-        .on("moveend", () => {
-            if(this.#debug_mode) {
-                this.update_location_helper(this.map);
-            }
-        });
+            })
+            .on("moveend", () => {
+                if (this.#debug_mode) {
+                    this.update_location_helper(this.map);
+                }
+            });
     }
 
     /**
@@ -415,40 +453,46 @@ class StorytellingMap {
 
         this.config.geojsons.forEach((record) => {
             this.map.addSource(record.layer.source, {
-                'type': 'geojson',
-                'data': this.#book_path + record.data
+                type: "geojson",
+                data: this.#book_path + record.data,
             });
             this.map.addLayer(record.layer);
             var paintProps = this.#layer_types[record.layer.type];
             paintProps.forEach((prop) => {
-                this.map.setPaintProperty(record.layer.id, prop, record.opacity);
+                this.map.setPaintProperty(
+                    record.layer.id,
+                    prop,
+                    record.opacity
+                );
             });
         });
 
         // setup the instance, pass callback functions
         scroller
-        .setup({
-            step: '.step',
-            offset: 0.5,
-            progress: true
-        })
-        .onStepEnter((response) => {
-            this.on_step_enter(response);
-        })
-        .onStepExit((response) => {
-            this.on_step_exit(response);
-        });
+            .setup({
+                step: ".step",
+                offset: 0.5,
+                progress: true,
+            })
+            .onStepEnter((response) => {
+                this.on_step_enter(response);
+            })
+            .onStepExit((response) => {
+                this.on_step_exit(response);
+            });
 
         // setup resize event
-        window.addEventListener('resize', () => {
+        window.addEventListener("resize", () => {
             scroller.resize();
         });
 
         console.log("Scrollytelling map ready");
-        document.getElementById('wait-before-visible').style.display = "none";
-        document.getElementById('storytelling-map-map').style.opacity = 1;
-        document.getElementsByClassName('mapboxgl-canvas')[0].style.cursor = "default";
-        document.getElementById('storytelling-map-features').style.display = "block";
+        document.getElementById("wait-before-visible").style.display = "none";
+        document.getElementById("storytelling-map-map").style.opacity = 1;
+        document.getElementsByClassName("mapboxgl-canvas")[0].style.cursor =
+            "default";
+        document.getElementById("storytelling-map-features").style.display =
+            "block";
         $("body").removeClass("loading-storytelling-map");
         this.footer.style.display = "block";
         this.load_images();
@@ -458,30 +502,31 @@ class StorytellingMap {
      * When the user enter a chapter.
      */
     on_step_enter(response) {
-        var chapter = this.config.chapters.find(chap => chap.id === response.element.id);
+        var chapter = this.config.chapters.find(
+            (chap) => chap.id === response.element.id
+        );
         this.map.flyTo(this.computeZoom(chapter.location));
-        if(chapter.showContext) {
-            var was_visible = $("#storytelling-map-context").css("display") != "none";
+        if (chapter.showContext) {
+            var was_visible =
+                $("#storytelling-map-context").css("display") != "none";
             $("#storytelling-map-context").show(0, () => {
-                if(Array.isArray(chapter.showContext)) {
-                    if(was_visible) {
+                if (Array.isArray(chapter.showContext)) {
+                    if (was_visible) {
                         this.contextual_map.flyTo({
                             center: chapter.showContext,
-                            zoom: 8
+                            zoom: 8,
                         });
-                    }
-                    else {
+                    } else {
                         this.contextual_map.jumpTo({
                             center: chapter.showContext,
-                            zoom: 8
+                            zoom: 8,
                         });
                     }
                     this.contextual_map.resize();
                     this.contextual_marker.setLngLat(chapter.showContext);
                 }
             });
-        }
-        else {
+        } else {
             $("#storytelling-map-context").hide(0);
         }
         if (this.config.showMarkers) {
@@ -498,7 +543,9 @@ class StorytellingMap {
      * When the user exit a chapter.
      */
     on_step_exit(response) {
-        var chapter = this.config.chapters.find(chap => chap.id === response.element.id);
+        var chapter = this.config.chapters.find(
+            (chap) => chap.id === response.element.id
+        );
         if (chapter.onChapterExit.length > 0) {
             chapter.onChapterExit.forEach((el) => {
                 this.setLayerOpacity(el);
@@ -511,9 +558,11 @@ class StorytellingMap {
      */
     computeZoom(location) {
         var actual_location = Object.assign({}, location); // clone, don't change the config
-        const a = (8.81-8)/(1920-948), b = 8.81-a*1920;
-        var x = document.getElementById('storytelling-map-map').offsetWidth, z = a*x+b;
-        actual_location.zoom *= z/8.81;
+        const a = (8.81 - 8) / (1920 - 948),
+            b = 8.81 - a * 1920;
+        var x = document.getElementById("storytelling-map-map").offsetWidth,
+            z = a * x + b;
+        actual_location.zoom *= z / 8.81;
         return actual_location;
     }
 
@@ -534,11 +583,15 @@ class StorytellingMap {
      * The update is on map move.
      */
     update_location_helper() {
-        const settings = `"center": [${this.map.getCenter().lng.toFixed(5)}, ${this.map.getCenter().lat.toFixed(5)}],
+        const settings = `"center": [${this.map
+            .getCenter()
+            .lng.toFixed(5)}, ${this.map.getCenter().lat.toFixed(5)}],
             "zoom": ${this.map.getZoom().toFixed(2)},
             "pitch": ${this.map.getPitch().toFixed(2)},
             "bearing": ${this.map.getBearing().toFixed(2)}`;
-        document.getElementById("storytelling-location-helper-info").innerText = settings;
+        document.getElementById(
+            "storytelling-location-helper-info"
+        ).innerText = settings;
     }
 
     /**
@@ -546,7 +599,9 @@ class StorytellingMap {
      * Example: "/map/viewer/1/awesome_story/``track_name``/fr"
      */
     track_path(track_name) {
-        return `/map/viewer/${this.#book_id}/${this.#book_dir}/${track_name}/fr`;
+        return `/map/viewer/${this.#book_id}/${
+            this.#book_dir
+        }/${track_name}/fr`;
     }
 
     /**
@@ -556,7 +611,7 @@ class StorytellingMap {
      * procedure actually set the src of img and source tags.
      */
     load_images() {
-        $("img[data-lazysrc], source[data-lazysrc]").each(function() {
+        $("img[data-lazysrc], source[data-lazysrc]").each(function () {
             $(this).attr("src", $(this).attr("data-lazysrc"));
         });
     }
@@ -568,25 +623,32 @@ class StorytellingMap {
      */
     init_contextual_map() {
         this.contextual_map = new mapboxgl.Map({
-            container: 'storytelling-map-context',
-            style: 'mapbox://styles/mapbox/streets-v11',
+            container: "storytelling-map-context",
+            style: "mapbox://styles/mapbox/streets-v11",
             center: this.start_location.center,
             zoom: this.start_location.zoom,
-            attributionControl: false
+            attributionControl: false,
         });
 
-        this.contextual_map.addControl(new mapboxgl.NavigationControl({
-            showCompass: false
-        }));
+        this.contextual_map.addControl(
+            new mapboxgl.NavigationControl({
+                showCompass: false,
+            })
+        );
 
         this.contextual_marker = new mapboxgl.Marker()
-        .setLngLat(this.start_location.center)
-        .addTo(this.contextual_map);
+            .setLngLat(this.start_location.center)
+            .addTo(this.contextual_map);
     }
 }
 
-$(function() {
-    if($("#storytelling-map").length) {
-        storytelling_map = new StorytellingMap(parseInt(BOOK_ID), encodeURIComponent(BOOK_DIR), BOOK_FILENAME, DEBUG_MODE);
+$(function () {
+    if ($("#storytelling-map").length) {
+        storytelling_map = new StorytellingMap(
+            parseInt(BOOK_ID),
+            encodeURIComponent(BOOK_DIR),
+            BOOK_FILENAME,
+            DEBUG_MODE
+        );
     }
 });

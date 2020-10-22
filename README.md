@@ -1,5 +1,7 @@
 # ExploreWilder
 
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+
 ## Demo
 
 The project is my website: https://explorewilder.com/
@@ -27,7 +29,7 @@ This is just an example of website using awesome open source technologies! The p
 - [x] Ko-fi.com webhook integration
 - [x] Admin space: manage the gallery, stories, members, see statistics (likes and views)
 
-Here you have a list of frameworks and tools I used, so that you don't have to dive into the code:
+I used the following frameworks and tools:
 
 ### Server side:
 

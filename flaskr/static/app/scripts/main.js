@@ -63,11 +63,11 @@ var is_autoplay = false;
  */
 var scroll_ticking = false;
 
-if(typeof(String.prototype.trim) === "undefined") {
+if (typeof String.prototype.trim === "undefined") {
     /**
      * Remove spaces after and before the string.
      */
-    String.prototype.trim = function() {
+    String.prototype.trim = function () {
         return String(this).replace(/^\s+|\s+$/g, "");
     };
 }
@@ -76,9 +76,11 @@ if(typeof(String.prototype.trim) === "undefined") {
  * Example of use: $.urlParam('param'); returns 'value' or null.
  * @param name Parameter name.
  */
-$.urlParam = function(name) {
-    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-    return (results == null) ? null : (results[1] || 0);
+$.urlParam = function (name) {
+    var results = new RegExp("[?&]" + name + "=([^&#]*)").exec(
+        window.location.href
+    );
+    return results == null ? null : results[1] || 0;
 };
 
 /**
@@ -87,10 +89,13 @@ $.urlParam = function(name) {
  * and he may want to load more thumbnails simultaneously to fill the large screen.
  */
 function adapt_amount_thumbnails_to_fetch() {
-    var overflow = (max_column_photos * $(window).height() / get_thumbnail_height()) - total_new_photos;
-    
-    if(overflow > 0) {
-        total_new_photos = default_total_new_photos + max_column_photos * parseInt(overflow);
+    var overflow =
+        (max_column_photos * $(window).height()) / get_thumbnail_height() -
+        total_new_photos;
+
+    if (overflow > 0) {
+        total_new_photos =
+            default_total_new_photos + max_column_photos * parseInt(overflow);
     }
 }
 
@@ -119,7 +124,9 @@ function move_body() {
  * @return {Number} Minimum gap from top where blocks should be displayed.
  */
 function get_header_height() {
-    return ($("#header").css("display") != "none") ? ($("#header").height() + 16) : 0;
+    return $("#header").css("display") != "none"
+        ? $("#header").height() + 16
+        : 0;
 }
 
 /**
@@ -129,11 +136,10 @@ function get_header_height() {
  * @param is_active {Number} - true to display the main window and the scroll bar.
  */
 function main_active(is_active) {
-    if(is_active) {
+    if (is_active) {
         $("body").css("overflow", "auto");
         $("#main").css("visibility", "visible");
-    }
-    else {
+    } else {
         $("#main").css("visibility", "hidden");
         $("body").css("overflow", "hidden");
     }
@@ -176,7 +182,7 @@ function number_with_commas(x) {
  * @return {Boolean} False if the big photo was loaded - to disable the page reload. True otherwise.
  */
 function close_large_photo(a) {
-    if(!main_is_active()) {
+    if (!main_is_active()) {
         close_photo();
         $(a).blur();
         return false;
@@ -207,26 +213,27 @@ function prev_next_buttons_onclick(index) {
  */
 function autoplay_button() {
     is_autoplay = !is_autoplay;
-    
+
     $("#button-auto").blur();
-    
-    if(is_autoplay) {
-        $("#button-auto").find(".fa-play-circle")
-                         .removeClass("fa-play-circle")
-                         .addClass("fa-pause-circle");
-        
+
+    if (is_autoplay) {
+        $("#button-auto")
+            .find(".fa-play-circle")
+            .removeClass("fa-play-circle")
+            .addClass("fa-pause-circle");
+
         reset_timer_autoplay();
-        
+
         console.log("Autoplay mode: enabled");
-    }
-    else {
-        $("#button-auto").find(".fa-pause-circle")
-                         .removeClass("fa-pause-circle")
-                         .addClass("fa-play-circle");
-        
+    } else {
+        $("#button-auto")
+            .find(".fa-pause-circle")
+            .removeClass("fa-pause-circle")
+            .addClass("fa-play-circle");
+
         clearInterval(timer_autoplay);
         timer_autoplay = 0;
-        
+
         console.log("Autoplay mode: disabled");
     }
     return false;
@@ -237,12 +244,12 @@ function autoplay_button() {
  * is reset (when the user clicks on next in auto play mode).
  */
 function reset_timer_autoplay() {
-    if(typeof timer_autoplay != "undefined") {
+    if (typeof timer_autoplay != "undefined") {
         clearInterval(timer_autoplay);
         timer_autoplay = null;
     }
-    timer_autoplay = setInterval(function() {
-        prev_next_buttons_onclick(last_loaded_photo +1);
+    timer_autoplay = setInterval(function () {
+        prev_next_buttons_onclick(last_loaded_photo + 1);
     }, autoplay_interval);
 }
 
@@ -250,8 +257,7 @@ function reset_timer_autoplay() {
  * Disable the auto play mode if enabled.
  */
 function disable_autoplay() {
-    if(is_autoplay)
-    {
+    if (is_autoplay) {
         autoplay_button();
     }
 }
@@ -262,7 +268,7 @@ function disable_autoplay() {
  * * fetch new photos if ``index`` refers to one of the last 3 photos.
  * * hide the next/prev button if the next/prev photo is out of range.
  * * update the onclick events of the prev/next buttons.
- * 
+ *
  * Notice: the auto play mode is disabled when the user loads the previous
  * picture and the timer is reset when the user loads the next one to avoid
  * fast jump.
@@ -271,47 +277,45 @@ function disable_autoplay() {
  * @param index {Number} - Id (from 0) of the new big photo.
  */
 function update_prev_next_buttons(index) {
-    if(typeof index != "number") {
+    if (typeof index != "number") {
         return;
     }
 
-    if((index +3) >= gallery.length) {
-        if(!no_more_photos) {
+    if (index + 3 >= gallery.length) {
+        if (!no_more_photos) {
             fetch_thumbnails(total_new_photos);
         }
     }
 
-    if((index +1) >= gallery.length) {
+    if (index + 1 >= gallery.length) {
         $("#button-next").css("visibility", "hidden");
         $("#button-auto").css("visibility", "hidden");
         disable_autoplay();
-    }
-    else {
+    } else {
         $("#button-next").css("visibility", "visible");
         $("#button-next").unbind("click");
-        $("#button-next").click(function() {
+        $("#button-next").click(function () {
             $("#button-next").blur();
-            if(is_autoplay) {
+            if (is_autoplay) {
                 reset_timer_autoplay();
             }
-            return prev_next_buttons_onclick(index +1);
+            return prev_next_buttons_onclick(index + 1);
         });
-        
+
         $("#button-auto").css("visibility", "visible");
         $("#button-auto").unbind("click");
         $("#button-auto").click(autoplay_button);
     }
 
-    if(index <= 0) {
+    if (index <= 0) {
         $("#button-prev").css("visibility", "hidden");
-    }
-    else {
+    } else {
         $("#button-prev").css("visibility", "visible");
         $("#button-prev").unbind("click");
-        $("#button-prev").click(function() {
+        $("#button-prev").click(function () {
             $("#button-prev").blur();
             disable_autoplay();
-            return prev_next_buttons_onclick(index -1);
+            return prev_next_buttons_onclick(index - 1);
         });
     }
 }
@@ -322,18 +326,20 @@ function update_prev_next_buttons(index) {
  * @param is_bind {Boolean} - True to show and bind, false to hide and unbind.
  */
 function bind_emotions(is_bind) {
-    for(var i = 0; i < emotions.length; i++) {
+    for (var i = 0; i < emotions.length; i++) {
         var emotion = emotions[i];
         var a = $("#button-" + emotion).parent("a");
-        a.css("visibility", (is_bind) ? "visible" : "hidden");
+        a.css("visibility", is_bind ? "visible" : "hidden");
         a.unbind("click");
-        if(is_bind) {
-            a.click((function() {
-                var current_emotion = emotion;
-                return function() {
-                    return share_emotion(current_emotion);
-                };
-            })());
+        if (is_bind) {
+            a.click(
+                (function () {
+                    var current_emotion = emotion;
+                    return function () {
+                        return share_emotion(current_emotion);
+                    };
+                })()
+            );
         }
     }
 }
@@ -352,15 +358,15 @@ function share_emotion(emotion) {
         url: url_share_emotion_photo,
         async: true,
         method: "POST",
-        data: {emotion: emotion},
+        data: { emotion: emotion },
         dataType: "json",
-        success: function(result) {
-            if(result.success) {
+        success: function (result) {
+            if (result.success) {
                 reset_feedback_form();
                 $("#modal-feedback").modal();
                 console.log("Emotion shared: " + emotion);
             }
-        }
+        },
     });
     return false;
 }
@@ -378,10 +384,10 @@ function log_visit() {
         url: url_log_visit_photo,
         async: true,
         method: "POST",
-        data: {photo_id: gallery[last_loaded_photo].id},
-        success: function() {
+        data: { photo_id: gallery[last_loaded_photo].id },
+        success: function () {
             bind_emotions(true);
-        }
+        },
     });
 }
 
@@ -400,11 +406,10 @@ function is_panorama(width, height) {
  * @param enable {Boolean} - True to show, false to hide the navbar.
  */
 function enable_header(enable) {
-    if(enable) {
+    if (enable) {
         $("#header").css("display", "fixed");
         $("#header").show();
-    }
-    else {
+    } else {
         $("#header").hide();
         $("#header").css("display", "none");
     }
@@ -424,21 +429,28 @@ function display_photo(photo, index) {
     var src_photo;
     var new_photo = false;
 
-    if(typeof photo == "object") {
+    if (typeof photo == "object") {
         src_photo = $(photo).attr("src");
-        if(photo.naturalWidth === 0 || typeof photo.naturalWidth == "undefined") {
-            console.log("ERROR: Full screen photo '" + src_photo + "' could not be loaded.");
+        if (
+            photo.naturalWidth === 0 ||
+            typeof photo.naturalWidth == "undefined"
+        ) {
+            console.log(
+                "ERROR: Full screen photo '" +
+                    src_photo +
+                    "' could not be loaded."
+            );
             return;
         }
         console.log("Full screen photo ready.");
 
         main_active(false); // remove the scroll bar before to get the window size
         new_photo = true;
-    }
-    else if (main_is_active()) { // don't re-display if the photo hasn't been loaded
+    } else if (main_is_active()) {
+        // don't re-display if the photo hasn't been loaded
         return;
-    }
-    else { // don't change the source
+    } else {
+        // don't change the source
         src_photo = $("#full-screen-photo").attr("src");
         photo = new Image();
         photo.src = src_photo;
@@ -453,72 +465,92 @@ function display_photo(photo, index) {
     var navbar_height = get_header_height();
     var box_height = $(window).height() - navbar_height - total_gap_photo * 2;
     var box_width = $(window).width() - total_gap_photo * 2;
-    
+
     // square button, all the same size defined by what is currently visible
-    var button_size = $("#button-close").width() || $("#onclick-scroll-down i").height();
+    var button_size =
+        $("#button-close").width() || $("#onclick-scroll-down i").height();
     photo_is_panorama = is_panorama(photo_width, photo_height);
 
     // resize the photo to fit the buttons and the photo in the box
-    if(box_height < photo_height) {
+    if (box_height < photo_height) {
         photo_height = box_height;
         photo_width = photo_height / ratio;
     }
-    if((!photo_is_panorama) && box_width < photo_width + total_gap_photo + button_size) {
+    if (
+        !photo_is_panorama &&
+        box_width < photo_width + total_gap_photo + button_size
+    ) {
         photo_width = box_width - total_gap_photo - button_size;
         photo_height = photo_width * ratio;
     }
-    
+
     // Change the max-width tag since changing the image width creates a
     // short lag when the old pictures is resized but the new one is not
     // displayed yet, so if the new picture has a different size, the old
     // picture would look weird for a few miliseconds.
     $("#full-screen-photo").css("max-width", photo_width);
-    
-    if(new_photo) {
+
+    if (new_photo) {
         $("#full-screen-photo").attr("src", src_photo);
         var info = "";
-        if(gallery[index].title != "") {
+        if (gallery[index].title != "") {
             info = "<h1>" + gallery[index].title + "</h1>";
         }
-        if(gallery[index].description == "[undisclosed]") {
+        if (gallery[index].description == "[undisclosed]") {
             info += $("#why-undisclosed").html();
-        }
-        else if(gallery[index].description != "") {
+        } else if (gallery[index].description != "") {
             info += text_to_html(gallery[index].description);
         }
         var exif = [];
-        if(gallery[index].focal_length_35mm != null) {
-            exif.push('<abbr data-toggle="tooltip" title="35 mm equivalent focal length">'
-                + gallery[index].focal_length_35mm + ' mm</abbr>');
+        if (gallery[index].focal_length_35mm != null) {
+            exif.push(
+                '<abbr data-toggle="tooltip" title="35 mm equivalent focal length">' +
+                    gallery[index].focal_length_35mm +
+                    " mm</abbr>"
+            );
         }
-        if(gallery[index].exposure_time != null) {
-            exif.push('<abbr data-toggle="tooltip" title="Exposure time in seconds">'
-                + gallery[index].exposure_time + ' s</abbr>');
+        if (gallery[index].exposure_time != null) {
+            exif.push(
+                '<abbr data-toggle="tooltip" title="Exposure time in seconds">' +
+                    gallery[index].exposure_time +
+                    " s</abbr>"
+            );
         }
-        if(gallery[index].f_number != null) {
-            exif.push('<abbr data-toggle="tooltip" title="Focal ratio">f/'
-                + gallery[index].f_number + '</abbr>');
+        if (gallery[index].f_number != null) {
+            exif.push(
+                '<abbr data-toggle="tooltip" title="Focal ratio">f/' +
+                    gallery[index].f_number +
+                    "</abbr>"
+            );
         }
-        if(gallery[index].iso != null) {
-            exif.push('<abbr data-toggle="tooltip" title="Film speed">ISO '
-                + gallery[index].iso + '</abbr>');
+        if (gallery[index].iso != null) {
+            exif.push(
+                '<abbr data-toggle="tooltip" title="Film speed">ISO ' +
+                    gallery[index].iso +
+                    "</abbr>"
+            );
         }
-        if(gallery[index].time != null) {
-            info += '<p class="desc-field-time">Photo took ' + gallery[index].time + '.</p>';
+        if (gallery[index].time != null) {
+            info +=
+                '<p class="desc-field-time">Photo took ' +
+                gallery[index].time +
+                ".</p>";
         }
-        if(exif.length) {
+        if (exif.length) {
             var separator = ' <span class="pipe">|</span> ';
-            info += '<p class="desc-field-conf">Camera configuration:<br />' + exif.join(separator) + '</p>';
+            info +=
+                '<p class="desc-field-conf">Camera configuration:<br />' +
+                exif.join(separator) +
+                "</p>";
         }
         $("#photo-description").html(info);
         last_loaded_photo = index;
-    }
-    else {
+    } else {
         console.log("Full screen photo resized.");
     }
 
     // update interface
-    if($("#animated-description:hover").length != 0) {
+    if ($("#animated-description:hover").length != 0) {
         fade_in_description();
     }
 
@@ -527,30 +559,35 @@ function display_photo(photo, index) {
     var offset_photo_left = total_gap_photo;
     var offset_y = navbar_height + total_gap_photo;
 
-    if(gap_on_right_side >= total_gap_photo + button_size) {
+    if (gap_on_right_side >= total_gap_photo + button_size) {
         offset_photo_left += gap_on_right_side;
     }
-    
-    if(photo_is_panorama) {
+
+    if (photo_is_panorama) {
         var container_width = box_width - total_gap_photo - button_size;
         $("#animated-description").css("max-width", container_width);
-        $("#animated-description").mousemove(function(evt) {
+        $("#animated-description").mousemove(function (evt) {
             var ratio = container_width / photo_width;
             var hscroll_width = container_width * ratio;
-            var pos_half_scroll = evt.pageX - total_gap_photo - hscroll_width / 2;
-            $(this).scrollLeft(pos_half_scroll / ratio).css("cursor", "ew-resize");
+            var pos_half_scroll =
+                evt.pageX - total_gap_photo - hscroll_width / 2;
+            $(this)
+                .scrollLeft(pos_half_scroll / ratio)
+                .css("cursor", "ew-resize");
         });
-    }
-    else {
+    } else {
         $("#animated-description").off("mousemove").css("cursor", "default");
     }
 
     $("#full-screen").css("left", offset_photo_left);
     $("#full-screen").css("top", navbar_height + total_gap_photo);
     var button = ["close", "love", "next", "prev", "auto"];
-    for(var i = 0; i < button.length; i++) {
+    for (var i = 0; i < button.length; i++) {
         $("#button-" + button[i]).css("right", total_gap_photo);
-        $("#button-" + button[i]).css("top", offset_y + i * (button_size + total_gap_photo));
+        $("#button-" + button[i]).css(
+            "top",
+            offset_y + i * (button_size + total_gap_photo)
+        );
     }
     $("#full-screen").css("top", navbar_height + total_gap_photo);
     $("#animated-download").css("top", navbar_height + 3);
@@ -560,7 +597,7 @@ function display_photo(photo, index) {
     // show the buttons if not visible
     $("#full-screen").show();
 
-    if(new_photo) {
+    if (new_photo) {
         // show the photo, its description, and the prev/next buttons
         $("#animated-full-screen").show();
 
@@ -577,17 +614,16 @@ function display_photo(photo, index) {
  * @param thumbnail {Image} - Reference to the thumbnail.
  */
 function load_on_thumbnail(thumbnail) {
-    if(main_is_active()) {
+    if (main_is_active()) {
         thumbnail.fadeTo(fade_out_thumbnail, opacity_thumbnail);
-        var img_spinner = $('<i></i>');
-        img_spinner.addClass('far fa-compass fa-2x fa-spin thumbnail-spin');
-        var spinner = $('<span></span>');
+        var img_spinner = $("<i></i>");
+        img_spinner.addClass("far fa-compass fa-2x fa-spin thumbnail-spin");
+        var spinner = $("<span></span>");
         spinner.addClass("around-spin");
         spinner.append(img_spinner);
-        spinner.css("animation-duration", (fade_out_thumbnail / 1000) + "s");
+        spinner.css("animation-duration", fade_out_thumbnail / 1000 + "s");
         thumbnail.after(spinner);
-    }
-    else {
+    } else {
         thumbnail.stop(); // stop the fadeTo animation
         thumbnail.css("opacity", 1);
         thumbnail.next().remove(); // remove the spinner
@@ -603,15 +639,13 @@ function load_on_thumbnail(thumbnail) {
  * @return {String} Filename of the optimal photo.
  */
 function optimal_photo(photo) {
-    if($(window).width() > m_size[0] || $(window).height() > m_size[1]) {
+    if ($(window).width() > m_size[0] || $(window).height() > m_size[1]) {
         console.log("Optimal photo size is large.");
         return photo.photo_l;
-    }
-    else if(is_panorama(photo.photo_l_w, photo.photo_l_h)) {
+    } else if (is_panorama(photo.photo_l_w, photo.photo_l_h)) {
         console.log("Panorama => load large.");
         return photo.photo_l;
-    }
-    else {
+    } else {
         console.log("Optimal photo size is medium.");
         return photo.photo_m;
     }
@@ -623,17 +657,17 @@ function optimal_photo(photo) {
  * @param index {Number} - Id (from 0) of the photo.
  */
 function preload_photo(index) {
-    if(index < 0 || index >= gallery.length) {
+    if (index < 0 || index >= gallery.length) {
         return; // out of range
     }
     var photo_name = optimal_photo(gallery[index]);
     var src_photo = dir_photos + gallery[index].id + "/" + photo_name;
     console.log("Caching '" + src_photo + "'...");
     var photo = new Image();
-    $(photo).on("load", function() {
+    $(photo).on("load", function () {
         console.log("Photo '" + photo_name + "' now in cache");
     });
-    $(photo).on("error", function() {
+    $(photo).on("error", function () {
         console.log("ERROR: failed to cache image " + photo_name);
     });
     photo.src = src_photo;
@@ -649,22 +683,25 @@ function load_photo(index) {
     var img = $("#gallery a").eq(index).find("img");
     var photo_name = optimal_photo(gallery[index]);
     var src_photo = dir_photos + gallery[index].id + "/" + photo_name;
-    var next_photo = (last_loaded_photo > 0) ? (2 * index - last_loaded_photo) : (index +1);
+    var next_photo =
+        last_loaded_photo > 0 ? 2 * index - last_loaded_photo : index + 1;
     console.log("Open '" + src_photo + "'.");
 
     // loading effect
     load_on_thumbnail(img);
 
     var photo = new Image();
-    $(photo).on("load", function() {
+    $(photo).on("load", function () {
         display_photo(this, index);
         load_on_thumbnail(img);
         preload_photo(next_photo);
     });
 
-    $(photo).on("error", function() {
+    $(photo).on("error", function () {
         // skip the photo and load the next/previous one
-        console.log("ERROR: loading image " + photo_name + " failed => jump over!");
+        console.log(
+            "ERROR: loading image " + photo_name + " failed => jump over!"
+        );
         load_photo(next_photo);
     });
 
@@ -689,15 +726,15 @@ function load_photo(index) {
  */
 function img_thumbnail(src, id, a) {
     $("<img />")
-    .attr("src", src)
-    .addClass("animate-shadow")
-    .on("error", function(event) {
-        console.log("ERROR loading thumbnail " + id + ": " + src);
-    })
-    .on("load", function(event) {
-        console.log("Thumbnail " + id + " loaded.");
-        $(this).appendTo(a);
-    });
+        .attr("src", src)
+        .addClass("animate-shadow")
+        .on("error", function (event) {
+            console.log("ERROR loading thumbnail " + id + ": " + src);
+        })
+        .on("load", function (event) {
+            console.log("Thumbnail " + id + " loaded.");
+            $(this).appendTo(a);
+        });
 }
 
 /**
@@ -709,10 +746,10 @@ function img_thumbnail(src, id, a) {
  * other functions can proceed.
  * @param total {Number} - Number of thumbnail/photo to fetch.
  */
-var fetch_thumbnails = (function(total) {
+var fetch_thumbnails = (function (total) {
     var in_progress = false;
-    return function(total) {
-        if(in_progress) {
+    return function (total) {
+        if (in_progress) {
             return;
         }
         in_progress = true;
@@ -723,29 +760,32 @@ var fetch_thumbnails = (function(total) {
             url: url_fetch_photos,
             async: true,
             method: "POST",
-            data: {offset: gallery.length, total: total},
+            data: { offset: gallery.length, total: total },
             dataType: "json",
-            success: function(result) {
+            success: function (result) {
                 in_progress = false;
-                for(var i = 0; i < result.length; i++) {
+                for (var i = 0; i < result.length; i++) {
                     gallery.push(result[i]);
                     var a = $("<a></a>")
                         .attr("href", "#")
                         .appendTo(thumbnails) // append `a` to the gallery in a specific order
-                        .click((function() {
-                            var curr_index = gallery.length -1;
-                            return function() {
-                                return load_photo(curr_index);
-                            }
-                        })());
-                    var img_src = dir_photos + result[i].id + "/" + result[i].thumbnail;
+                        .click(
+                            (function () {
+                                var curr_index = gallery.length - 1;
+                                return function () {
+                                    return load_photo(curr_index);
+                                };
+                            })()
+                        );
+                    var img_src =
+                        dir_photos + result[i].id + "/" + result[i].thumbnail;
                     // append `img` to the `a` only when the image has been loaded, i.e. out of order
                     img_thumbnail(img_src, result[i].id, a);
                 }
-                if(result.length < total) {
+                if (result.length < total) {
                     no_more_photos = true;
                 }
-            }
+            },
         });
     };
 })();
@@ -754,20 +794,23 @@ var fetch_thumbnails = (function(total) {
  * Show the photo description on top of the big photo.
  */
 function fade_in_description() {
-    if($("#photo-description").html() == "") {
+    if ($("#photo-description").html() == "") {
         // do not show an empty description
         $("#photo-description").css("visibility", "hidden");
         return;
     }
     $("#photo-description").css("visibility", "visible");
     $("#photo-description").css("opacity", 0);
-    $("#photo-description").fadeTo(fade_photo_description, opacity_photo_description);
+    $("#photo-description").fadeTo(
+        fade_photo_description,
+        opacity_photo_description
+    );
     $('#animated-description abbr[data-toggle="tooltip"]').tooltip({
         placement: "bottom",
         offset: "0,2px",
         container: "#animated-description",
         trigger: "hover",
-        boundary: "body" // the tooltip is located outside its parent
+        boundary: "body", // the tooltip is located outside its parent
     });
     return false;
 }
@@ -779,14 +822,13 @@ function fade_in_description() {
  * the overwhelming description.
  */
 function trigger_description(evt) {
-    if(typeof evt !== "undefined" && evt.relatedTarget === null) {
+    if (typeof evt !== "undefined" && evt.relatedTarget === null) {
         return; // tooltip on mouseleave triggers a mouseenter which should be dismissed
     }
-    
-    if(photo_is_panorama) {
+
+    if (photo_is_panorama) {
         $(this).one("click", fade_in_description);
-    }
-    else {
+    } else {
         fade_in_description();
     }
 }
@@ -797,10 +839,10 @@ function trigger_description(evt) {
  */
 function create_photo_description_animation() {
     $("#animated-description")
-    .mouseenter(trigger_description)
-    .mouseleave(function() {
-        $("#photo-description").css("visibility", "hidden");
-    });
+        .mouseenter(trigger_description)
+        .mouseleave(function () {
+            $("#photo-description").css("visibility", "hidden");
+        });
 }
 
 /**
@@ -808,10 +850,10 @@ function create_photo_description_animation() {
  * care about copyright. So the right click is disabled on all img elements.
  */
 function disable_right_click() {
-    if(!right_click_disabled_image) {
+    if (!right_click_disabled_image) {
         return;
     }
-    $("img").on("contextmenu", function() {
+    $("img").on("contextmenu", function () {
         return false;
     });
 }
@@ -828,32 +870,31 @@ function disable_right_click() {
  * @param ref {String} - Reference to the form. Default: all.
  */
 function refresh_submit_button(clickable, delay, ref) {
-    if(typeof ref === "undefined") {
+    if (typeof ref === "undefined") {
         ref = "body";
     }
-    
+
     var submit_button = $(ref).find("button[type=submit]");
     submit_button.find("i").remove();
     var style = "";
 
-    if(typeof delay === "undefined") {
+    if (typeof delay === "undefined") {
         delay = 0;
     }
 
-    if(clickable) {
-        submit_button.delay(delay).queue(function() {
+    if (clickable) {
+        submit_button.delay(delay).queue(function () {
             $(this).removeAttr("disabled");
             $(this).dequeue();
         });
         style = "far fa-paper-plane";
-    }
-    else {
+    } else {
         submit_button.attr("disabled", "disabled");
         style = "fas fa-spinner fa-pulse";
     }
 
-    style += ' fa-2x';
-    var img_button = $('<i></i>');
+    style += " fa-2x";
+    var img_button = $("<i></i>");
     img_button.addClass(style);
     submit_button.append(img_button);
 }
@@ -865,20 +906,20 @@ function refresh_submit_button(clickable, delay, ref) {
  * @param stay_on {Boolean} - True to keep the info visible, false to fadeout after a few seconds.
  */
 function append_info(result, selector, stay_on) {
-    if(typeof stay_on === "undefined") {
+    if (typeof stay_on === "undefined") {
         stay_on = false;
     }
-    var alert_type = (result.success) ? "alert-success" : "alert-danger";
-    var popup = $('<div></div>')
+    var alert_type = result.success ? "alert-success" : "alert-danger";
+    var popup = $("<div></div>")
         .addClass("alert " + alert_type)
-        .attr('role', 'alert');
+        .attr("role", "alert");
     popup.append($("<strong></strong>").text(result.info));
-    if(!stay_on) {
+    if (!stay_on) {
         popup
-        .delay(message_delay_before_fadein)
-        .fadeOut(message_fadein_time, function() {
-            $(this).remove();
-        });
+            .delay(message_delay_before_fadein)
+            .fadeOut(message_fadein_time, function () {
+                $(this).remove();
+            });
     }
     $(selector).append(popup);
 }
@@ -887,8 +928,8 @@ function append_info(result, selector, stay_on) {
  * Manage custom error messages for each field of the login form.
  */
 function init_login_form() {
-    $("#login-form").submit(function(e) {
-        if(this.checkValidity() === false) {
+    $("#login-form").submit(function (e) {
+        if (this.checkValidity() === false) {
             e.preventDefault();
             e.stopPropagation();
             this.classList.add("was-validated");
@@ -902,9 +943,9 @@ function init_login_form() {
  */
 function init_contact_form() {
     init_dropdown_subject();
-    
-    $("#contact-form").submit(function(e) {
-        if(this.checkValidity() === false) {
+
+    $("#contact-form").submit(function (e) {
+        if (this.checkValidity() === false) {
             e.preventDefault();
             e.stopPropagation();
             this.classList.add("was-validated");
@@ -924,23 +965,26 @@ function init_contact_form() {
                 captcha: $("#captcha").val(),
                 browser_time: new Date(),
                 win_res: $(window).width() + "x" + $(window).height() + "px",
-                newsletter_subscription: $("#newsletter-subscription").prop("checked") ? 1 : 0,
-                privacy_policy: $("#privacy-policy").val()
+                newsletter_subscription: $("#newsletter-subscription").prop(
+                    "checked"
+                )
+                    ? 1
+                    : 0,
+                privacy_policy: $("#privacy-policy").val(),
             },
             dataType: "json",
-            success: function(result) {
-                if(result.success) {
+            success: function (result) {
+                if (result.success) {
                     $("#contact-form").css("display", "none");
                     append_info(result, "#show-after-success", true);
-                }
-                else {
+                } else {
                     append_info(result, "#contact-form");
                     refresh_submit_button(true, message_delay_before_resend);
                     reload_captcha(); // reset the outdated captcha
                     $("#captcha").val("");
                 }
-            }
-        })
+            },
+        });
         e.preventDefault();
     });
 }
@@ -955,14 +999,20 @@ function init_contact_form() {
 function reset_feedback_form() {
     $(".checkbox-menu-subject input[type='checkbox']").prop("checked", false);
     $(".checkbox-menu-subject li").toggleClass("active", false);
-    $(".checkbox-menu-subject input[type='checkbox']:first").prop("checked", true);
+    $(".checkbox-menu-subject input[type='checkbox']:first").prop(
+        "checked",
+        true
+    );
     $(".checkbox-menu-subject li:first").toggleClass("active", true);
-    
+
     $("#message").val("");
     $("#hide-after-success").css("display", "block");
     $("#feedback-form").css("display", "block");
     $("#hiden-form-group").css("display", "none");
-    $("#engage-more-group").css("display", $("#engage-more-decision").prop("checked") ? "block" : "none");
+    $("#engage-more-group").css(
+        "display",
+        $("#engage-more-decision").prop("checked") ? "block" : "none"
+    );
     $("#newsletter-subscription").prop("checked", false);
     $("#ask-subscription").css("display", "none");
     reload_captcha();
@@ -975,9 +1025,11 @@ function reset_feedback_form() {
  * Get the list of the selected subjects.
  */
 function ckeckboxes_to_list() {
-    return $('.checkbox-menu-subject input:checked').map(function () {
-        return this.name;
-    }).get();
+    return $(".checkbox-menu-subject input:checked")
+        .map(function () {
+            return this.name;
+        })
+        .get();
 }
 
 /**
@@ -985,29 +1037,36 @@ function ckeckboxes_to_list() {
  * must exists.
  */
 function init_feedback_form() {
-    $("#message").focus(function() {
+    $("#message").focus(function () {
         $("#hiden-form-group").css("display", "block");
     });
-    
-    $("#engage-more-decision").change(function() {
-        $("#engage-more-group").css("display", $(this).prop("checked") ? "block" : "none");
+
+    $("#engage-more-decision").change(function () {
+        $("#engage-more-group").css(
+            "display",
+            $(this).prop("checked") ? "block" : "none"
+        );
     });
-    
-    $("#email").focus(function() {
+
+    $("#email").focus(function () {
         $("#ask-subscription").css("display", "block");
     });
-    
+
     init_dropdown_subject();
-    
-    $("#feedback-form").submit(function(e) {
-        if(this.checkValidity() === false) {
+
+    $("#feedback-form").submit(function (e) {
+        if (this.checkValidity() === false) {
             e.preventDefault();
             e.stopPropagation();
             this.classList.add("was-validated");
             return;
         }
 
-        refresh_submit_button(false, message_delay_before_resend, "#feedback-form");
+        refresh_submit_button(
+            false,
+            message_delay_before_resend,
+            "#feedback-form"
+        );
         $.ajax({
             url: url_detailed_feedback,
             async: true,
@@ -1020,23 +1079,30 @@ function init_feedback_form() {
                 captcha: $("#captcha").val(),
                 browser_time: new Date(),
                 win_res: $(window).width() + "x" + $(window).height() + "px",
-                newsletter_subscription: $("#newsletter-subscription").prop("checked") ? 1 : 0,
-                privacy_policy: $("#privacy-policy").val()
+                newsletter_subscription: $("#newsletter-subscription").prop(
+                    "checked"
+                )
+                    ? 1
+                    : 0,
+                privacy_policy: $("#privacy-policy").val(),
             },
             dataType: "json",
-            success: function(result) {
-                if(result.success) {
+            success: function (result) {
+                if (result.success) {
                     $("#hide-after-success").css("display", "none");
                     append_info(result, "#show-after-success");
-                }
-                else {
+                } else {
                     append_info(result, "#feedback-form");
-                    refresh_submit_button(true, message_delay_before_resend, "#feedback-form");
+                    refresh_submit_button(
+                        true,
+                        message_delay_before_resend,
+                        "#feedback-form"
+                    );
                     reload_captcha(); // reset the outdated captcha
                     $("#captcha").val("");
                 }
-            }
-        })
+            },
+        });
         e.preventDefault();
     });
 }
@@ -1045,7 +1111,7 @@ function init_feedback_form() {
  * Load another captcha.
  */
 function reload_captcha() {
-    if(!$("#captcha-passcode").length) {
+    if (!$("#captcha-passcode").length) {
         return false;
     }
     var date = new Date();
@@ -1057,10 +1123,10 @@ function reload_captcha() {
  * Load a captcha if the data-autoload attribute is defined in the img tag.
  */
 function load_captcha() {
-    if(!$("#captcha-passcode").length) {
+    if (!$("#captcha-passcode").length) {
         return false;
     }
-    if($("#captcha-passcode").attr("data-autoload")) {
+    if ($("#captcha-passcode").attr("data-autoload")) {
         reload_captcha("#captcha-passcode");
     }
 }
@@ -1077,11 +1143,17 @@ function get_thumbnail_height() {
  * Scroll one row of thumbnails down.
  */
 function scroll_down() {
-    $("html, body").animate({
-        scrollTop: $(window).scrollTop() + get_thumbnail_height() + total_gap_photo
-    }, {
-        duration: 400
-    });
+    $("html, body").animate(
+        {
+            scrollTop:
+                $(window).scrollTop() +
+                get_thumbnail_height() +
+                total_gap_photo,
+        },
+        {
+            duration: 400,
+        }
+    );
     return false;
 }
 
@@ -1097,7 +1169,7 @@ function is_on_screen(elem) {
     var docViewBottom = docViewTop + $(window).height();
     var elemTop = $(elem).offset().top;
     var elemBottom = elemTop + $(elem).height();
-    return (elemBottom <= docViewBottom) && (elemTop >= docViewTop);
+    return elemBottom <= docViewBottom && elemTop >= docViewTop;
 }
 
 /**
@@ -1111,20 +1183,20 @@ function book_tooltip() {
         animation: true,
         container: "#content-book",
         placement: "bottom",
-        trigger: "hover"
+        trigger: "hover",
     });
     $("#content-book p.can-zoom-in").tooltip({
         animation: true,
         container: "#content-book",
         placement: "bottom",
-        trigger: "manual" // triggered by book_zoom_images()
+        trigger: "manual", // triggered by book_zoom_images()
     });
     $("sup a").tooltip({
         animation: true,
         container: "#content-book",
         offset: "0,10px",
         placement: "top",
-        trigger: "hover"
+        trigger: "hover",
     });
 }
 
@@ -1134,13 +1206,16 @@ function book_tooltip() {
 function book_static_map_effects() {
     var el = ".above-static-map";
     $(".static-map")
-    .hover(function() {
-        $(this).find(el).css("opacity", 1);
-    },
-    function() {
-        $(this).find(el).css("opacity", 0.7);
-    })
-    .find(el).css("opacity", 0.7);
+        .hover(
+            function () {
+                $(this).find(el).css("opacity", 1);
+            },
+            function () {
+                $(this).find(el).css("opacity", 0.7);
+            }
+        )
+        .find(el)
+        .css("opacity", 0.7);
 }
 
 /**
@@ -1149,22 +1224,24 @@ function book_static_map_effects() {
  */
 function book_zoom_images() {
     $(".can-zoom-in")
-    .css("cursor", "grab")
-    .hover(function() {
-        $(this).tooltip("show");
-    },
-    function() {
-        $(this).tooltip("hide");
-    })
-    .zoom({
-        on: "grab",
-        onZoomIn: function() {
-            $(this).css("cursor", "grabbing");
-        },
-        onZoomOut: function() {
-            $(this).css("cursor", "grab");
-        }
-    });
+        .css("cursor", "grab")
+        .hover(
+            function () {
+                $(this).tooltip("show");
+            },
+            function () {
+                $(this).tooltip("hide");
+            }
+        )
+        .zoom({
+            on: "grab",
+            onZoomIn: function () {
+                $(this).css("cursor", "grabbing");
+            },
+            onZoomOut: function () {
+                $(this).css("cursor", "grab");
+            },
+        });
 }
 
 /**
@@ -1187,14 +1264,23 @@ function open_modal_privacy_policy() {
  * Setup the "Amazon Affiliate Links" modal and show it.
  */
 function amazon_affiliate_links_selection() {
-    var links = JSON.parse(this.dataset.amazonAffiliateLinks.replace(/'/g, '"'));
+    var links = JSON.parse(
+        this.dataset.amazonAffiliateLinks.replace(/'/g, '"')
+    );
     var product_name = this.dataset.amazonProductName;
-    console.log("Open 'Amazon Affiliate Links' modal for this product: " + product_name);
+    console.log(
+        "Open 'Amazon Affiliate Links' modal for this product: " + product_name
+    );
     $(".amazon-product-name").empty().append(product_name);
     $("#list-amazon-affiliate-links").empty();
-    for(var i = 0; i < links.length; i++) {
+    for (var i = 0; i < links.length; i++) {
         var link = links[i];
-        var title = "See this product in " + link["website"] + " (Amazon in " + link["marketplace"] + ")";
+        var title =
+            "See this product in " +
+            link["website"] +
+            " (Amazon in " +
+            link["marketplace"] +
+            ")";
         var a = $("<a></a>")
             .attr("href", link["link"])
             .attr("rel", "nofollow")
@@ -1205,7 +1291,7 @@ function amazon_affiliate_links_selection() {
                 animation: true,
                 placement: "bottom",
                 container: "#modal-amazon-affiliate-links",
-                trigger: "hover"
+                trigger: "hover",
             });
         var li = $("<li></li>").append(a);
         $("#list-amazon-affiliate-links").append(li);
@@ -1220,11 +1306,11 @@ function amazon_affiliate_links_selection() {
 function cookie_policy_decision(decision) {
     var later_on = new Date();
     var curr_month = later_on.getUTCMonth();
-    if(curr_month == 12 - offset_months) { // December to January
+    if (curr_month == 12 - offset_months) {
+        // December to January
         later_on.setUTCFullYear(later_on.getUTCFullYear() + 1);
         later_on.setUTCMonth(offset_months - 1);
-    }
-    else {
+    } else {
         later_on.setUTCMonth(curr_month + offset_months);
     }
     console.log("Accept long-term cookies? " + decision);
@@ -1243,12 +1329,11 @@ function cookie_policy_decision(decision) {
  */
 function cookie_policy_consent() {
     var dnt = navigator.doNotTrack;
-    if(dnt == "1" || dnt == "yes") {
+    if (dnt == "1" || dnt == "yes") {
         console.log("Do Not Track preference took into account.");
         cookie_policy_decision("false");
         show_subscribe_newsletter_toast();
-    }
-    else if(document.cookie.indexOf("cookies_toast=true") < 0) {
+    } else if (document.cookie.indexOf("cookies_toast=true") < 0) {
         $("#cookie-policy-consent").show();
         $("#cookie-policy-consent .toast").toast("show");
         $("#cookie-policy-consent button").click(function () {
@@ -1256,8 +1341,7 @@ function cookie_policy_consent() {
             cookie_policy_decision(this.dataset.accept);
             show_subscribe_newsletter_toast();
         });
-    }
-    else {
+    } else {
         show_subscribe_newsletter_toast();
     }
 }
@@ -1274,7 +1358,7 @@ function cap_first_letter(word) {
  * not be included in the page (Jinja condition).
  */
 function show_subscribe_newsletter_toast() {
-    window.setTimeout(function() {
+    window.setTimeout(function () {
         $("#subscribe-newsletter").show();
         $("#subscribe-newsletter .toast").toast("show");
     }, delay_popup_like_button_book);
@@ -1286,8 +1370,8 @@ function show_subscribe_newsletter_toast() {
  * @see cookie_policy_consent()
  */
 function subscribe_newsletter() {
-    $("#subscribe-newsletter form").submit(function(e) {
-        if(this.checkValidity() === false) {
+    $("#subscribe-newsletter form").submit(function (e) {
+        if (this.checkValidity() === false) {
             e.preventDefault();
             e.stopPropagation();
             this.classList.add("was-validated");
@@ -1300,20 +1384,26 @@ function subscribe_newsletter() {
             async: true,
             method: "POST",
             data: {
-                email: $("#email-newsletter").val()
+                email: $("#email-newsletter").val(),
             },
             dataType: "json",
-            success: function(result) {
-                if(result.success) {
+            success: function (result) {
+                if (result.success) {
                     $("#subscribe-newsletter form").css("display", "none");
-                    append_info(result, "#subscribe-newsletter .info-newsletter", true);
-                }
-                else {
-                    append_info(result, "#subscribe-newsletter .info-newsletter");
+                    append_info(
+                        result,
+                        "#subscribe-newsletter .info-newsletter",
+                        true
+                    );
+                } else {
+                    append_info(
+                        result,
+                        "#subscribe-newsletter .info-newsletter"
+                    );
                     refresh_submit_button(false, 0, "#subscribe-newsletter");
                 }
-            }
-        })
+            },
+        });
         e.preventDefault();
     });
 }
@@ -1322,7 +1412,7 @@ function subscribe_newsletter() {
  * Add a visit entry with emotion when the visitor clicks on the "Like" button of the book.
  */
 function like_this_book() {
-    if($("#popup-like-book").length) {
+    if ($("#popup-like-book").length) {
         $("#popup-like-book .toast").toast("dispose");
     }
     $(this).css("visibility", "hidden");
@@ -1332,15 +1422,15 @@ function like_this_book() {
         url: url_share_emotion_book,
         async: true,
         method: "POST",
-        data: {book_id: this.dataset.bookId, emotion: emotion},
+        data: { book_id: this.dataset.bookId, emotion: emotion },
         dataType: "json",
-        success: function(result) {
-            if(result.success) {
+        success: function (result) {
+            if (result.success) {
                 reset_feedback_form();
                 $("#modal-feedback").modal();
                 console.log("Emotion shared: " + emotion);
             }
-        }
+        },
     });
     return false;
 }
@@ -1349,7 +1439,11 @@ function like_this_book() {
  * Put this.href as url anchor.
  */
 function url_anchor_to_this_id() {
-    window.history.replaceState(window.location.pathname, "", window.location.pathname + $(this).attr("href"));
+    window.history.replaceState(
+        window.location.pathname,
+        "",
+        window.location.pathname + $(this).attr("href")
+    );
 }
 
 /**
@@ -1363,10 +1457,9 @@ function open_this_book() {
         url: url_share_emotion_book,
         async: false,
         method: "POST",
-        data: {book_id: this.dataset.bookId, emotion: emotion},
+        data: { book_id: this.dataset.bookId, emotion: emotion },
         dataType: "json",
-        success: function(result) {
-        }
+        success: function (result) {},
     });
     return true;
 }
@@ -1376,11 +1469,15 @@ function open_this_book() {
  * https://stackoverflow.com/questions/25016848/bootstrap-putting-checkbox-in-a-dropdown
  */
 function init_dropdown_subject() {
-    $(".checkbox-menu-subject").on("change", "input[type='checkbox']", function() {
-        $(this).closest("li").toggleClass("active", this.checked);
-    });
+    $(".checkbox-menu-subject").on(
+        "change",
+        "input[type='checkbox']",
+        function () {
+            $(this).closest("li").toggleClass("active", this.checked);
+        }
+    );
 
-    $(document).on('click', '.allow-focus', function (e) {
+    $(document).on("click", ".allow-focus", function (e) {
         e.stopPropagation();
     });
 }
@@ -1389,27 +1486,29 @@ function init_dropdown_subject() {
  * Change the login form into a password reset form.
  */
 function login_to_password_reset_form() {
-    window.history.replaceState(window.location.pathname, "", url_password_reset);
+    window.history.replaceState(
+        window.location.pathname,
+        "",
+        url_password_reset
+    );
     $(".hidden-for-password-reset").remove();
-    $("#content-form")
-    .find("h1")
-    .text("Password Reset");
+    $("#content-form").find("h1").text("Password Reset");
     $("#login-form")
-    .attr("action", url_password_reset)
-    .find("button[type=submit]")
-    .attr("title", "Reset my password")
-    .find("i")
-    .removeClass("fa-unlock-alt")
-    .addClass("fa-envelope-open-text");
+        .attr("action", url_password_reset)
+        .find("button[type=submit]")
+        .attr("title", "Reset my password")
+        .find("i")
+        .removeClass("fa-unlock-alt")
+        .addClass("fa-envelope-open-text");
 }
 
 /**
  * Show a popup to warn the visitor about a non-HTTPS website redirection.
  */
 function alert_insecure_website() {
-    $("#non-https-website").text(this.href.split("/",3).join("/"));
+    $("#non-https-website").text(this.href.split("/", 3).join("/"));
     $("#non-https-website-url").attr("href", this.href);
-    $('#nonHttpsWarning').modal('show');
+    $("#nonHttpsWarning").modal("show");
     return false;
 }
 
@@ -1424,9 +1523,9 @@ class toc {
 
         /** Used for scroll event throttling. */
         this.scroll_timeout = undefined;
-        
+
         // move the section id into a created div that will become the anchor
-        $("#content-book .section").prepend(function() {
+        $("#content-book .section").prepend(function () {
             var id = $(this).attr("id");
             $(this).removeAttr("id");
             return $("<div></div>").attr("id", id).addClass("title-anchor");
@@ -1440,7 +1539,7 @@ class toc {
      * @return {Boolean} False at the first visible anchor to stop looping.
      */
     get_elem(elem) {
-        if(is_on_screen(elem)) {
+        if (is_on_screen(elem)) {
             this.id_on_focus = elem.attr("id");
             return false; // stop looping through anchors
         }
@@ -1451,8 +1550,12 @@ class toc {
      * Loop through all anchors and update the URL accordingly to the reading progress.
      */
     actual_animate() {
-        if(typeof this.id_on_focus === "string") {
-            window.history.replaceState(window.location.pathname, "", window.location.pathname + "#" + this.id_on_focus);
+        if (typeof this.id_on_focus === "string") {
+            window.history.replaceState(
+                window.location.pathname,
+                "",
+                window.location.pathname + "#" + this.id_on_focus
+            );
             this.id_on_focus = undefined;
         }
     }
@@ -1466,12 +1569,12 @@ class toc {
      */
     animate() {
         var my_toc = this;
-        $("#content-book .title-anchor").each(function() {
+        $("#content-book .title-anchor").each(function () {
             return my_toc.get_elem($(this));
         });
-        if(typeof this.scroll_timeout !== "number") {
+        if (typeof this.scroll_timeout !== "number") {
             this.actual_animate();
-            this.scroll_timeout = window.setTimeout(function() {
+            this.scroll_timeout = window.setTimeout(function () {
                 my_toc.actual_animate(); // move end
                 my_toc.scroll_timeout = undefined;
             }, 400); // 400 ms is less than 100 times per 30 seconds
@@ -1483,13 +1586,13 @@ class toc {
  * When the window is resized: move the padding top accordingly to the new navbar
  * height and resize the big photo if needed.
  */
-$(window).resize(function() {
-    if($("#main").length) {
+$(window).resize(function () {
+    if ($("#main").length) {
         adapt_amount_thumbnails_to_fetch();
         move_body();
         display_photo();
     }
-    if($("#content-book").length) {
+    if ($("#content-book").length) {
         book_tooltip();
     }
 });
@@ -1499,24 +1602,28 @@ $(window).resize(function() {
  * But not too often as detailed in the MDN web doc:
  * https://developer.mozilla.org/en-US/docs/Web/API/Element/scroll_event
  */
-$(window).scroll(function() {
+$(window).scroll(function () {
     let last_known_scroll_position = $(window).scrollTop();
     let scroll_timeout = undefined;
-    if(!scroll_ticking) {
-        window.requestAnimationFrame(function() {
-            if($("#main").length) {
+    if (!scroll_ticking) {
+        window.requestAnimationFrame(function () {
+            if ($("#main").length) {
                 $("#onclick-scroll-down").show();
-                if((last_known_scroll_position + $(window).height() + get_thumbnail_height()) >= $(document).height()) {
-                    if(!no_more_photos) {
+                if (
+                    last_known_scroll_position +
+                        $(window).height() +
+                        get_thumbnail_height() >=
+                    $(document).height()
+                ) {
+                    if (!no_more_photos) {
                         fetch_thumbnails(total_new_photos);
-                    }
-                    else {
+                    } else {
                         $("#onclick-scroll-down").hide();
                     }
                 }
             }
 
-            if($("#content-book").length) {
+            if ($("#content-book").length) {
                 toc.animate();
             }
 
@@ -1532,23 +1639,23 @@ $(window).scroll(function() {
  * @see prev_next_buttons_onclick()
  * @param e {Object} - Event.
  */
-$(window).keydown(function(e) {
-    if(!$("#main").length) {
+$(window).keydown(function (e) {
+    if (!$("#main").length) {
         return;
     }
-    if(main_is_active()) {
+    if (main_is_active()) {
         return;
     }
 
     // Next (arrow) key pressed
-    if(e.which == 39 && (last_loaded_photo + 1) < gallery.length) {
+    if (e.which == 39 && last_loaded_photo + 1 < gallery.length) {
         disable_autoplay();
-        prev_next_buttons_onclick(last_loaded_photo +1);
+        prev_next_buttons_onclick(last_loaded_photo + 1);
     }
     // Previous (arrow) key pressed
-    else if(e.which == 37 && last_loaded_photo > 0) {
+    else if (e.which == 37 && last_loaded_photo > 0) {
         disable_autoplay();
-        prev_next_buttons_onclick(last_loaded_photo -1);
+        prev_next_buttons_onclick(last_loaded_photo - 1);
     }
 });
 
@@ -1559,71 +1666,79 @@ $(window).keydown(function(e) {
  * * Initialise the interface.
  *
  */
-$(function() {
+$(function () {
     var csrf_token = $("meta[name=csrf-token]").attr("content");
     $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+        beforeSend: function (xhr, settings) {
+            if (
+                !/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) &&
+                !this.crossDomain
+            ) {
                 xhr.setRequestHeader("X-CSRFToken", csrf_token);
             }
-        }
+        },
     });
-    
+
     // https://stackoverflow.com/questions/36460538/scrolling-issues-with-multiple-bootstrap-modals
-    $("body").on("hidden.bs.modal", function (e) { 
-        if ($('.modal:visible').length) { 
-            $('body').addClass('modal-open');
+    $("body").on("hidden.bs.modal", function (e) {
+        if ($(".modal:visible").length) {
+            $("body").addClass("modal-open");
         }
     });
 
-    if($("#main").length) { // main page
+    if ($("#main").length) {
+        // main page
         move_body();
         adapt_amount_thumbnails_to_fetch();
         fetch_thumbnails(total_new_photos);
         create_photo_description_animation();
         disable_right_click();
     }
-    if($("#contact-form").length) { // contact page
+    if ($("#contact-form").length) {
+        // contact page
         init_contact_form();
     }
     $('.tooltip-networks[data-toggle="tooltip"]').tooltip({
         offset: "0,3px",
         placement: "bottom",
-        trigger: "hover"
+        trigger: "hover",
     });
     $('.tooltip-support[data-toggle="tooltip"]').tooltip({
         offset: "0,3px",
         placement: "bottom",
         html: true,
-        trigger: "hover"
+        trigger: "hover",
     });
-    $('.carbon-tooltip').tooltip({
+    $(".carbon-tooltip").tooltip({
         offset: "left: 5px",
         placement: "right",
         html: true,
-        trigger: "hover"
+        trigger: "hover",
     });
 
     load_captcha();
-    
-    if($("#content-book").length) { // story page
-        if(right_click_disabled_text) {
-            $("#content-book").bind("selectstart dragstart", function(e) {
+
+    if ($("#content-book").length) {
+        // story page
+        if (right_click_disabled_text) {
+            $("#content-book").bind("selectstart dragstart", function (e) {
                 e.preventDefault();
                 return false;
             });
             $("#content-book").css("cursor", "default"); // the user cannot select text
         }
         toc = new toc();
-        if($("#visible-when-loaded").attr("data-add-visit") == "True") {
+        if ($("#visible-when-loaded").attr("data-add-visit") == "True") {
             $.ajax({
                 url: url_share_emotion_book,
                 async: true,
                 method: "POST",
-                data: {book_id: $("#visible-when-loaded").attr("data-book-id"), emotion: "neutral"},
+                data: {
+                    book_id: $("#visible-when-loaded").attr("data-book-id"),
+                    emotion: "neutral",
+                },
                 dataType: "json",
-                success: function(result) {
-                }
+                success: function (result) {},
             });
         }
         $("#wait-before-visible").hide();
@@ -1631,78 +1746,90 @@ $(function() {
         book_tooltip();
         book_zoom_images();
         book_static_map_effects();
-        
+
         // scroll down if an anchor is defined, it isn't automatic because the content has been dynamically loaded
-        if(location.hash && $(location.hash).length) {
-            $([document.documentElement, document.body]).scrollTop($(location.hash).offset().top);
+        if (location.hash && $(location.hash).length) {
+            $([document.documentElement, document.body]).scrollTop(
+                $(location.hash).offset().top
+            );
         }
     }
-    
-    if($("#popup-like-book").length) {
-        window.setTimeout(function() {
+
+    if ($("#popup-like-book").length) {
+        window.setTimeout(function () {
             $("#popup-like-book").show();
             $("#popup-like-book .toast").toast("show");
         }, delay_popup_like_button_book);
     }
-    
-    if($("#login-form").length) { // login page
+
+    if ($("#login-form").length) {
+        // login page
         init_login_form();
     }
-    
-    if($("#feedback-form").length) { // feedback modal
+
+    if ($("#feedback-form").length) {
+        // feedback modal
         init_feedback_form();
     }
 
     // xs screen is a smartphone with no useful onmouseover to display a tooltip
     if (window.matchMedia("(min-width: 768px)").matches) {
-        $('#header [data-toggle="tooltip"], #subNavbarNav [data-toggle="tooltip"]').tooltip({
+        $(
+            '#header [data-toggle="tooltip"], #subNavbarNav [data-toggle="tooltip"]'
+        ).tooltip({
             animation: true,
             placement: "bottom",
-            delay: { "show": 100, "hide": 0 },
+            delay: { show: 100, hide: 0 },
             container: "#header",
-            trigger: "hover"
+            trigger: "hover",
         });
-        $('#full-screen [data-toggle="tooltip"], #subNavbarNav [data-toggle="tooltip"]').tooltip({
+        $(
+            '#full-screen [data-toggle="tooltip"], #subNavbarNav [data-toggle="tooltip"]'
+        ).tooltip({
             animation: true,
             placement: "left",
-            delay: { "show": 100, "hide": 0 },
-            trigger: "hover"
+            delay: { show: 100, hide: 0 },
+            trigger: "hover",
         });
     }
-    
+
     $('.tweetable a[data-toggle="tooltip"]').tooltip({
         animation: true,
         placement: "right",
-        trigger: "hover"
+        trigger: "hover",
     });
-    
+
     $('.crowdfunding-progress[data-toggle="tooltip"]').tooltip({
         animation: true,
         placement: "right",
         html: true,
-        trigger: "hover"
+        trigger: "hover",
     });
-    
+
     $('.card-text a.dropdown-item[data-toggle="tooltip"]').tooltip({
         animation: true,
         placement: "right",
-        trigger: "hover"
+        trigger: "hover",
     });
 
     $('.card-text a.btn[data-toggle="tooltip"]').tooltip({
         animation: true,
         offset: "top: 5px",
         placement: "bottom",
-        trigger: "hover"
+        trigger: "hover",
     });
-    
-    $('.tweetable-button').each(function() {
+
+    $(".tweetable-button").each(function () {
         // by button event to not propagate the change to other buttons
-        $(this).click(function() {
+        $(this).click(function () {
             var url = encodeURIComponent(window.location.href);
-            $(this).attr("href", $(this).attr("href")
-                .replace("url=%23", "url=" + url)
-                .replace("+-+%23", "+-+" + url));
+            $(this).attr(
+                "href",
+                $(this)
+                    .attr("href")
+                    .replace("url=%23", "url=" + url)
+                    .replace("+-+%23", "+-+" + url)
+            );
             return true;
         });
     });
@@ -1715,21 +1842,31 @@ $(function() {
     $("#onclick-close-photo").click(close_photo);
     $(".onclick-like-this-book").click(like_this_book);
     $(".onclick-open-this-book").click(open_this_book);
-    $('#pills-tab li.nav-item a[data-toggle="pill"]').click(url_anchor_to_this_id);
+    $('#pills-tab li.nav-item a[data-toggle="pill"]').click(
+        url_anchor_to_this_id
+    );
     $("#onclick-password-reset").click(login_to_password_reset_form);
-    $('body').on('click', 'a.amazon-affiliate-link', amazon_affiliate_links_selection); // also apply to dynamically added elements
+    $("body").on(
+        "click",
+        "a.amazon-affiliate-link",
+        amazon_affiliate_links_selection
+    ); // also apply to dynamically added elements
     cookie_policy_consent();
     subscribe_newsletter();
-    
-    $('body').on('click', 'a[href^="http://"]:not(\'.bypass-non-https-warning\')', alert_insecure_website);
-    
+
+    $("body").on(
+        "click",
+        "a[href^=\"http://\"]:not('.bypass-non-https-warning')",
+        alert_insecure_website
+    );
+
     // blur up
     $("img.hidden-card")
-    .on("load", function(event) {
-        $(this).removeClass("hidden-card");
-        $(this).siblings(".preview-card").addClass("hidden-card");
-    })
-    .attr("src", function() {
-        return $(this).attr("data-src");
-    }); // set the attribute after the event listener
+        .on("load", function (event) {
+            $(this).removeClass("hidden-card");
+            $(this).siblings(".preview-card").addClass("hidden-card");
+        })
+        .attr("src", function () {
+            return $(this).attr("data-src");
+        }); // set the attribute after the event listener
 });
