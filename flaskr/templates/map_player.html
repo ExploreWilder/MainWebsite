@@ -215,7 +215,7 @@
                             <abbr data-toggle="tooltip"
                                   title="The best open street map for city navigation"
                                   class="layer-info"><i class="fas fa-info-circle"></i></abbr>
-                        </a>-->
+                        </a>
                         <a class="dropdown-item"
                            href="#"
                            data-boundlayer="world-street-stamen-toner,world-eumetsat-meteosat-iodc-mpe,world-eumetsat-meteosat-0deg-h0b3">
@@ -223,7 +223,7 @@
                             <abbr data-toggle="tooltip"
                                   title="Meteosat image by EUMETSAT covering Europe, Africa, western Asia"
                                   class="layer-info"><i class="fas fa-info-circle"></i></abbr>
-                        </a>
+                        </a>-->
                     </div>
                 </li>
             </ul>
@@ -241,7 +241,7 @@
 {% block extra_scripts %}
     <script nonce="{{ csp_nonce() }}" src="/static/dist-{{ config.STATIC_PACKAGE.version }}/js/map_player.vendor.bundle.js"></script>
     <script nonce="{{ csp_nonce() }}" type="text/javascript">
-        VTS_BROWSER_CONFIG="/static/dist-{{ config.STATIC_PACKAGE.version }}/js/map_player_config/main_config.json";
+        VTS_BROWSER_CONFIG="/static/dist-{{ config.STATIC_PACKAGE.version }}/js/map_player_config/";
     </script>
     <script nonce="{{ csp_nonce() }}" src="/static/dist-{{ config.STATIC_PACKAGE.version }}/js/map_player.app.bundle.js"></script>
 {% endblock %}

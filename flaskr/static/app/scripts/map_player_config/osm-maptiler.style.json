@@ -1,0 +1,75 @@
+{
+    "constants": {
+        "@osmid": {"if":[["has","$osm_id"],"$osm_id",""]},
+        "@name": {"if":[["has","$name"],{"if":[["any",["!has","$name:en"],["==",{"has-latin":"$name"},true]],"{$name}","{$name}\n{$name:en}"]},""]},
+        "@font": ["noto-mix","noto-cjk"],
+        "@italic-font": ["noto-italic","noto-mix","noto-cjk"]
+    },
+    "fonts": {
+        "noto-italic": "https://cdn.melown.com/vts/melown2015/fonts/noto-italic/1.0.0/noto-i.fnt",
+        "noto-mix": "https://cdn.melown.com/vts/melown2015/fonts/noto-extended/1.0.0/noto.fnt",
+        "noto-cjk": "https://cdn.melown.com/vts/melown2015/fonts/noto-cjk/1.0.0/noto.fnt",
+        "noto-serif": "https://cdn.melown.com/vts/melown2015/fonts/noto-serif/1.0.0/noto-serif.fnt"
+    },
+    "layers": {
+        "places": {
+            "filter": ["all",["==","#group","place"],["in","$class","city","town","village","suburb","hamlet"]],
+            "&population": {"str2num":{"if":[["has","$population"],"$population",1]}},
+            "&importance": {"logScale":["&population",24183000, 10,90]},
+            "&rank": {"discrete2":["&population",[[0,6],[100,5],[600,4],[4000,3],[25000,2],[150000,1],[1000000,0]]]},
+            "importance-source": "&importance",
+            "label": true,
+            "label-source": "@name",
+            "label-size": {"linear2":["&rank",[[0,25],[6,14]]]}, 
+            "label-font": "@italic-font",
+            "label-color": [222,222,222,255],
+            "label-color2": [0,0,0,200],
+            "label-outline": [0.5,0.7,2.2,2.2],
+            "zbuffer-offset": [-0.35,0,0],
+            "culling": 89,
+            "&id": "{@osmid} {@name}",
+            "hysteresis": [500,100,"&id",true]
+         },
+         "peaks": {
+             "filter": ["all",["==","#group","mountain_peak"],["has","$name"],["!=","$name",""]],
+             "&prominence": {"add":[
+                 {"if":[["has","$ele"],{"mul":[0.0001,{"str2num":"$ele"}]},0]},
+                 {"if":[["has","$prominence"],{"mul":[0.3048,{"str2num":"$prominence"}]},0]}]},
+             "&importance": {"logScale":["&prominence",8848.8848]},
+             "&rank": {"discrete2":["&prominence",[[0,6],[30,5],[70,4],[150,3],[300,2],[700,1],[1500,0]]]},
+             "importance-source": "&importance",
+             "&feet": {"round":{"mul":[3.2808399,{"str2num":"$ele"}]}},
+             "&elevation-name": {"if":[["==","#metric",true],"{{'round':{'str2num':'$ele'}}} m","{&feet} ft"]},
+             "&peak-name": {"if":[["has","$ele"],"{@name}\n{&elevation-name}","{@name}"]},
+             "&peak-name2": {"if":[["==","&rank",0],{"uppercase":"&peak-name"},"&peak-name"]},
+             "label": true,
+             "label-source": "&peak-name2",
+             "label-size": {"linear2":["&rank",[[0,20],[6,14]]]},
+             "label-font": "@font",
+             "label-color": {"linear2":["&rank",[[1,[222,222,222,255]],[6,[222,222,222,230]]]]},
+             "label-color2": {"linear2":["&rank",[[1,[0,0,0,200]],[6,[0,0,0,160]]]]},
+             "label-outline": [0.3,0.6,2.2,5],
+             "label-stick": {"linear2":["&rank",[[1,[60,0,2,222,222,222,200]],[6,[60,0,2,222,222,222,128]]]]},
+             "zbuffer-offset": [-0.45,0,0],
+             "culling": 90,
+             "&id": "{@osmid} {&peak-name}",
+             "hysteresis": [500,100,"&id",true]
+         },
+         "country-boundaries": {
+             "filter": ["all",["==","#group","boundary"],["==","$admin_level","2"],["!=","$maritime","1"]],
+             "line": true,
+             "line-flat": false,
+             "line-width": 4,
+             "line-color": [255,255,255,128],
+             "zbuffer-offset": [-0.01,0,0]
+         },
+         "state-boundaries": {
+             "filter": ["all",["==","#group","boundary"],["==","$admin_level","4"],["!=","$maritime","1"]],
+             "line": true,
+             "line-flat": false,
+             "line-width": 4,
+             "line-color": [255,255,255,64],
+             "zbuffer-offset": [-0.01,0,0]
+        }
+    }
+}

@@ -1,23 +1,38 @@
 {
-  "constants": {
-    "@name-solver": {"if":[["has","$name"],"$name","$Name"]},
-    "@ele": {"if":[["has","$elevation"],"$elevation","$Elevation"]},
-    "@ele-solver": "{{'round': {'str2num':'@ele'}}} m",
-    "@id-solver": "{@ele-solver} {@name-solver}",
-    "@prom-solver": {"mul":[-1,{"str2num":{"if":[["has","$prom"],"$prom","$Prom"]}}]}
-  },
-  "layers": {
-    "peak-labels": {
-      "label": true,
-      "label-source": "{@name-solver}\n{@ele-solver}",
-      "label-no-overlap": true,
-      "label-no-overlap-factor": ["div-by-dist","@prom-solver"],
-      "label-size": 19,
-      "label-stick": [70,5,2,255,255,255,128],
-      "label-color": [255,233,0,255],
-      "zbuffer-offset": [-1,0,0],
-      "culling": 92,
-      "hysteresis": [500,100,"@id-solver",true]
+    "constants":
+    {
+        "@font": ["noto-mix","noto-cjk"],
+        "@name": {"uppercase":{"if":[["has","$name"],"$name","$Name"]}},
+        "@feet": {"round":{"mul":[3.2808399,{"str2num":"$Elevation"}]}}
+    },
+    "fonts":
+    {
+        "noto-mix": "https://cdn.melown.com/vts/melown2015/fonts/noto-extended/1.0.0/noto.fnt",
+        "noto-cjk": "https://cdn.melown.com/vts/melown2015/fonts/noto-cjk/1.0.0/noto.fnt",
+        "noto-serif": "https://cdn.melown.com/vts/melown2015/fonts/noto-serif/1.0.0/noto-serif.fnt"
+    },
+    "layers":
+    {
+        "peak-labels":
+        {
+            "&peak-prominence": {"add":[{"mul":[0.0001,{"str2num":"$Elevation"}]},{"str2num":"$Prom"}]},
+            "&importance": {"logScale":["&peak-prominence",8848.8848]},
+            "importance-source": "&importance",
+            "importance-weight": 1.02,
+            "&peak-name-aux": {"trim":"{@name}"},
+            "&elevation-name": {"if":[["==","#metric",true],"{{'round':{'str2num':'$Elevation'}}} m","{@feet} ft"]},
+            "&peak-name": "{&peak-name-aux}\n{&elevation-name}",
+            "label": true,
+            "label-source": "&peak-name",
+            "label-size": 20,
+            "label-font": "@font",
+            "label-stick": [70,0,2,222,222,222,200],
+            "label-color": [222,222,222,255],
+            "label-color2": [0,0,0,200],
+            "label-outline": [0.3,0.6,2.2,5],
+            "zbuffer-offset": [-0.2,0,0],
+            "culling": 90,
+            "hysteresis": [500,100,"&peak-name",true]
+        }
     }
-  }
 }

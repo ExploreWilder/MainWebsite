@@ -92,7 +92,7 @@ def vts_proxy_world_topo_otm(z: int, x: int, y: int) -> FlaskResponse:
     """
     Tunneling map requests to the OpenTopoMap servers.
     Caching request is not forbidden by OpenTopoMap, so tiles are cached
-    for better performance but re-downloaded and overwritten in older than
+    for better performance. Tiles are re-downloaded and overwritten if older than
     a week for complying the HTTP Expires value.
     """
     mimetype = "image/png"
@@ -371,7 +371,7 @@ def download_bing_metadata(bing_key: str, imagery_set: str = "Aerial", timeout: 
             r = s.get(metadata_url, timeout=timeout)
             r.raise_for_status()
         except requests.exceptions.HTTPError as err:
-            raise Exception("Failed to download the imagery metadata from Bing Maps (" + r.status_code + " status code)")
+            raise Exception("Failed to download the imagery metadata from Bing Maps (" + str(r.status_code) + " status code)")
     
     try:
         metadata = json.loads(r.content)
@@ -422,6 +422,9 @@ def vts_proxy_bing_aerial(z: int, x: int, y: int) -> FlaskResponse:
       https://docs.microsoft.com/en-us/bingmaps/articles/bing-maps-tile-system
     
     """
+    mimetype = "image/jpeg"
+    if z < 1: # the lowest level of detail is 1, i.e. the tile 0/0/0.jpeg does not exist
+        return tile_not_found(mimetype)
     if not "BingImageryMetadata" in session:
         try:
             metadata = download_bing_metadata(current_app.config["BING_API_KEY"])
@@ -431,7 +434,11 @@ def vts_proxy_bing_aerial(z: int, x: int, y: int) -> FlaskResponse:
     else:
         metadata = session["BingImageryMetadata"]
     image_url, subdomains = metadata
-    r = requests.get(image_url.format(
-        subdomain=get_subdomain(x, y, subdomains),
-        quadkey=tilesystem.tile_to_quadkey((x, y), z)))
-    return Response(r.content, mimetype="image/jpeg")
+    try:
+        r = requests.get(image_url.format(
+            subdomain=get_subdomain(x, y, subdomains),
+            quadkey=tilesystem.tile_to_quadkey((x, y), z)))
+        r.raise_for_status()
+    except requests.exceptions.HTTPError as err:
+        return tile_not_found(mimetype)
+    return Response(r.content, mimetype=mimetype)

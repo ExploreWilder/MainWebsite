@@ -1,0 +1,13 @@
+{
+	"credits" : [ "klokantech", "osm" ],
+	"geodataUrl" : "https://cdn.melown.com/vts/melown2015/features/global/osm-maptiler/{lod}-{x}-{y}.geo?gr=0&r=13&viewspec={viewspec}",
+	"lodRange" : [ 1, 21 ],
+	"metaUrl" : "https://cdn.melown.com/vts/melown2015/features/global/osm-maptiler/{lod}-{x}-{y}.meta?gr=0-4&r=13",
+	"style" : "osm-maptiler.style.json",
+	"tileRange" : 
+	[
+		[ 0, 0 ],
+		[ 0, 0 ]
+	],
+	"type" : "geodata-tiles"
+}

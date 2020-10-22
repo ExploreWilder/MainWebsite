@@ -1,0 +1,59 @@
+{
+    "constants":
+    {
+        "@font": ["noto-serif","noto-mix","noto-cjk"],
+        "@icon-marker": ["icons", 6, 8, 18, 18],
+        "@zbuffer-offset": -0.05,
+        "@waypoint-color": [200,255,0,230]
+    },
+    "bitmaps":
+    {
+        "icons": "/static/images/placemark_circle.png"
+    },
+    "fonts":
+    {
+        "noto-mix": "https://cdn.melown.com/vts/melown2015/fonts/noto-extended/1.0.0/noto.fnt",
+        "noto-cjk": "https://cdn.melown.com/vts/melown2015/fonts/noto-cjk/1.0.0/noto.fnt",
+        "noto-serif": "https://cdn.melown.com/vts/melown2015/fonts/noto-serif/1.0.0/noto-serif.fnt"
+    },
+    "layers" :
+    {
+        "track-line" :
+        {
+            "filter" : ["==", "#type", "line"],
+            "line": true,
+            "line-width" : 6,
+            "line-color": [255,0,0,255],
+            "zbuffer-offset" : ["@zbuffer-offset",0,0],
+            "z-index" : -1
+        },
+        "track-shadow" :
+        {
+            "filter" : ["==", "#type", "line"],
+            "line": true,
+            "line-width" : 20,
+            "line-color": [255,255,255,60],
+            "zbuffer-offset" : ["@zbuffer-offset",0,0],
+            "hover-event" : true,
+            "advanced-hit" : true
+        },
+        "way-points" :
+        {
+            "filter" : ["all", ["==", "#type", "point"], ["==", "#group", "waypoints"]],
+            "icon": true,
+            "icon-source": "@icon-marker",
+            "icon-color": "@waypoint-color",
+            "icon-scale": 2,
+            "icon-origin": "center-center",
+            "zbuffer-offset" : [{"add":["@zbuffer-offset",-0.1]},0,0],
+            "label": true,
+            "label-size": 18,
+            "culling": 90,
+            "label-source": "$title",
+            "label-offset": [0,-20],
+            "label-color": "@waypoint-color",
+            "label-outline": [0.3,0.6,2.2,5],
+            "label-font": "@font"
+        }
+    }
+}

@@ -324,7 +324,11 @@
 		"mario" : true,
 		"rotate" : 0,
 		"controlSearch" : false,
-		"controlSpace" : false
+		"controlSpace" : false,
+		"mapMetricUnits" : true,
+        "mapFeaturesReduceParams": [0.05,0.17,11,1,1000],
+		"mapFeaturesReduceMode": "margin",
+		"mapDefaultFont": "https://cdn.melown.com/libs/vtsjs/fonts/noto-basic/1.0.0/noto.fnt"
 	},
 	"credits" : 
 	{
@@ -337,6 +341,11 @@
 		{
 			"id" : 109,
 			"notice" : "{copy}{Y} Melown Technologies SE"
+		},
+		"klokantech" : 
+		{
+			"id" : 115,
+			"notice" : "[https://www.maptiler.com/copyright/ {copy} MapTiler]"
 		},
 		"osm" : 
 		{
@@ -380,7 +389,8 @@
 		}
 	},
 	"freeLayers" : {
-		"peaklist-org-ultras" : "peaklist.json"
+		"peaklist-org-ultras" : "peaklist.json",
+		"osm-maptiler": "osm-maptiler.json"
 	},
 	"glue" : [],
 	"namedViews" : {},
@@ -577,17 +587,17 @@
 		{
 			"2d" : 
 			{
-				"creditsUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.credits?3",
-				"maskUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.mask?3",
-				"metaUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.2dmeta?3",
-				"orthoUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}-{sub}.ortho?3"
+				"creditsUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.credits?0",
+				"maskUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.mask?0",
+				"metaUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.2dmeta?0",
+				"orthoUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}-{sub}.ortho?0"
 			},
 			"id" : "melown-viewfinder-world",
 			"lodRange" : [ 1, 21 ],
-			"meshUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.bin?3",
-			"metaUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.meta?3",
-			"navUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.nav?3",
-			"textureUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}-{sub}.jpg?3",
+			"meshUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.bin?0",
+			"metaUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.meta?0",
+			"navUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}.nav?0",
+			"textureUrl" : "https://cdn.melown.com/vts/melown2015/terrain/global/viewfinder3/{lod}-{x}-{y}-{sub}.jpg?0",
 			"tileRange" : 
 			[
 				[ 0, 0 ],
@@ -604,11 +614,27 @@
 			"peaklist-org-ultras" : 
 			{
 				"style" : "peaklist.style.json"
+			},
+			"osm-maptiler" : 
+			{
+				"style" : "osm-maptiler.style.json"
 			}
+		},
+		"options": { 
+			"superelevation" : [[0,4000],[1.5,1.3]]
 		},
 		"surfaces" : 
 		{
-			"melown-viewfinder-world" : [ "default-satellite" ]
+			"melown-viewfinder-world" : 
+			[ 
+				{
+					"id" : "default-satellite",
+					"options": {
+						"shaderVarFlatShade" : true,
+						"shaderFilter" : "c.rgb = mix(vec3(1.0),mix(mix(vec3(0.0),c.rgb,flatShadeData.rgb),c.rgb,0.3),0.90);"
+					}
+				}
+			]
 		}
 	}
 }

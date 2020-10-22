@@ -29,7 +29,6 @@ Module
 ^^^^^^
 
 .. js:autoattribute:: extra_height
-.. js:autoattribute:: zbuffer_offset
 .. js:autoattribute:: timeoutHideMapPointerID
 .. js:autoattribute:: timeoutHideMap
 .. js:autoattribute:: partialRedraw

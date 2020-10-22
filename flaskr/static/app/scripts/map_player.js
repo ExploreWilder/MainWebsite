@@ -55,8 +55,22 @@
  */
 
 /*
+ * DETAILS ABOUT THE MAP CONFIG:
+ *
  * Information about the mapConfig.json:
  * https://github.com/melowntech/vts-mapproxy/blob/master/docs/resources.md
+ *
+ * More in-depth mapConfig.json configuration by example:
+ * https://rigel.mlwn.se/mountain-map/
+ * https://github.com/ondra-prochazka/a-3d-mountain-map
+ *
+ * Use the style editor in the VTS Browser Inspector Mode to customize the *.style.json:
+ * Ctrl+Shift+D then Shift+E
+ * https://github.com/melowntech/vts-browser-js/wiki/VTS-Browser-Inspector-Mode
+ *
+ * More documentation about properties:
+ * https://github.com/melowntech/vts-browser-js/wiki/VTS-Geodata-Format#layers-structure
+ * https://vts-geospatial.org/tutorials/geojson.html
  */
 
 var browser, renderer, map;
@@ -69,15 +83,10 @@ var pathDistance = 0;
 
 /**
  * Add extra height to be sure the track is above the terrain.
+ * The Z-buffer in the map_player_config/webtrack.style.json is also tunned.
  * https://github.com/melowntech/vts-browser-js/issues/201
  */
 var extra_height = 45;
-
-/**
- * Z-buffer OpenGL. There is no optimal value, it needs some tuning.
- * https://github.com/melowntech/vts-browser-js/issues/201
- */
-var zbuffer_offset = -0.05;
 
 /**
  * Identifier of the timeout used to hide the pointer on the map
@@ -86,10 +95,11 @@ var zbuffer_offset = -0.05;
 var timeoutHideMapPointerID = null;
 
 /**
- * Timeout in ms after which the tooltip and pointer are hidden
- * after being inactive.
+ * Minimum timeout in ms after which the tooltip and pointer are hidden
+ * after being inactive. The timeout extends when the browser is
+ * lagging.
  */
-var timeoutHideMap = 2000;
+var timeoutHideMap = 1000;
 
 /**
  * True when the pointer and tooltip are not redrew on the map.
@@ -129,8 +139,8 @@ function update_hiker_pos(tooltip_item, data) {
     // view parameter is described in documentation 
     // https://github.com/Melown/vts-browser-js/wiki/VTS-Browser-Map-API#definition-of-view
     browser = vts.browser('map-player', {
-        map: VTS_BROWSER_CONFIG,
-        position : [ 'obj', 16.402434, 48.079867, 'float', 0.00, 9.60, -90.00, 0.00, 2595540.94, 45.00 ]
+        map: VTS_BROWSER_CONFIG + "main_config.json",
+        inspector: true // https://github.com/melowntech/vts-browser-js/wiki/VTS-Browser-Inspector-Mode
     });
 
     //check whether browser is supported
@@ -288,56 +298,9 @@ function onHeightProcessed() {
     
     //center map postion to track gemetery
     centerPositonToGeometry(lineGeometry);
-  
-    //style used for displaying geodata
-    //find out more about styles: https://vts-geospatial.org/tutorials/geojson.html
-    var style = {
-        'constants': {
-            '@icon-marker': ['icons', 6, 8, 18, 18]
-        },
-    
-        'bitmaps': {
-            'icons': '/static/images/placemark_circle.png'
-        },
-
-        "layers" : {
-            "track-line" : {
-                "filter" : ["==", "#type", "line"],
-                "line": true,
-                "line-width" : 6,
-                "line-color": [255,0,0,255],
-                "zbuffer-offset" : [zbuffer_offset,0,0],
-                "z-index" : -1
-            },
-
-            "track-shadow" : {
-                "filter" : ["==", "#type", "line"],
-                "line": true,
-                "line-width" : 20,
-                "line-color": [255,255,255,60],
-                "zbuffer-offset" : [zbuffer_offset,0,0], // same as track-line
-                "hover-event" : true,
-                "advanced-hit" : true
-            },
-
-            "way-points" : {
-                "filter" : ["all", ["==", "#type", "point"], ["==", "#group", "waypoints"]],
-                "icon": true,
-                "icon-source": "@icon-marker",
-                "icon-color": [255,255,0,255], // yellow
-                "icon-scale": 2,
-                "icon-origin": "center-center",
-                "zbuffer-offset" : [zbuffer_offset - 0.1,0,0],
-                "label": true,
-                "label-size": 18,
-                "label-source": "$title",
-                "label-offset": [0,-20],
-            },
-
-        }
-    };
 
     //make free layer
+    var style = VTS_BROWSER_CONFIG + "webtrack.style.json";
     var freeLayer = geodata.makeFreeLayer(style);
 
     // self-attribution.
