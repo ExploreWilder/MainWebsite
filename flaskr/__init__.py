@@ -33,7 +33,7 @@ from .utils import *
 try:
     from .secret_config import Production_config, Config, Testing_config
 except ImportError:
-    from .config import Production_config, Config, Testing_config
+    from .config import Production_config, Config, Testing_config # type: ignore[misc]
 
 from .cache import cache
 

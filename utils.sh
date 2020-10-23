@@ -86,8 +86,7 @@ case ${tool} in
         ;;
     mypy)
         source venv/bin/activate
-        mypy --no-implicit-optional flaskr/
-        cd - >/dev/null
+        mypy --config-file mypy.ini flaskr/
         deactivate
         ;;
     *)

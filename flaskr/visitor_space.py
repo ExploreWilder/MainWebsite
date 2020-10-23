@@ -57,14 +57,16 @@ def subscribe_newsletter(cursor: MySQLCursor, session: Dict, email: str, name: s
     member_data = cursor.fetchone()
     new_subscription = False
 
-    if cursor.rowcount == 0: # new member
+    if cursor.rowcount == 0 or not member_data: # new member
         cursor.execute("""INSERT INTO members(username, email, newsletter_id)
             VALUES ({username}, '{email}', '{newsletter_id}')""".format(
                 username=("'" + name.title() + "'") if name else "NULL",
                 email=email,
                 newsletter_id=generate_newsletter_id()))
         new_subscription = True
-    elif not member_data[0]: # existing member but new in the newsletter list
+    
+    # existing member but new in the newsletter list:
+    elif not member_data[0]: # type: ignore[index]
         cursor.execute("""UPDATE members
             SET newsletter_id='{newsletter_id}'
             WHERE email='{email}'""".format(
@@ -385,7 +387,7 @@ def send_mail() -> FlaskResponse:
             "subject-is-ebook-or-hard-copy-enquiry": "eBook or Hard Copy Enquiry",
             "subject-is-technical-feedback-or-bug-report": "Technical Feedback or Bug Report"}
         
-        selected_subjects = [dic.get(n) for n in request.form.getlist("subjects[]")]
+        selected_subjects = [dic.get(n, "") for n in request.form.getlist("subjects[]")]
         li = "</li><li>".join(selected_subjects)
         subject = "<p>Subjects:</p><ul><li>" + li + "</li></ul>"
     else:
@@ -458,9 +460,9 @@ def send_mail() -> FlaskResponse:
         name=printable_name,
         email=email,
         ip=request.remote_addr,
-        platform=request.user_agent.platform,
-        browser=request.user_agent.browser,
-        version=request.user_agent.version,
+        platform=request.user_agent.platform if hasattr(request.user_agent, "platform") else "?", # type: ignore[attr-defined]
+        browser=request.user_agent.browser if hasattr(request.user_agent, "browser") else "?", # type: ignore[attr-defined]
+        version=request.user_agent.version if hasattr(request.user_agent, "version") else "?", # type: ignore[attr-defined]
         browser_time=escape(request.form["browser_time"]),
         win_res=escape(request.form["win_res"]),
         subscription="Yes" if subscribe_me else "No",
@@ -472,6 +474,8 @@ def send_mail() -> FlaskResponse:
             open(current_app.config["DKIM_PATH_PRIVATE_KEY"]).read(),
             current_app.config["DKIM_SELECTOR"])
         secure_email.send(mailto, "Contact Form", "", content)
+    else:
+        print(content)
     session["last_message"] = int(time())
 
     if subscribe_me:
@@ -968,7 +972,7 @@ def share_emotion_book() -> FlaskResponse:
 
     # manage visitor identifier
     raw_cookie = request.cookies.get("visitor_data")
-    def bake() -> Dict:
+    def bake() -> JSONSecureCookie:
         # MySQL INT is 32-bit signed. Keep positive, so the 32nd bit is 0
         return JSONSecureCookie({"id": secrets.randbits(31)}, current_app.config["COOKIE_SECRET_KEY"])
     if not raw_cookie: # create a new visitor identifier

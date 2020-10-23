@@ -165,7 +165,7 @@ def is_same_site() -> bool:
     """
     if "Sec-Fetch-Site" in request.headers:
         return request.headers.get("Sec-Fetch-Site") == "same-origin"
-    return request.referrer != None and request.url_root in request.referrer
+    return request.referrer != None and request.url_root in str(request.referrer)
 
 def is_admin() -> bool:
     """
@@ -373,9 +373,9 @@ def get_access_level_from_id(id: int, cursor: MySQLCursor) -> int:
         FROM members
         WHERE member_id={id}""".format(id=str(id)))
     data = cursor.fetchone()
-    if cursor.rowcount == 0:
+    if cursor.rowcount == 0 or not data:
         raise ValueError("Invalid member identifier!")
-    return data[0]
+    return data[0] # type: ignore[index]
 
 def get_image_size(path: str) -> Tuple[int, int]:
     """
@@ -514,7 +514,7 @@ def total_subscribers(cursor: MySQLCursor) -> int:
     """ Count the number of subscribers and returns a positive integer or 0. """
     cursor.execute("SELECT COUNT(newsletter_id) FROM members WHERE email IS NOT NULL")
     data = cursor.fetchone()
-    return data[0] if cursor.rowcount else 0
+    return data[0] if cursor.rowcount and data else 0 # type: ignore[index]
 
 def same_site(view: Any) -> Any:
     """ View decorator redirecting external requests to the 404-error page. """

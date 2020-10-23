@@ -34,97 +34,97 @@ class Config(object):
     """ Configuration in debug/development mode. """
 
     #: Interactive debugger for unhandled exceptions and auto-reload on code changes.
-    DEBUG=True
+    DEBUG: bool = True
     #: True to warn the user about a maintenance.
-    MAINTENANCE=True
+    MAINTENANCE: bool = True
     #: Number of characters/digits in the CAPTCHA.
-    CAPTCHA_LENGTH=3
+    CAPTCHA_LENGTH: int = 3
     #: List of characters and digits without the similar ones 0O, LV, 1I, etc.
-    CAPTCHA_CHARACTERS_OKAY="ABCDEFGHIJKLMNOPQRSTUVWXYZ23456789"
+    CAPTCHA_CHARACTERS_OKAY: str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ23456789"
     #: Full path where the TTF font is located.
-    CAPTCHA_TTF_FONT=absolute_path("static/web_fonts/UNDISCLOSED/UNDISCLOSED.ttf")
+    CAPTCHA_TTF_FONT: str = absolute_path("static/web_fonts/UNDISCLOSED/UNDISCLOSED.ttf")
     #: User name to access the MySQL database.
-    MYSQL_DATABASE_USER="UNDISCLOSED"
+    MYSQL_DATABASE_USER: str = "UNDISCLOSED"
     #: Password of the user.
-    MYSQL_DATABASE_PASSWORD="UNDISCLOSED"
+    MYSQL_DATABASE_PASSWORD: str = r"UNDISCLOSED"
     #: Name of the MySQL database.
-    MYSQL_DATABASE_DB="UNDISCLOSED"
+    MYSQL_DATABASE_DB: str = "UNDISCLOSED"
     #: Set to *localhost* if the database is in the same server than the application.
-    MYSQL_DATABASE_HOST="UNDISCLOSED"
+    MYSQL_DATABASE_HOST: str = "UNDISCLOSED"
     #: Browsers will not allow JavaScript access to cookies marked as *HTTP only* for security.
-    SESSION_COOKIE_HTTPONLY=True
+    SESSION_COOKIE_HTTPONLY: bool = True
     #: Browsers will not allow JavaScript access to the remember me cookie from Flask-Login.
-    REMEMBER_COOKIE_HTTPONLY=True
+    REMEMBER_COOKIE_HTTPONLY: bool = True
     #: Browsers will allow JavaScript access to the CSRF cookie from Flask-SeaSurf.
-    CSRF_COOKIE_HTTPONLY=True
+    CSRF_COOKIE_HTTPONLY: bool = True
     #: Restrict how cookies are sent with requests from external sites.
-    SESSION_COOKIE_SAMESITE="Strict"
+    SESSION_COOKIE_SAMESITE: str = "Strict"
     #: Restrict how the CSRF cookie is sent with requests from external sites.
-    CSRF_COOKIE_SAMESITE="Strict"
+    CSRF_COOKIE_SAMESITE: str = "Strict"
     #: Cookies secret key.
-    COOKIE_SECRET_KEY=b"UNDISCLOSED"
+    COOKIE_SECRET_KEY: bytes = rb"UNDISCLOSED"
     #: A secret key that will be used for securely signing the session cookie.
-    SECRET_KEY=b"UNDISCLOSED"
+    SECRET_KEY: bytes = rb"UNDISCLOSED"
     #: Salt used to hash the captcha code.
-    CAPTCHA_SALT=b"UNDISCLOSED"
+    CAPTCHA_SALT: bytes = rb"UNDISCLOSED"
     #: Directory where CAPTCHAs are saved.
-    CAPTCHA_FOLDER=absolute_path("captchas")
+    CAPTCHA_FOLDER: str = absolute_path("captchas")
     #: Salt used to hash some user exposed data.
-    RANDOM_SALT=b"UNDISCLOSED"
+    RANDOM_SALT: bytes = rb"UNDISCLOSED"
     #: Path where all the photographies are located.
-    GALLERY_FOLDER=absolute_path("UNDISCLOSED")
+    GALLERY_FOLDER: str = absolute_path("UNDISCLOSED")
     #: Path where all the books are located.
-    SHELF_FOLDER=absolute_path("UNDISCLOSED")
+    SHELF_FOLDER: str = absolute_path("UNDISCLOSED")
     #: Path where all "deleted" files are moved.
-    WASTEBASKET_FOLDER=absolute_path("UNDISCLOSED")
+    WASTEBASKET_FOLDER: str = absolute_path("UNDISCLOSED")
     #: Email user name.
-    EMAIL_USER="UNDISCLOSED"
+    EMAIL_USER: str = "UNDISCLOSED"
     #: Email domain name.
-    EMAIL_DOMAIN="UNDISCLOSED.com"
+    EMAIL_DOMAIN: str = "UNDISCLOSED.com"
     #: DKIM selector.
-    DKIM_SELECTOR="default"
+    DKIM_SELECTOR: str = "UNDISCLOSED"
     #: Path to the DKIM private key.
-    DKIM_PATH_PRIVATE_KEY=absolute_path("UNDISCLOSED")
+    DKIM_PATH_PRIVATE_KEY: str = absolute_path("UNDISCLOSED")
     #: Brand name.
-    BRAND_NAME="ExploreWilder.com"
+    BRAND_NAME: str = "UNDISCLOSED.com"
     #: Legal name (for the copyright).
-    LEGAL_NAME="Clement"
+    LEGAL_NAME: str = "UNDISCLOSED"
     #: No cache to develop and test with instant changes.
-    CACHE_TYPE="null"
+    CACHE_TYPE: str = "null"
     #: Required elapsed time before the user can re-submit.
-    REQUIRED_TIME_GAP=15
+    REQUIRED_TIME_GAP: int = 15
     #: Size (width and height) in pixel of the thumbnails.
-    THUMBNAIL_SIZE=300
+    THUMBNAIL_SIZE: int = 300
     #: JPEG quality compression in percent of the resized photography.
-    PHOTO_QUALITY=95
+    PHOTO_QUALITY: int = 95
     #: Maximum width/height in pixel of the big photo displayed in the interface.
-    PHOTO_L_MAX_SIZE=(2560, 1440)
+    PHOTO_L_MAX_SIZE: Tuple[int, int] = (2560, 1440)
     #: Maximum width/height in pixel of the medium photo displayed in the interface.
-    PHOTO_M_MAX_SIZE=(1366, 768)
+    PHOTO_M_MAX_SIZE: Tuple[int, int] = (1366, 768)
     #: Length of the random file name for thumbnails, '.jpg' excluded.
-    THUMBNAIL_FILENAME_SIZE=20
+    THUMBNAIL_FILENAME_SIZE: int = 20
     #: Length of the random file name for medium photos, '.jpg' excluded.
-    PHOTO_M_FILENAME_SIZE=25
+    PHOTO_M_FILENAME_SIZE: int = 25
     #: Length of the random file name for big photos, '.jpg' excluded.
-    PHOTO_L_FILENAME_SIZE=30
+    PHOTO_L_FILENAME_SIZE: int = 30
     #: Required access level to be able to read the pictures title and description.
-    ACCESS_LEVEL_READ_INFO=64
+    ACCESS_LEVEL_READ_INFO: int = 64
     #: Required access level to be able to download a .gpx file.
-    ACCESS_LEVEL_DOWNLOAD_GPX=10
+    ACCESS_LEVEL_DOWNLOAD_GPX: int = 10
     #: List of emotions accordingly to the buttons next to the big picture.
-    EMOTIONS=["love", "like", "neutral", "dislike", "hate"]
+    EMOTIONS: List[str] = ["love", "like", "neutral", "dislike", "hate"]
     #: Crowdfunding currency of the amount defined in the webhook table.
-    CROWDFUNDING_CURRENCY="€"
+    CROWDFUNDING_CURRENCY: str = "€"
     #: Number of photos per page in the admin section.
-    DEFAULT_PHOTOS_PER_PAGE=15
+    DEFAULT_PHOTOS_PER_PAGE: int = 15
     #: Number of books per page in the admin section.
-    DEFAULT_BOOKS_PER_PAGE=15
+    DEFAULT_BOOKS_PER_PAGE: int = 15
     #: Do NOT choose an option multiple of an other one, to drag & drop from one page to an other one.
-    OPTIONS_PHOTOS_PER_PAGE=[DEFAULT_PHOTOS_PER_PAGE, 70, 200]
+    OPTIONS_PHOTOS_PER_PAGE: List[int] = [DEFAULT_PHOTOS_PER_PAGE, 70, 200]
     #: Do NOT choose an option multiple of an other one, to drag & drop from one page to an other one.
-    OPTIONS_BOOKS_PER_PAGE=[DEFAULT_BOOKS_PER_PAGE, 70, 200]
+    OPTIONS_BOOKS_PER_PAGE: List[int] = [DEFAULT_BOOKS_PER_PAGE, 70, 200]
     #: Twitter account details
-    TWITTER_ACCOUNT={
+    TWITTER_ACCOUNT: Dict[str, Any] = {
         "name": "UNDISCLOSED", # the name displayed in the profile
         "screen_name": "UNDISCLOSED", # the name in the URL
         "user_access_token": "UNDISCLOSED",
@@ -139,7 +139,7 @@ class Config(object):
         "connection_timeout": 5, # seconds to wait before giving up the timeline download
     }
     #: Mastodon account details
-    MASTODON_ACCOUNT={
+    MASTODON_ACCOUNT: Dict[str, Any]={
         "name": "UNDISCLOSED", # the name displayed in the profile
         "screen_name": "UNDISCLOSED", # the name in the URL
         "community_url": "https://UNDISCLOSED/",
@@ -148,32 +148,37 @@ class Config(object):
         "connection_timeout": 5, # seconds to wait before giving up the timeline download
     }
     #: More Markdown extensions: https://python-markdown.github.io/extensions/
-    MD_EXT=verbose_md_ext(["admonition", "footnotes", "attr_list", "abbr", "toc", "def_list", "tables"]) + [
+    MD_EXT: List[Any] = verbose_md_ext(["admonition", "footnotes", "attr_list", "abbr", "toc", "def_list", "tables"]) + [
         AmazonAffiliateLinksExtension(),
         TweetableExtension(twitter_username=TWITTER_ACCOUNT["screen_name"], brand_name=BRAND_NAME)]
     #: Additional extensions for processing the stories.
-    BOOK_MD_EXT=MD_EXT + ["mdx_sections",]
+    BOOK_MD_EXT: List[Any] = MD_EXT + ["mdx_sections",]
     #: Publicly available country-specific layers accessible by the map viewer app.
-    MAP_LAYERS=["NZ", "FR", "CA", "NO", "CH"]
+    MAP_LAYERS: List[str] = ["NZ", "FR", "CA", "NO", "CH"]
     #: LDS API key.
-    LDS_API_KEY="UNDISCLOSED"
+    LDS_API_KEY: str = "UNDISCLOSED"
     #: Thunderforest API key.
-    THUNDERFOREST_API_KEY="UNDISCLOSED"
+    THUNDERFOREST_API_KEY: str = "UNDISCLOSED"
     #: Microsoft Bing key.
-    BING_API_KEY="UNDISCLOSED"
+    BING_API_KEY: str = "UNDISCLOSED"
     #: IGN app key and credentials.
-    IGN={"username": "UNDISCLOSED", "password": "UNDISCLOSED", "app": "UNDISCLOSED"}
-    #: Mapbox public token.
-    MAPBOX_PUB_KEY="pk.UNDISCLOSED.UNDISCLOSED"
+    IGN: Dict[str, str] = {
+        "username": "UNDISCLOSED",
+        "password": r"UNDISCLOSED",
+        "app": "UNDISCLOSED"}
+    #: Mapbox public token for the satellite tiles.
+    MAPBOX_PUB_KEY: str = "pk.UNDISCLOSED.UNDISCLOSED"
     #: NASA Earthdata credentials: https://urs.earthdata.nasa.gov/home
-    NASA_EARTHDATA={"username": "UNDISCLOSED", "password": "UNDISCLOSED"}
+    NASA_EARTHDATA: Dict[str, str] = {
+        "username": "UNDISCLOSED",
+        "password": r"UNDISCLOSED"}
     #: Social networks (excluding donation platforms).
-    SOCIAL_NETWORKS=[
+    SOCIAL_NETWORKS: List[Tuple[str, str]] = [
         ("Mastodon", MASTODON_ACCOUNT["community_url"] + "@" + MASTODON_ACCOUNT["screen_name"]),
         ("Twitter", "https://twitter.com/" + TWITTER_ACCOUNT["screen_name"]),
         ("Pixelfed", "https://pixelfed.social/UNDISCLOSED")]
     #: Mapbox Static Images Configuration (kind of): https://docs.mapbox.com/api/maps/#static-images
-    MAPBOX_STATIC_IMAGES={
+    MAPBOX_STATIC_IMAGES: Dict[str, Any] = {
         "username": "UNDISCLOSED",
         "style_id": "UNDISCLOSED",
         "width": 800,
@@ -184,7 +189,7 @@ class Config(object):
         "points": 150
     }
     #: Content Security Policy Configuration.
-    CSP_CONFIG={
+    CSP_CONFIG: Dict[str, Union[str, List[str]]] = {
         "default-src": "'none'",
         "base-uri": "'none'",
         "script-src": [
@@ -229,44 +234,44 @@ class Config(object):
         "child-src": "blob:", # Mapbox GL JS
     }
     #: A list of CSP sections to include a per-request nonce value in.
-    CSP_NONCE_IN=["script-src"]
+    CSP_NONCE_IN: List[str] = ["script-src"]
 
 class Testing_config(object):
     """ Configuration to append. For remote/local testing purposes only. """
 
     #: Testing.
-    TESTING=True
+    TESTING: bool = True
     #: Use a different database because tests drop all tables.
-    MYSQL_DATABASE_DB="UNDISCLOSED"
+    MYSQL_DATABASE_DB: str = "UNDISCLOSED"
     #: Required elapsed time before the user can re-submit.
-    REQUIRED_TIME_GAP=1
+    REQUIRED_TIME_GAP: int = 1
 
 class Production_config(Config):
     """ Configuration in production mode (online) based on the debug-mode config. """
 
     #: Do not enable debug mode when deploying in production.
-    DEBUG=False
+    DEBUG: bool = False
     #: Not testing.
-    TESTING=False
+    TESTING: bool = False
     #: Git SHA1 commit as Sentry release ID.
-    GIT_COMMIT="UNDISCLOSED"
+    GIT_COMMIT: str = "UNDISCLOSED"
     #: Sentry Data Source Name found from the Sentry web app.
-    SENTRY_DSN="https://UNDISCLOSED@oUNDISCLOSED.ingest.sentry.io/UNDISCLOSED"
+    SENTRY_DSN: str = "https://UNDISCLOSED@UNDISCLOSED.ingest.sentry.io/UNDISCLOSED"
     #: Browsers will only send cookies with requests over HTTPS if the cookie is marked *secure*.
-    SESSION_COOKIE_SECURE=True
+    SESSION_COOKIE_SECURE: bool = True
     #: Browsers will only send the remember me cookie with requests over HTTPS.
-    REMEMBER_COOKIE_SECURE=True
+    REMEMBER_COOKIE_SECURE: bool = True
     #: Browsers will only send the CSRF cookie with requests over HTTPS.
-    CSRF_COOKIE_SECURE=True
+    CSRF_COOKIE_SECURE: bool = True
     #: User name to access the MySQL database.
-    MYSQL_DATABASE_USER="UNDISCLOSED"
+    MYSQL_DATABASE_USER: str = "UNDISCLOSED"
     #: Password of the user.
-    MYSQL_DATABASE_PASSWORD="UNDISCLOSED"
+    MYSQL_DATABASE_PASSWORD: str = r"UNDISCLOSED"
     #: Name of the MySQL database.
-    MYSQL_DATABASE_DB="UNDISCLOSED"
+    MYSQL_DATABASE_DB: str = "UNDISCLOSED"
     #: Type of caching: https://pythonhosted.org/Flask-Caching/
-    CACHE_TYPE="filesystem"
+    CACHE_TYPE: str = "filesystem"
     #: Directory to store cache. Make sure that nobody stores files there.
-    CACHE_DIR=absolute_path("UNDISCLOSED")
+    CACHE_DIR: str = absolute_path("UNDISCLOSED")
     #: The default timeout that is used if no timeout is specified. Cache for 1 day.
-    CACHE_DEFAULT_TIMEOUT=60*60*24
+    CACHE_DEFAULT_TIMEOUT: int = 60*60*24

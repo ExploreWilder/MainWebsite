@@ -191,7 +191,7 @@ def vts_proxy_ign(layer: str, z: int, x: int, y: int) -> FlaskResponse:
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)
 
-def get_subdomain(x: int, y:int, subdomains: Union[str, Tuple[str]] = "abc") -> str:
+def get_subdomain(x: int, y:int, subdomains: Union[str, Tuple[str], List[str]] = "abc") -> str:
     """
     Returns a subdomain based on the position.
     Subdomains help supporting more simultaneous tile requests.
@@ -349,7 +349,7 @@ def download_bing_metadata(bing_key: str, imagery_set: str = "Aerial", timeout: 
     * Get Imagery Metadata (Microsoft):
       https://docs.microsoft.com/en-us/bingmaps/rest-services/imagery/get-imagery-metadata
     
-    * The request configuration (timeout and Keep-Alive) is based on the VTS Mapproxy / TMS Bing:
+    * The request timeout is based on the official VTS Mapproxy:
       https://github.com/melowntech/vts-mapproxy/blob/master/mapproxy/src/mapproxy/generator/tms-bing.cpp#L105
     
     * Licensing Options (Microsoft):
@@ -366,7 +366,6 @@ def download_bing_metadata(bing_key: str, imagery_set: str = "Aerial", timeout: 
     metadata_url = "https://dev.virtualearth.net/REST/v1/Imagery/Metadata/" + imagery_set + "?key=" + bing_key
 
     with requests.Session() as s:
-        s.keep_alive = False # no reuse
         try:
             r = s.get(metadata_url, timeout=timeout)
             r.raise_for_status()

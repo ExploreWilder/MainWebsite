@@ -157,5 +157,5 @@ class BookProcessor:
         ref = match_obj.group(1)
         footnote_content = re.search(re.compile(r'id="fn:' + re.escape(ref) + r'">\n<p>(.+)&#160;'), self.html)
         # convert HTML to text by removing tags
-        footnote_content = re.sub(re.compile(r'<.*?>'), '', footnote_content.group(1))
+        footnote_content = re.sub(re.compile(r'<.*?>'), '', footnote_content.group(1)) # type: ignore[union-attr]
         return 'href="#fn:%(ref)s" data-toggle="tooltip" title="%(title)s"' %{'ref': ref, 'title': footnote_content}
