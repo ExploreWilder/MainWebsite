@@ -30,6 +30,7 @@
 
 from .utils import *
 
+
 class Captcha:
     """ Create, check and kill a CAPTCHA. """
 
@@ -63,7 +64,9 @@ class Captcha:
             return True
         if not "captcha_passcode" in session:
             return False
-        hashed_input = werkzeug.security.pbkdf2_bin(passcode.upper(), self.config["CAPTCHA_SALT"])[:9]
+        hashed_input = werkzeug.security.pbkdf2_bin(
+            passcode.upper(), self.config["CAPTCHA_SALT"]
+        )[:9]
         result = hashed_input == session["captcha_passcode"]
         session.pop("captcha_passcode", None)
         self.passcode = ""
@@ -75,17 +78,21 @@ class Captcha:
         The CAPTCHA font is hard to read by a machine, and easy by a human.
         If the CAPTCHA font file cannot be read, a 'better than nothing' default font is loaded.
         """
-        self.captcha = Image.new("RGB", (self.config["CAPTCHA_LENGTH"] * 37, 35), "white")
+        self.captcha = Image.new(
+            "RGB", (self.config["CAPTCHA_LENGTH"] * 37, 35), "white"
+        )
         try:
             font = ImageFont.truetype(self.config["CAPTCHA_TTF_FONT"], 32)
-        except OSError: # font file not found or could not be read
+        except OSError:  # font file not found or could not be read
             font = ImageFont.load_default()
         draw = ImageDraw.Draw(self.captcha)
         self.generate_passcode()
         offset = 0
         border_left = 10
         for c in self.passcode:
-            draw.text((border_left + 35 * offset, 2), c, self.random_colour(), font=font)
+            draw.text(
+                (border_left + 35 * offset, 2), c, self.random_colour(), font=font
+            )
             offset += 1
         draw = ImageDraw.Draw(self.captcha)
 
@@ -98,8 +105,13 @@ class Captcha:
         The captcha works like a candom anyway, single use/try.
         Do NOT call that function outside the class.
         """
-        self.passcode = "".join(secrets.choice(self.config["CAPTCHA_CHARACTERS_OKAY"]) for _ in range(self.config["CAPTCHA_LENGTH"]))
-        session["captcha_passcode"] = werkzeug.security.pbkdf2_bin(self.passcode, self.config["CAPTCHA_SALT"])[:9]
+        self.passcode = "".join(
+            secrets.choice(self.config["CAPTCHA_CHARACTERS_OKAY"])
+            for _ in range(self.config["CAPTCHA_LENGTH"])
+        )
+        session["captcha_passcode"] = werkzeug.security.pbkdf2_bin(
+            self.passcode, self.config["CAPTCHA_SALT"]
+        )[:9]
 
     def random_colour(self) -> Tuple[int, int, int]:
         """
@@ -108,13 +120,17 @@ class Captcha:
         Returns:
             tuple of 3 ints in the [0, 255] range.
         """
-        sigma = 255 / 6 # 99.7% of samples within [-255, 255]
-        average = 100 # Average colour = (red + green + blue) / 3 or less in a white background
+        sigma = 255 / 6  # 99.7% of samples within [-255, 255]
+        average = 100  # Average colour = (red + green + blue) / 3 or less in a white background
+
         def random_element():
-            return min(abs(random.gauss(average, sigma)), 255) # all samples within [0, 255]
+            return min(
+                abs(random.gauss(average, sigma)), 255
+            )  # all samples within [0, 255]
+
         red = random_element()
         green = random_element()
-        blue = min(max(3 * average - red - green, 0), 255) # force to [0, 255]
+        blue = min(max(3 * average - red - green, 0), 255)  # force to [0, 255]
         return (int(red), int(green), int(blue))
 
     def to_file(self) -> FlaskResponse:
@@ -123,16 +139,18 @@ class Captcha:
 
         Returns:
             PNG file.
-        
+
         Raises:
             404: If the image cannot be saved.
         """
-        self.filepath = os.path.join(self.config["CAPTCHA_FOLDER"], random_filename(64, "png"))
+        self.filepath = os.path.join(
+            self.config["CAPTCHA_FOLDER"], random_filename(64, "png")
+        )
         try:
             self.captcha.save(self.filepath, "PNG")
-        except: # directory 
+        except:  # directory
             abort(404)
-        return send_file(self.filepath, mimetype="image/png") # copy file into RAM
+        return send_file(self.filepath, mimetype="image/png")  # copy file into RAM
 
     def __del__(self) -> None:
         """ Remove the created file if existing. """

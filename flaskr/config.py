@@ -30,6 +30,7 @@
 
 from .utils import *
 
+
 class Config(object):
     """ Configuration in debug/development mode. """
 
@@ -42,7 +43,9 @@ class Config(object):
     #: List of characters and digits without the similar ones 0O, LV, 1I, etc.
     CAPTCHA_CHARACTERS_OKAY: str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ23456789"
     #: Full path where the TTF font is located.
-    CAPTCHA_TTF_FONT: str = absolute_path("static/web_fonts/UNDISCLOSED/UNDISCLOSED.ttf")
+    CAPTCHA_TTF_FONT: str = absolute_path(
+        "static/web_fonts/UNDISCLOSED/UNDISCLOSED.ttf"
+    )
     #: User name to access the MySQL database.
     MYSQL_DATABASE_USER: str = "UNDISCLOSED"
     #: Password of the user.
@@ -125,8 +128,8 @@ class Config(object):
     OPTIONS_BOOKS_PER_PAGE: List[int] = [DEFAULT_BOOKS_PER_PAGE, 70, 200]
     #: Twitter account details
     TWITTER_ACCOUNT: Dict[str, Any] = {
-        "name": "UNDISCLOSED", # the name displayed in the profile
-        "screen_name": "UNDISCLOSED", # the name in the URL
+        "name": "UNDISCLOSED",  # the name displayed in the profile
+        "screen_name": "UNDISCLOSED",  # the name in the URL
         "user_access_token": "UNDISCLOSED",
         "user_access_token_secret": "UNDISCLOSED",
         "app_name": "UNDISCLOSED",
@@ -135,24 +138,31 @@ class Config(object):
         "api_secret_key": "UNDISCLOSED",
         "bearer_token": "UNDISCLOSED",
         "data_store": absolute_path("UNDISCLOSED"),
-        "max_refresh_period": 60*60, # seconds
-        "connection_timeout": 5, # seconds to wait before giving up the timeline download
+        "max_refresh_period": 60 * 60,  # seconds
+        "connection_timeout": 5,  # seconds to wait before giving up the timeline download
     }
     #: Mastodon account details
-    MASTODON_ACCOUNT: Dict[str, Any]={
-        "name": "UNDISCLOSED", # the name displayed in the profile
-        "screen_name": "UNDISCLOSED", # the name in the URL
+    MASTODON_ACCOUNT: Dict[str, Any] = {
+        "name": "UNDISCLOSED",  # the name displayed in the profile
+        "screen_name": "UNDISCLOSED",  # the name in the URL
         "community_url": "https://UNDISCLOSED/",
         "data_store": absolute_path("UNDISCLOSED"),
-        "max_refresh_period": 60*60, # seconds
-        "connection_timeout": 5, # seconds to wait before giving up the timeline download
+        "max_refresh_period": 60 * 60,  # seconds
+        "connection_timeout": 5,  # seconds to wait before giving up the timeline download
     }
     #: More Markdown extensions: https://python-markdown.github.io/extensions/
-    MD_EXT: List[Any] = verbose_md_ext(["admonition", "footnotes", "attr_list", "abbr", "toc", "def_list", "tables"]) + [
+    MD_EXT: List[Any] = verbose_md_ext(
+        ["admonition", "footnotes", "attr_list", "abbr", "toc", "def_list", "tables"]
+    ) + [
         AmazonAffiliateLinksExtension(),
-        TweetableExtension(twitter_username=TWITTER_ACCOUNT["screen_name"], brand_name=BRAND_NAME)]
+        TweetableExtension(
+            twitter_username=TWITTER_ACCOUNT["screen_name"], brand_name=BRAND_NAME
+        ),
+    ]
     #: Additional extensions for processing the stories.
-    BOOK_MD_EXT: List[Any] = MD_EXT + ["mdx_sections",]
+    BOOK_MD_EXT: List[Any] = MD_EXT + [
+        "mdx_sections",
+    ]
     #: Publicly available country-specific layers accessible by the map viewer app.
     MAP_LAYERS: List[str] = ["NZ", "FR", "CA", "NO", "CH"]
     #: LDS API key.
@@ -165,18 +175,24 @@ class Config(object):
     IGN: Dict[str, str] = {
         "username": "UNDISCLOSED",
         "password": r"UNDISCLOSED",
-        "app": "UNDISCLOSED"}
+        "app": "UNDISCLOSED",
+    }
     #: Mapbox public token for the satellite tiles.
     MAPBOX_PUB_KEY: str = "pk.UNDISCLOSED.UNDISCLOSED"
     #: NASA Earthdata credentials: https://urs.earthdata.nasa.gov/home
     NASA_EARTHDATA: Dict[str, str] = {
         "username": "UNDISCLOSED",
-        "password": r"UNDISCLOSED"}
+        "password": r"UNDISCLOSED",
+    }
     #: Social networks (excluding donation platforms).
     SOCIAL_NETWORKS: List[Tuple[str, str]] = [
-        ("Mastodon", MASTODON_ACCOUNT["community_url"] + "@" + MASTODON_ACCOUNT["screen_name"]),
+        (
+            "Mastodon",
+            MASTODON_ACCOUNT["community_url"] + "@" + MASTODON_ACCOUNT["screen_name"],
+        ),
         ("Twitter", "https://twitter.com/" + TWITTER_ACCOUNT["screen_name"]),
-        ("Pixelfed", "https://pixelfed.social/UNDISCLOSED")]
+        ("Pixelfed", "https://pixelfed.social/UNDISCLOSED"),
+    ]
     #: Mapbox Static Images Configuration (kind of): https://docs.mapbox.com/api/maps/#static-images
     MAPBOX_STATIC_IMAGES: Dict[str, Any] = {
         "username": "UNDISCLOSED",
@@ -186,55 +202,53 @@ class Config(object):
         "@2x": True,
         "access_token": "pk.UNDISCLOSED.UNDISCLOSED",
         "logo": False,
-        "points": 150
+        "points": 150,
     }
     #: Content Security Policy Configuration.
     CSP_CONFIG: Dict[str, Union[str, List[str]]] = {
         "default-src": "'none'",
         "base-uri": "'none'",
         "script-src": [
-            "'unsafe-inline'", # ignored
-            "https:", # ignored
-            "'strict-dynamic'"
+            "'unsafe-inline'",  # ignored
+            "https:",  # ignored
+            "'strict-dynamic'",
         ],
         "connect-src": [
             "'self'",
-            "https://*.sentry.io", # for error reporting and perf monitoring (tracing)
-            "https://*.tiles.mapbox.com", # Mapbox GL JS
-            "https://api.mapbox.com", # Mapbox GL JS + 3D map viewer
-            "https://cdn.melown.com", # 3D map viewer
-            "https://*.geo.admin.ch", # 3D map viewer
-            "https://opencache.statkart.no", # 3D map viewer
-            "https://tiles.maps.eox.at", # 3D map viewer
-            "https://*.tile.openstreetmap.org", # 3D map viewer
+            "https://*.sentry.io",  # for error reporting and perf monitoring (tracing)
+            "https://*.tiles.mapbox.com",  # Mapbox GL JS
+            "https://api.mapbox.com",  # Mapbox GL JS + 3D map viewer
+            "https://cdn.melown.com",  # 3D map viewer
+            "https://*.geo.admin.ch",  # 3D map viewer
+            "https://opencache.statkart.no",  # 3D map viewer
+            "https://tiles.maps.eox.at",  # 3D map viewer
+            "https://*.tile.openstreetmap.org",  # 3D map viewer
             # specify all subdomains since fastly is a shared domain:
-            "https://stamen-tiles-a.a.ssl.fastly.net", # 3D map viewer
-            "https://stamen-tiles-b.a.ssl.fastly.net", # 3D map viewer
-            "https://stamen-tiles-c.a.ssl.fastly.net", # 3D map viewer
-            "https://stamen-tiles-d.a.ssl.fastly.net" # 3D map viewer
+            "https://stamen-tiles-a.a.ssl.fastly.net",  # 3D map viewer
+            "https://stamen-tiles-b.a.ssl.fastly.net",  # 3D map viewer
+            "https://stamen-tiles-c.a.ssl.fastly.net",  # 3D map viewer
+            "https://stamen-tiles-d.a.ssl.fastly.net",  # 3D map viewer
         ],
         "img-src": [
             "'self'",
             "data:",
-            "blob:", # Mapbox GL JS
-            "https://api.mapbox.com", # 2D map viewer
-            "https://*.geo.admin.ch", # 2D map viewer
-            "https://opencache.statkart.no", # 2D map viewer
-            "https://maps.geogratis.gc.ca", # 2D map viewer
-            "https://*.tile.openstreetmap.org", # 2D map viewer
-            "https://tiles.maps.eox.at" # 2D map viewer
+            "blob:",  # Mapbox GL JS
+            "https://api.mapbox.com",  # 2D map viewer
+            "https://*.geo.admin.ch",  # 2D map viewer
+            "https://opencache.statkart.no",  # 2D map viewer
+            "https://maps.geogratis.gc.ca",  # 2D map viewer
+            "https://*.tile.openstreetmap.org",  # 2D map viewer
+            "https://tiles.maps.eox.at",  # 2D map viewer
         ],
-        "style-src": [
-            "'self'",
-            "'unsafe-inline'"
-        ],
+        "style-src": ["'self'", "'unsafe-inline'"],
         "font-src": "'self'",
         "media-src": "'self'",
-        "worker-src": "blob:", # Mapbox GL JS
-        "child-src": "blob:", # Mapbox GL JS
+        "worker-src": "blob:",  # Mapbox GL JS
+        "child-src": "blob:",  # Mapbox GL JS
     }
     #: A list of CSP sections to include a per-request nonce value in.
     CSP_NONCE_IN: List[str] = ["script-src"]
+
 
 class Testing_config(object):
     """ Configuration to append. For remote/local testing purposes only. """
@@ -245,6 +259,7 @@ class Testing_config(object):
     MYSQL_DATABASE_DB: str = "UNDISCLOSED"
     #: Required elapsed time before the user can re-submit.
     REQUIRED_TIME_GAP: int = 1
+
 
 class Production_config(Config):
     """ Configuration in production mode (online) based on the debug-mode config. """
@@ -274,4 +289,4 @@ class Production_config(Config):
     #: Directory to store cache. Make sure that nobody stores files there.
     CACHE_DIR: str = absolute_path("UNDISCLOSED")
     #: The default timeout that is used if no timeout is specified. Cache for 1 day.
-    CACHE_DEFAULT_TIMEOUT: int = 60*60*24
+    CACHE_DEFAULT_TIMEOUT: int = 60 * 60 * 24

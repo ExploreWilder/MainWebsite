@@ -38,7 +38,10 @@ from .webtrack import WebTrack
 map_app = Blueprint("map_app", __name__)
 mysql = LocalProxy(get_db)
 
-def track_path_to_header(book_id: int, book_url: str, book_title: str, gpx_name: str) -> List[Dict]:
+
+def track_path_to_header(
+    book_id: int, book_url: str, book_title: str, gpx_name: str
+) -> List[Dict]:
     """
     Format the header breadcrumbs - refer to templates/layout.html.
 
@@ -47,24 +50,22 @@ def track_path_to_header(book_id: int, book_url: str, book_title: str, gpx_name:
         book_url (str): Book URL based on the 'shelf' database table.
         book_title (str): Book title based on the 'shelf' database table.
         gpx_name (str): Name of the GPX file in the /tracks directory WITHOUT file extension.
-    
+
     Returns:
         List of dicts.
     """
     return [
-        {
-            "title": "Stories",
-            "url": "/stories"
-        },
+        {"title": "Stories", "url": "/stories"},
         {
             "title": book_title,
             "url": "/stories/" + str(book_id) + "/" + book_url,
         },
         {
-            "title": gpx_name.replace('_', ' ')
+            "title": gpx_name.replace("_", " ")
             # no URL because it is the current one
-        }
+        },
     ]
+
 
 def get_gpx_download_path(book_id: int, book_url: str, gpx_name: str) -> str:
     """
@@ -75,6 +76,7 @@ def get_gpx_download_path(book_id: int, book_url: str, gpx_name: str) -> str:
     """
     return "/".join(["/books", str(book_id), book_url, gpx_name]) + ".gpx"
 
+
 def get_thumbnail_path(book_id: int, book_url: str, gpx_name: str) -> str:
     """
     Returns the path to the thumbnail file.
@@ -84,7 +86,10 @@ def get_thumbnail_path(book_id: int, book_url: str, gpx_name: str) -> str:
     """
     return "map/static_map/" + "/".join([str(book_id), book_url, gpx_name]) + ".jpg"
 
-@map_app.route("/player/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>")
+
+@map_app.route(
+    "/player/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>"
+)
 def map_player(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
     """
     Map viewer with a real 3D map more focused on a fun user experience than a hiker-centric track viewer.
@@ -104,11 +109,13 @@ def map_player(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
     gpx_name = escape(gpx_name)
     country_code = escape(country)
     country_code_up = country_code.upper()
-    cursor.execute("""SELECT access_level, title
+    cursor.execute(
+        """SELECT access_level, title
         FROM shelf
         WHERE book_id={book_id} AND url='{book_url}'""".format(
-            book_id=book_id,
-            book_url=book_url))
+            book_id=book_id, book_url=book_url
+        )
+    )
     data = cursor.fetchone()
     if cursor.rowcount == 0 or actual_access_level() < data[0]:
         abort(404)
@@ -119,14 +126,20 @@ def map_player(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
     return render_template(
         "map_player.html",
         header_breadcrumbs=track_path_to_header(book_id, book_url, data[1], gpx_name),
-        url_topo_map="/map/viewer/" + "/".join([str(book_id), book_url, gpx_name, country_code]),
+        url_topo_map="/map/viewer/"
+        + "/".join([str(book_id), book_url, gpx_name, country_code]),
         country=country_code_up,
         gpx_download_path=gpx_download_path,
-        thumbnail_networks=request.url_root + get_thumbnail_path(book_id, book_url, gpx_name),
+        thumbnail_networks=request.url_root
+        + get_thumbnail_path(book_id, book_url, gpx_name),
         total_subscribers=total_subscribers(cursor),
-        is_prod=not current_app.config["DEBUG"])
+        is_prod=not current_app.config["DEBUG"],
+    )
 
-@map_app.route("/viewer/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>")
+
+@map_app.route(
+    "/viewer/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>"
+)
 def map_viewer(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
     """
     2D map viewer with some basic tools, track and topo information.
@@ -144,17 +157,21 @@ def map_viewer(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
     cursor = mysql.cursor()
     book_url = escape(book_url)
     gpx_name = escape(gpx_name)
-    cursor.execute("""SELECT access_level, title
+    cursor.execute(
+        """SELECT access_level, title
         FROM shelf
         WHERE book_id={book_id} AND url='{book_url}'""".format(
-            book_id=book_id,
-            book_url=book_url))
+            book_id=book_id, book_url=book_url
+        )
+    )
     data = cursor.fetchone()
     country_code = escape(country)
     country_code_up = country_code.upper()
-    if cursor.rowcount == 0 \
-        or actual_access_level() < data[0] \
-        or not country_code_up in current_app.config["MAP_LAYERS"]:
+    if (
+        cursor.rowcount == 0
+        or actual_access_level() < data[0]
+        or not country_code_up in current_app.config["MAP_LAYERS"]
+    ):
         abort(404)
     if actual_access_level() >= current_app.config["ACCESS_LEVEL_DOWNLOAD_GPX"]:
         gpx_download_path = get_gpx_download_path(book_id, book_url, gpx_name)
@@ -164,24 +181,30 @@ def map_viewer(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
         "map_viewer.html",
         country=country_code_up,
         header_breadcrumbs=track_path_to_header(book_id, book_url, data[1], gpx_name),
-        url_player_map="/map/player/" + "/".join([str(book_id), book_url, gpx_name, country_code]),
+        url_player_map="/map/player/"
+        + "/".join([str(book_id), book_url, gpx_name, country_code]),
         gpx_download_path=gpx_download_path,
-        thumbnail_networks=request.url_root + get_thumbnail_path(book_id, book_url, gpx_name),
+        thumbnail_networks=request.url_root
+        + get_thumbnail_path(book_id, book_url, gpx_name),
         total_subscribers=total_subscribers(cursor),
-        is_prod=not current_app.config["DEBUG"])
+        is_prod=not current_app.config["DEBUG"],
+    )
 
-def create_static_map(gpx_path: str, static_map_path: str, static_image_settings: Dict) -> None:
+
+def create_static_map(
+    gpx_path: str, static_map_path: str, static_image_settings: Dict
+) -> None:
     """
     Create a URL based on the ``gpx_path`` GPX file and the ``static_image_settings`` configuration.
     The URL is then fetched to the Mapbox server to retrieve a JPG image.
     Mapbox pricing: https://www.mapbox.com/pricing/#glstatic (free up to 50,000 per month)
     A Mapbox access token is required for the map generation.
-    
+
     Args:
         gpx_path (str): Secured path to the input file.
         static_map_path (str): Secured path to the overwritten output file.
         static_image_settings (Dict): Mapbox Static Images configuration (kind of).
-    
+
     Returns:
         Nothing, the image is saved into the disk.
     """
@@ -191,6 +214,7 @@ def create_static_map(gpx_path: str, static_map_path: str, static_image_settings
     r = requests.get(url)
     with open(static_map_path, "wb") as static_image:
         static_image.write(r.content)
+
 
 @map_app.route("/static_map/<int:book_id>/<string:book_url>/<string:gpx_name>.jpg")
 def static_map(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
@@ -211,27 +235,36 @@ def static_map(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
     """
     book_url = escape(book_url)
     cursor = mysql.cursor()
-    cursor.execute("""SELECT access_level
+    cursor.execute(
+        """SELECT access_level
         FROM shelf
         WHERE book_id={book_id} AND url='{book_url}'""".format(
-            book_id=book_id,
-            book_url=book_url))
+            book_id=book_id, book_url=book_url
+        )
+    )
     data = cursor.fetchone()
     if cursor.rowcount == 0 or actual_access_level() < data[0]:
         abort(404)
     gpx_filename = secure_filename(escape(gpx_name) + ".gpx")
-    gpx_dir = os.path.join(current_app.config["SHELF_FOLDER"], secure_filename(book_url))
+    gpx_dir = os.path.join(
+        current_app.config["SHELF_FOLDER"], secure_filename(book_url)
+    )
     gpx_path = os.path.join(gpx_dir, gpx_filename)
     append_ext = "_static_map.jpg"
     static_map_path = gpx_path + append_ext
-    if not os.path.isfile(static_map_path) \
-        or os.stat(static_map_path).st_size == 0 \
-        or os.stat(static_map_path).st_mtime < os.stat(gpx_path).st_mtime: # update profile
+    if (
+        not os.path.isfile(static_map_path)
+        or os.stat(static_map_path).st_size == 0
+        or os.stat(static_map_path).st_mtime < os.stat(gpx_path).st_mtime
+    ):  # update profile
         try:
-            create_static_map(gpx_path, static_map_path, current_app.config["MAPBOX_STATIC_IMAGES"])
+            create_static_map(
+                gpx_path, static_map_path, current_app.config["MAPBOX_STATIC_IMAGES"]
+            )
         except Exception as e:
             return "{}".format(type(e).__name__), 500
     return send_from_directory(gpx_dir, gpx_filename + append_ext)
+
 
 @map_app.route("/webtracks/<int:book_id>/<string:book_url>/<string:gpx_name>.webtrack")
 @same_site
@@ -254,35 +287,41 @@ def webtrack_file(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
     """
     book_url = escape(book_url)
     cursor = mysql.cursor()
-    cursor.execute("""SELECT access_level
+    cursor.execute(
+        """SELECT access_level
         FROM shelf
         WHERE book_id={book_id} AND url='{book_url}'""".format(
-            book_id=book_id,
-            book_url=book_url))
+            book_id=book_id, book_url=book_url
+        )
+    )
     data = cursor.fetchone()
     if cursor.rowcount == 0 or actual_access_level() < data[0]:
         abort(404)
     gpx_filename = secure_filename(escape(gpx_name) + ".gpx")
-    gpx_dir = os.path.join(current_app.config["SHELF_FOLDER"], secure_filename(book_url))
+    gpx_dir = os.path.join(
+        current_app.config["SHELF_FOLDER"], secure_filename(book_url)
+    )
     gpx_path = os.path.join(gpx_dir, gpx_filename)
     if not os.path.isfile(gpx_path) or os.stat(gpx_path).st_size == 0:
         return "GPX file missing or empty", 500
     webtrack_path = replace_extension(gpx_path, "webtrack")
-    if not os.path.isfile(webtrack_path) \
-        or os.stat(webtrack_path).st_size == 0 \
-        or os.stat(webtrack_path).st_mtime < os.stat(gpx_path).st_mtime: # update webtrack
-        try: # TODO: re-create the WebTrack file if bad header information
+    if (
+        not os.path.isfile(webtrack_path)
+        or os.stat(webtrack_path).st_size == 0
+        or os.stat(webtrack_path).st_mtime < os.stat(gpx_path).st_mtime
+    ):  # update webtrack
+        try:  # TODO: re-create the WebTrack file if bad header information
             gpx_to_webtrack_with_elevation(
-                gpx_path,
-                webtrack_path,
-                current_app.config["NASA_EARTHDATA"]
+                gpx_path, webtrack_path, current_app.config["NASA_EARTHDATA"]
             )
         except Exception as e:
             return "{}".format(type(e).__name__), 500
     return send_from_directory(
         gpx_dir,
         replace_extension(gpx_filename, "webtrack"),
-        mimetype="application/prs.webtrack")
+        mimetype="application/prs.webtrack",
+    )
+
 
 class CustomFileHandler(srtm.data.FileHandler):
     """
@@ -300,11 +339,10 @@ class CustomFileHandler(srtm.data.FileHandler):
 
         return result
 
+
 def gpx_to_webtrack_with_elevation(
-        gpx_path: str,
-        webtrack_path: str,
-        credentials: Dict[str, str]
-    ) -> None:
+    gpx_path: str, webtrack_path: str, credentials: Dict[str, str]
+) -> None:
     """
     Find out the elevation profile of ``gpx_path`` thanks to SRTM data
     version 3.0 with 1-arc-second for the whole world and save the result
@@ -318,19 +356,20 @@ def gpx_to_webtrack_with_elevation(
     Use gpxpy: https://github.com/tkrajina/gpxpy
     Use SRTM.py: https://github.com/nawagers/srtm.py/tree/EarthDataLogin
     SRTM data are stored in the folder specified in CustomFileHandler().get_srtm_dir()
-    
+
     Args:
         gpx_path (str): Secured path to the input file.
         webtrack_path (str): Secured path to the overwritten output file.
-    
+
     Returns:
         The result is saved into a file, nothing is returned.
     """
     elevation_data = srtm.data.GeoElevationData(
-        version='v3.1a',
+        version="v3.1a",
         EDuser=credentials["username"],
         EDpass=credentials["password"],
-        file_handler=CustomFileHandler())
+        file_handler=CustomFileHandler(),
+    )
     with open(gpx_path, "r") as input_gpx_file:
         gpx = gpxpy.parse(input_gpx_file)
         elevation_data.add_elevations(gpx, smooth=True)
@@ -350,12 +389,16 @@ def gpx_to_webtrack_with_elevation(
                             gps_curr_point.latitude,
                             gps_curr_point.longitude,
                             gps_prev_point.latitude,
-                            gps_prev_point.longitude)
-                    elevation_profile.append([
-                        gps_curr_point.longitude,
-                        gps_curr_point.latitude,
-                        current_length,
-                        gps_curr_point.elevation])
+                            gps_prev_point.longitude,
+                        )
+                    elevation_profile.append(
+                        [
+                            gps_curr_point.longitude,
+                            gps_curr_point.latitude,
+                            current_length,
+                            gps_curr_point.elevation,
+                        ]
+                    )
 
                     # statistics:
                     if elevation_min > gps_curr_point.elevation:
@@ -369,40 +412,51 @@ def gpx_to_webtrack_with_elevation(
                         if delta_h > 0:
                             elevation_total_gain += delta_h
                         else:
-                            elevation_total_loss -= delta_h # keep loss positive/unsigned
-                    
+                            elevation_total_loss -= (
+                                delta_h  # keep loss positive/unsigned
+                            )
+
                     gps_prev_point = gpxpy.geo.Location(
                         gps_curr_point.latitude,
                         gps_curr_point.longitude,
-                        gps_curr_point.elevation)
-        
+                        gps_curr_point.elevation,
+                    )
+
         waypoints = []
         for waypoint in gpx.waypoints:
-            point_ele = elevation_data.get_elevation(waypoint.latitude, waypoint.longitude, approximate=False)
-            waypoints.append([
-                waypoint.longitude,
-                waypoint.latitude,
-                True, # with elevation
-                point_ele,
-                waypoint.symbol,
-                waypoint.name])
-        
+            point_ele = elevation_data.get_elevation(
+                waypoint.latitude, waypoint.longitude, approximate=False
+            )
+            waypoints.append(
+                [
+                    waypoint.longitude,
+                    waypoint.latitude,
+                    True,  # with elevation
+                    point_ele,
+                    waypoint.symbol,
+                    waypoint.name,
+                ]
+            )
+
         full_profile = {
-            "segments": [{
-                "withEle": True,
-                "points": elevation_profile
-            }],
+            "segments": [{"withEle": True, "points": elevation_profile}],
             "waypoints": waypoints,
             "trackInformation": {
                 "length": current_length,
                 "minimumAltitude": elevation_min,
                 "maximumAltitude": elevation_max,
                 "elevationGain": elevation_total_gain,
-                "elevationLoss": elevation_total_loss}}
-        
+                "elevationLoss": elevation_total_loss,
+            },
+        }
+
         webTrack = WebTrack(webtrack_path, full_profile)
 
-@map_app.route("/middleware/lds/<string:layer>/<string:a_d>/<int:z>/<int:x>/<int:y>", methods=("GET",))
+
+@map_app.route(
+    "/middleware/lds/<string:layer>/<string:a_d>/<int:z>/<int:x>/<int:y>",
+    methods=("GET",),
+)
 @same_site
 def proxy_lds(layer: str, a_d: str, z: int, x: int, y: int) -> FlaskResponse:
     """
@@ -421,12 +475,14 @@ def proxy_lds(layer: str, a_d: str, z: int, x: int, y: int) -> FlaskResponse:
         y (int): Y parameter of the XYZ request.
     """
     url = "https://tiles-{}.data-cdn.linz.govt.nz/services;key={}/tiles/v4/{}/EPSG:3857/{}/{}/{}.png".format(
-        escape(a_d), current_app.config["LDS_API_KEY"], escape(layer), z, x, y)
+        escape(a_d), current_app.config["LDS_API_KEY"], escape(layer), z, x, y
+    )
     try:
         r = requests.get(url)
     except:
         abort(404)
     return Response(r.content, mimetype="image/png")
+
 
 @map_app.route("/middleware/ign", methods=("GET",))
 @same_site
@@ -442,7 +498,8 @@ def proxy_ign() -> FlaskResponse:
         current_app.config["IGN"]["username"],
         current_app.config["IGN"]["password"],
         current_app.config["IGN"]["app"],
-        secure_decode_query_string(request.query_string))
+        secure_decode_query_string(request.query_string),
+    )
     try:
         r = requests.get(url)
     except:

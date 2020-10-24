@@ -34,28 +34,31 @@ from email.mime.text import MIMEText
 from email.utils import formatdate
 from .utils import *
 
+
 class SecureEmail:
     """ Handle the SMTP connection and send DKIM-signed emails. """
-    
+
     #: The *From* field of the email as ``self.user``@``self.domain``. String-type.
     mailfrom: str
-    
+
     #: The username of the *From* field. String-type.
     user: str
-    
+
     #: The domain name of the *From* field. String-type.
     domain: str
-    
+
     #: The DKIM private ASCII key as Bytes.
     dkim_private_key: bytes
-    
+
     #: The DKIM selector as Bytes.
     dkim_selector: bytes
-    
+
     #: The SMTP socket. Open with ``__init__()`` and closed with ``__del__()``.
     socket: smtplib.SMTP
-    
-    def __init__(self, user: str, domain: str, dkim_private_key: str, dkim_selector: str) -> None:
+
+    def __init__(
+        self, user: str, domain: str, dkim_private_key: str, dkim_selector: str
+    ) -> None:
         """
         Configure the email account and open an SMTP connection.
         The SMTP host is `localhost`.
@@ -66,7 +69,7 @@ class SecureEmail:
             domain (str): The domain name of the *From* field, f.i. `example.com` in `hello@example.com`.
             dkim_private_key (str): The DKIM private ASCII key.
             dkim_selector (str): The DKIM selector.
-        
+
         Raises:
             smtplib exception.
         """
@@ -75,8 +78,8 @@ class SecureEmail:
         self.mailfrom = user + "@" + domain
         self.dkim_private_key = dkim_private_key.encode()
         self.dkim_selector = dkim_selector.encode()
-        self.socket = smtplib.SMTP('localhost')
-        
+        self.socket = smtplib.SMTP("localhost")
+
     def send(self, mailto: str, subject: str, text: str, html: str) -> None:
         """
         Create and send a text/HTML email. Multiple calls use the same SMTP session.
@@ -87,24 +90,32 @@ class SecureEmail:
             subject (str): The email subject.
             text (str): The email content in plain text format.
             html (str): The email content in HTML format.
-        
+
         Raises:
             smtplib exception.
         """
-        message = MIMEMultipart('alternative')
-        message['From'] = self.mailfrom
-        message['To'] = mailto
-        message['Date'] = formatdate() # better ranking on SpamAssassin
-        message['Message-ID'] = "<" + str(time()) + "-" + random_text(15) + "@" + self.domain + ">"
-        message['Subject'] = subject
-        message.attach(MIMEText(text, 'plain'))
-        message.attach(MIMEText(html, 'html'))
-        headers = [b'from', b'to', b'subject', b'message-id']
-        sig = dkim.sign(message.as_bytes(), self.dkim_selector, self.domain.encode(), self.dkim_private_key, include_headers=headers)
+        message = MIMEMultipart("alternative")
+        message["From"] = self.mailfrom
+        message["To"] = mailto
+        message["Date"] = formatdate()  # better ranking on SpamAssassin
+        message["Message-ID"] = (
+            "<" + str(time()) + "-" + random_text(15) + "@" + self.domain + ">"
+        )
+        message["Subject"] = subject
+        message.attach(MIMEText(text, "plain"))
+        message.attach(MIMEText(html, "html"))
+        headers = [b"from", b"to", b"subject", b"message-id"]
+        sig = dkim.sign(
+            message.as_bytes(),
+            self.dkim_selector,
+            self.domain.encode(),
+            self.dkim_private_key,
+            include_headers=headers,
+        )
         sig = sig.decode()
-        message['DKIM-Signature'] = sig[len("DKIM-Signature: "):]
-        self.socket.sendmail(message['From'], message['To'], message.as_string())
-    
+        message["DKIM-Signature"] = sig[len("DKIM-Signature: ") :]
+        self.socket.sendmail(message["From"], message["To"], message.as_string())
+
     def __del__(self) -> None:
         """
         Terminate the SMTP session and close the connection.

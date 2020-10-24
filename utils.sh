@@ -89,6 +89,12 @@ case ${tool} in
         mypy --config-file mypy.ini flaskr/
         deactivate
         ;;
+    black)
+        source venv/bin/activate
+        black flaskr/
+        black tests/
+        deactivate
+        ;;
     *)
         echo "`basename ${0}`:usage: [sentry-release]" \
             "| [init-db-localhost]" \
@@ -99,7 +105,8 @@ case ${tool} in
             "| [run-app-localhost]" \
             "| [test-coverage-localhost]" \
             "| [test-localhost]" \
-            "| [mypy]"
+            "| [mypy]" \
+            "| [black]"
         exit 1
         ;;
 esac

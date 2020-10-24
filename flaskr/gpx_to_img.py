@@ -38,14 +38,16 @@ from typing import Dict
 DEFAULT_MARGIN_POINTS_NO: int = 3
 DEFAULT_MAX_ITER: int = 20
 
+
 class MyGPXTrackSegment(mod_gpxpy.gpx.GPXTrackSegment):
     """ Add a custom simplification. """
+
     def _distance_guesser(
-            self,
-            points_no: int,
-            margin_points_no: int = DEFAULT_MARGIN_POINTS_NO,
-            max_iter: int = DEFAULT_MAX_ITER
-        ) -> int:
+        self,
+        points_no: int,
+        margin_points_no: int = DEFAULT_MARGIN_POINTS_NO,
+        max_iter: int = DEFAULT_MAX_ITER,
+    ) -> int:
         """
         Find out the max distance for the 'simplify' procedure with the number of points as a requirement.
 
@@ -53,7 +55,7 @@ class MyGPXTrackSegment(mod_gpxpy.gpx.GPXTrackSegment):
             points_no (int): The number of points to expect.
             margin_points_no (int): The bound/range around the expected number of points, the lesser the slower.
             max_iter (int): Limit the number of calls to 'simplify' to avoid infinite loop if the margin is too small.
-        
+
         Returns:
             int: The max_distance parameter to give to 'simplify'.
         """
@@ -71,13 +73,13 @@ class MyGPXTrackSegment(mod_gpxpy.gpx.GPXTrackSegment):
             else:
                 break
         return dicho
-    
+
     def simplify_with_distance_guesser(
-            self,
-            points_no: int,
-            margin_points_no: int = DEFAULT_MARGIN_POINTS_NO,
-            max_iter: int = DEFAULT_MAX_ITER
-        ) -> None:
+        self,
+        points_no: int,
+        margin_points_no: int = DEFAULT_MARGIN_POINTS_NO,
+        max_iter: int = DEFAULT_MAX_ITER,
+    ) -> None:
         """
         Simplify the segment to about `points_no` more or less `margin_points_no`.
 
@@ -88,12 +90,13 @@ class MyGPXTrackSegment(mod_gpxpy.gpx.GPXTrackSegment):
         """
         self.simplify(self._distance_guesser(points_no, margin_points_no, max_iter - 1))
 
+
 def gpx_to_src(
-        gpx: mod_gpxpy.gpx.GPX,
-        conf: Dict,
-        margin_points_no: int=DEFAULT_MARGIN_POINTS_NO,
-        max_iter: int=DEFAULT_MAX_ITER
-    ) -> str:
+    gpx: mod_gpxpy.gpx.GPX,
+    conf: Dict,
+    margin_points_no: int = DEFAULT_MARGIN_POINTS_NO,
+    max_iter: int = DEFAULT_MAX_ITER,
+) -> str:
     """
     Returns a url to a static JPG image that fit the track in the GPX file.
     Static image overview: https://docs.mapbox.com/help/how-mapbox-works/static-maps/
@@ -105,28 +108,30 @@ def gpx_to_src(
         points_no (int): The number of points to expect.
         margin_points_no (int): The bound around the expected number of points, the lesser the slower.
         max_iter (int): Limit the number of calls to 'simplify' to avoid infinite loop if the margin is too small.
-    """    
+    """
     # merge all track segments to ease the simplification process and fill gaps between tracks
     merged_segments = MyGPXTrackSegment()
     for track in gpx.tracks:
         for segment in track.segments:
             merged_segments.join(segment)
-    
-    merged_segments.simplify_with_distance_guesser(conf["points"], margin_points_no, max_iter)
+
+    merged_segments.simplify_with_distance_guesser(
+        conf["points"], margin_points_no, max_iter
+    )
     coordinates = []
     for point in merged_segments.points:
         coordinates.append([point.longitude, point.latitude])
-    
+
     str_geojson = mod_json.dumps(
         mod_json.loads(
-            mod_json.dumps({
-                "type": "LineString",
-                "coordinates": coordinates
-            }),
-            parse_float=lambda x: round(float(x), 3) # limit the precision to no more than 6 decimals places
+            mod_json.dumps({"type": "LineString", "coordinates": coordinates}),
+            parse_float=lambda x: round(
+                float(x), 3
+            ),  # limit the precision to no more than 6 decimals places
         ),
-        separators=(',', ':')) # remove whitespaces
-    
+        separators=(",", ":"),
+    )  # remove whitespaces
+
     return "https://api.mapbox.com/styles/v1/{}/{}/static/geojson({})/auto/{}x{}{}?access_token={}&logo={}".format(
         conf["username"],
         conf["style_id"],
@@ -135,4 +140,5 @@ def gpx_to_src(
         conf["height"],
         "@2x" if conf["@2x"] else "",
         conf["access_token"],
-        "true" if conf["logo"] else "false")
+        "true" if conf["logo"] else "false",
+    )

@@ -34,34 +34,47 @@ from xml.dom import minidom
 
 social_networks_app = Blueprint("social_networks_app", __name__)
 
+
 def share_link(link: str, network: str, subject: str = "") -> str:
     """ Format a social platform link and return a string. """
-    networks = {"twitter": 'https://twitter.com/intent/tweet?via=' + current_app.config["TWITTER_ACCOUNT"]["screen_name"] + '&url=',
-                "facebook": 'https://www.facebook.com/sharer/sharer.php?u=',
-                "linkedin": 'https://www.linkedin.com/shareArticle?mini=true&url=',
-                "vkontakte": 'https://vk.com/share.php?url=',
-                "email": 'mailto:?subject=' + (quote_plus(subject) if subject else '') + '&amp;body=',
-                "tumblr": 'http://www.tumblr.com/share/link?url='}
-    return networks[network] + quote_plus(link if link.startswith('http') else request.url_root + link)
+    networks = {
+        "twitter": "https://twitter.com/intent/tweet?via="
+        + current_app.config["TWITTER_ACCOUNT"]["screen_name"]
+        + "&url=",
+        "facebook": "https://www.facebook.com/sharer/sharer.php?u=",
+        "linkedin": "https://www.linkedin.com/shareArticle?mini=true&url=",
+        "vkontakte": "https://vk.com/share.php?url=",
+        "email": "mailto:?subject="
+        + (quote_plus(subject) if subject else "")
+        + "&amp;body=",
+        "tumblr": "http://www.tumblr.com/share/link?url=",
+    }
+    return networks[network] + quote_plus(
+        link if link.startswith("http") else request.url_root + link
+    )
+
 
 def create_media_filename(src: str, salt: bytes) -> str:
     """ Hash `src` with a secret `salt` so that the authenticity can be checked, and return a string. """
     return werkzeug.security.pbkdf2_hex(src, salt) + "." + file_extension(src)
 
+
 def encode_media_origin(url: str) -> str:
     """ Convert the string `url` into an hexadecimal string (URL safer than base64, no trailing '='). """
     return url.encode().hex()
+
 
 def decode_media_origin(hex_str: str) -> str:
     """ Decode a string encoded with encode_media_origin() and return a string. """
     return bytes.fromhex(hex_str).decode()
 
+
 def download_image(
-        clear_url: str,
-        hashed_filename: str,
-        data_store: str,
-        timeout: Union[float, Tuple[float, float]]
-    ) -> None:
+    clear_url: str,
+    hashed_filename: str,
+    data_store: str,
+    timeout: Union[float, Tuple[float, float]],
+) -> None:
     """
     Download `clear_url` and save it in the `data_store` directory as `hashed_filename`.
     The media download is intended to avoid enlarging the image-src rule of the CSP,
@@ -81,6 +94,7 @@ def download_image(
         with open(path_file, "wb") as f:
             f.write(r.content)
 
+
 def compress_timeline(timeline: List, salt: bytes) -> List:
     """
     Compress the verbose Twitter feed into a small one. Just keep the useful elements.
@@ -89,7 +103,7 @@ def compress_timeline(timeline: List, salt: bytes) -> List:
     Args:
         timeline (List): The Twitter timeline.
         salt (bytes): The salt to apply on the filename.
-    
+
     Returns:
         List: The timeline with less information and links to the (locally) stored images.
     """
@@ -104,8 +118,10 @@ def compress_timeline(timeline: List, salt: bytes) -> List:
                 "name": tweet["user"]["name"],
                 "screen_name": tweet["user"]["screen_name"],
                 "profile_image_origin": encode_media_origin(profile_image_url),
-                "profile_image_filename": create_media_filename(profile_image_url, salt)
-            }
+                "profile_image_filename": create_media_filename(
+                    profile_image_url, salt
+                ),
+            },
         }
         if tweet["retweeted"]:
             original_source = tweet["retweeted_status"]["user"]
@@ -115,12 +131,15 @@ def compress_timeline(timeline: List, salt: bytes) -> List:
                     "name": original_source["name"],
                     "screen_name": original_source["screen_name"],
                     "profile_image_origin": encode_media_origin(profile_image_url),
-                    "profile_image_filename": create_media_filename(profile_image_url, salt)
+                    "profile_image_filename": create_media_filename(
+                        profile_image_url, salt
+                    ),
                 }
             }
         compressed_timeline.append(compressed_tweet)
 
     return compressed_timeline
+
 
 def get_dom_text(nodelist) -> str:
     """ Find out the text node of `nodelist` and return a string. """
@@ -128,9 +147,12 @@ def get_dom_text(nodelist) -> str:
     for node in nodelist:
         if node.nodeType == node.TEXT_NODE:
             rc.append(node.data)
-    return ''.join(rc)
+    return "".join(rc)
 
-@social_networks_app.route("/<string:network>/media/<string:origin>/<string:filename>", methods=("GET",))
+
+@social_networks_app.route(
+    "/<string:network>/media/<string:origin>/<string:filename>", methods=("GET",)
+)
 @same_site
 def send_media(network: str, origin: str, filename: str) -> FlaskResponse:
     """
@@ -139,7 +161,7 @@ def send_media(network: str, origin: str, filename: str) -> FlaskResponse:
     Args:
         network (str): Social platform name in small cap, "twitter" or "mastodon".
         filename (str): The filename of the image (locally) saved, excluding the directory.
-    
+
     Returns:
         The image.
     """
@@ -151,16 +173,21 @@ def send_media(network: str, origin: str, filename: str) -> FlaskResponse:
         timeout = current_app.config[network + "_ACCOUNT"]["connection_timeout"]
     else:
         abort(404)
-    
-    if not os.path.isfile(os.path.join(data_store, filename)): # download and save locally
+
+    if not os.path.isfile(
+        os.path.join(data_store, filename)
+    ):  # download and save locally
         origin_url = decode_media_origin(origin)
-        reverse_filename = create_media_filename(origin_url, current_app.config["RANDOM_SALT"])
+        reverse_filename = create_media_filename(
+            origin_url, current_app.config["RANDOM_SALT"]
+        )
         if reverse_filename == filename:
             download_image(origin_url, reverse_filename, data_store, timeout)
         else:
-            abort(404) # compromized origin
-    
+            abort(404)  # compromized origin
+
     return send_from_directory(data_store, filename)
+
 
 @social_networks_app.route("/twitter/my_timeline", methods=("POST",))
 @same_site
@@ -174,29 +201,41 @@ def my_twitter_timeline() -> FlaskResponse:
     delta = current_app.config["TWITTER_ACCOUNT"]["max_refresh_period"]
 
     # update:
-    if (not os.path.isfile(old_timeline)) or (os.stat(old_timeline).st_mtime + delta) < current_timestamp:
+    if (not os.path.isfile(old_timeline)) or (
+        os.stat(old_timeline).st_mtime + delta
+    ) < current_timestamp:
         # authenticate:
         twitter = Twython(
             current_app.config["TWITTER_ACCOUNT"]["api_key"],
             current_app.config["TWITTER_ACCOUNT"]["api_secret_key"],
             current_app.config["TWITTER_ACCOUNT"]["user_access_token"],
-            current_app.config["TWITTER_ACCOUNT"]["user_access_token_secret"])
-        
-        try: # download:
+            current_app.config["TWITTER_ACCOUNT"]["user_access_token_secret"],
+        )
+
+        try:  # download:
             content = twitter.get_user_timeline(
-                screen_name=screen_name,
-                json_encoded=True)
-        except: # https://twython.readthedocs.io/en/latest/api.html#exceptions
-            current_app.logger.exception("Failed to get the " + screen_name + " timeline from Twitter")
-        else: # compress and overwrite the old timeline:
+                screen_name=screen_name, json_encoded=True
+            )
+        except:  # https://twython.readthedocs.io/en/latest/api.html#exceptions
+            current_app.logger.exception(
+                "Failed to get the " + screen_name + " timeline from Twitter"
+            )
+        else:  # compress and overwrite the old timeline:
             with open(old_timeline, "w") as new_timeline:
-                new_timeline.write(json.dumps(compress_timeline(content, current_app.config["RANDOM_SALT"])))
-    
+                new_timeline.write(
+                    json.dumps(
+                        compress_timeline(content, current_app.config["RANDOM_SALT"])
+                    )
+                )
+
     try:
         return send_from_directory(data_store, timeline_filename)
     except:
-        current_app.logger.exception("Failed to locally retrieve the Twitter timeline @" + screen_name)
+        current_app.logger.exception(
+            "Failed to locally retrieve the Twitter timeline @" + screen_name
+        )
         abort(404)
+
 
 @social_networks_app.route("/mastodon/my_timeline", methods=("POST",))
 @same_site
@@ -209,17 +248,25 @@ def my_mastodon_timeline() -> FlaskResponse:
     delta = current_app.config["MASTODON_ACCOUNT"]["max_refresh_period"]
     file_exists = os.path.isfile(old_timeline)
     timeout = current_app.config["MASTODON_ACCOUNT"]["connection_timeout"]
-    account_url = current_app.config["MASTODON_ACCOUNT"]["community_url"] + "@" + current_app.config["MASTODON_ACCOUNT"]["screen_name"]
+    account_url = (
+        current_app.config["MASTODON_ACCOUNT"]["community_url"]
+        + "@"
+        + current_app.config["MASTODON_ACCOUNT"]["screen_name"]
+    )
 
     # update:
-    if (not file_exists) or (os.stat(old_timeline).st_mtime + delta) < current_timestamp:
+    if (not file_exists) or (
+        os.stat(old_timeline).st_mtime + delta
+    ) < current_timestamp:
         try:
             r = requests.get(account_url + ".rss", timeout=timeout)
         except:
-            current_app.logger.exception("Failed to get the Mastodon timeline: " + account_url)
+            current_app.logger.exception(
+                "Failed to get the Mastodon timeline: " + account_url
+            )
         else:
             if current_app.config["DEBUG"]:
-                r.raise_for_status() # keep silent in prod, no error threw, no update
+                r.raise_for_status()  # keep silent in prod, no error threw, no update
 
             # if the HTTP status code < 400 (error), so it could be 200 (OK) or 301 (Not Modified):
             if r.status_code == requests.codes.ok:
@@ -230,29 +277,41 @@ def my_mastodon_timeline() -> FlaskResponse:
 
                 for toot_dom in toots:
                     toot_dict: Dict[str, Any] = {
-                        "text": get_dom_text(toot_dom.getElementsByTagName("title")[0].childNodes),
-                        "guid": get_dom_text(toot_dom.getElementsByTagName("guid")[0].childNodes),
-                        "created_at": get_dom_text(toot_dom.getElementsByTagName("pubDate")[0].childNodes)
+                        "text": get_dom_text(
+                            toot_dom.getElementsByTagName("title")[0].childNodes
+                        ),
+                        "guid": get_dom_text(
+                            toot_dom.getElementsByTagName("guid")[0].childNodes
+                        ),
+                        "created_at": get_dom_text(
+                            toot_dom.getElementsByTagName("pubDate")[0].childNodes
+                        ),
                     }
                     media = toot_dom.getElementsByTagName("enclosure")
                     if len(media) > 0:
                         images = []
                         for image in media:
                             image_url = image.getAttribute("url")
-                            images.append({
-                                "filename": create_media_filename(image_url, current_app.config["RANDOM_SALT"]),
-                                "origin": encode_media_origin(image_url),
-                                "type": image.getAttribute("type").split('/')[-1]
-                            })
+                            images.append(
+                                {
+                                    "filename": create_media_filename(
+                                        image_url, current_app.config["RANDOM_SALT"]
+                                    ),
+                                    "origin": encode_media_origin(image_url),
+                                    "type": image.getAttribute("type").split("/")[-1],
+                                }
+                            )
                         toot_dict["images"] = images
                     all_my_toots.append(toot_dict)
-                
+
                 # overwrite the old timeline:
                 with open(old_timeline, "w") as new_timeline:
                     new_timeline.write(json.dumps(all_my_toots))
-    
+
     try:
         return send_from_directory(data_store, timeline_filename)
     except:
-        current_app.logger.exception("Failed to locally retrieve the Mastodon timeline " + account_url)
+        current_app.logger.exception(
+            "Failed to locally retrieve the Mastodon timeline " + account_url
+        )
         abort(404)

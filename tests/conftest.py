@@ -31,6 +31,7 @@
 import os, pytest, shutil
 from flaskr import create_app, db
 
+
 @pytest.fixture(scope="session")
 def files():
     """ This client fixture will be called once. """
@@ -38,13 +39,17 @@ def files():
 
     with app.app_context():
         db.init_db()
-        db.load_from_file(open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb"))
+        db.load_from_file(
+            open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb")
+        )
         directories = []
 
         # Create the files refered by the database
         cursor = db.get_db().cursor()
-        cursor.execute("""SELECT thumbnail_src, photo_m_src, photo_l_src, raw_src
-            FROM gallery""")
+        cursor.execute(
+            """SELECT thumbnail_src, photo_m_src, photo_l_src, raw_src
+            FROM gallery"""
+        )
         data = cursor.fetchall()
         for picture in data:
             for src in picture:
@@ -52,8 +57,10 @@ def files():
                     os.mknod(os.path.join("../photos", src))
                 except:
                     pass
-        cursor.execute("""SELECT url, file_name
-            FROM shelf""")
+        cursor.execute(
+            """SELECT url, file_name
+            FROM shelf"""
+        )
         data = cursor.fetchall()
         for book in data:
             try:
@@ -73,11 +80,16 @@ def files():
         except:
             pass
         try:
-            with open(os.path.join("../books", "fourth_story", "my_track.gpx_profile.bin"), 'x') as f:
-                print('something', file=f) # that is to avoid profile update and external urllib requests
+            with open(
+                os.path.join("../books", "fourth_story", "my_track.gpx_profile.bin"),
+                "x",
+            ) as f:
+                print(
+                    "something", file=f
+                )  # that is to avoid profile update and external urllib requests
         except:
             pass
-        
+
         # Create a book folder not in the database - see test_xhr_admin_space.py
         try:
             new_dir = os.path.join("../books", "lovely_poem")
@@ -85,11 +97,12 @@ def files():
             os.mkdir(new_dir)
         except:
             pass
-    
+
     yield files
 
-    for directory in directories: # clean up
+    for directory in directories:  # clean up
         shutil.rmtree(directory)
+
 
 @pytest.fixture
 def app():
@@ -98,34 +111,44 @@ def app():
 
     with app.app_context():
         db.init_db()
-        db.load_from_file(open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb"))
+        db.load_from_file(
+            open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb")
+        )
 
     yield app
+
 
 @pytest.fixture
 def client(app):
     return app.test_client()
 
+
 @pytest.fixture
 def runner(app):
     return app.test_cli_runner()
+
 
 class auth_actions(object):
     def __init__(self, client):
         self._client = client
 
     def login(self, email="user@test.com", password="user"):
-        self._client.get("/login", data=dict(), follow_redirects=True) # load CAPTCHA
-        return self._client.post("/login", data=dict(
-            email=email,
-            password=password,
-            captcha="empty",
-            privacyPolicy=True,
-            copyrightNotice=True,
-        ), follow_redirects=True)
+        self._client.get("/login", data=dict(), follow_redirects=True)  # load CAPTCHA
+        return self._client.post(
+            "/login",
+            data=dict(
+                email=email,
+                password=password,
+                captcha="empty",
+                privacyPolicy=True,
+                copyrightNotice=True,
+            ),
+            follow_redirects=True,
+        )
 
     def logout(self):
         return self._client.get("/logout", follow_redirects=True)
+
 
 @pytest.fixture
 def auth(client):

@@ -30,6 +30,7 @@
 
 from .utils import *
 
+
 def get_db():
     """
     Connect to the application's configured database. The connection is unique
@@ -41,24 +42,27 @@ def get_db():
                 current_app.config["MYSQL_DATABASE_HOST"],
                 current_app.config["MYSQL_DATABASE_USER"],
                 current_app.config["MYSQL_DATABASE_PASSWORD"],
-                current_app.config["MYSQL_DATABASE_DB"]
+                current_app.config["MYSQL_DATABASE_DB"],
             )
         except pymysql.Error as e:
-            if e.args[0] == 1049: # unknown database, create it
+            if e.args[0] == 1049:  # unknown database, create it
                 g.db = pymysql.connect(
                     current_app.config["MYSQL_DATABASE_HOST"],
                     current_app.config["MYSQL_DATABASE_USER"],
-                    current_app.config["MYSQL_DATABASE_PASSWORD"]
+                    current_app.config["MYSQL_DATABASE_PASSWORD"],
                 )
                 cursor = g.db.cursor()
-                cursor.execute("CREATE DATABASE {db_name}".format(
-                    db_name=current_app.config["MYSQL_DATABASE_DB"])
+                cursor.execute(
+                    "CREATE DATABASE {db_name}".format(
+                        db_name=current_app.config["MYSQL_DATABASE_DB"]
+                    )
                 )
                 g.db.commit()
             else:
                 print("MySQL error %d: %s" % (e.args[0], e.args[1]))
 
     return g.db if "db" in g else None
+
 
 def close_db(error=None):
     """ If this request connected to the database, close the connection. """
@@ -67,10 +71,11 @@ def close_db(error=None):
     if db is not None:
         db.close()
 
+
 def load_from_file(file) -> bool:
     """ Load an SQL file descriptor into the database. """
-    request_list = file.read().decode("utf8").split(';') # split file in list
-    request_list.pop() # drop last empty entry
+    request_list = file.read().decode("utf8").split(";")  # split file in list
+    request_list.pop()  # drop last empty entry
     if request_list is not False:
         db = get_db()
         if db:
@@ -83,6 +88,7 @@ def load_from_file(file) -> bool:
             return False
     return True
 
+
 def init_db() -> bool:
     """
     Run the file schema.sql which clears the database.
@@ -90,6 +96,7 @@ def init_db() -> bool:
     """
     with current_app.open_resource("schema.sql") as f:
         return load_from_file(f)
+
 
 @click.command("init-db")
 @with_appcontext
@@ -99,9 +106,10 @@ def init_db_command():
     Ensure to be connected to the right database or data may be lost forever!
     """
     if init_db():
-        click.secho("Success: Database initialized.", fg='green')
+        click.secho("Success: Database initialized.", fg="green")
     else:
-        click.secho("Error: Failed to initialize the database.", fg='red')
+        click.secho("Error: Failed to initialize the database.", fg="red")
+
 
 def init_app(app):
     """

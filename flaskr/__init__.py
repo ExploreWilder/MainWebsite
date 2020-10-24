@@ -33,9 +33,10 @@ from .utils import *
 try:
     from .secret_config import Production_config, Config, Testing_config
 except ImportError:
-    from .config import Production_config, Config, Testing_config # type: ignore[misc]
+    from .config import Production_config, Config, Testing_config  # type: ignore[misc]
 
 from .cache import cache
+
 
 def create_app(is_testing: bool = False) -> Flask:
     """ Create and configure an instance of the Flask application. """
@@ -63,46 +64,50 @@ def create_app(is_testing: bool = False) -> Flask:
     if is_testing:
         app.config.from_object(Testing_config)
     app.config["STATIC_PACKAGE"] = get_static_package_config()
-    
+
     @app.context_processor
     def app_ctx_processor() -> Dict:
         return dict(
             share_link=share_link,
-            allowed_external_connections=allowed_external_connections)
-    
+            allowed_external_connections=allowed_external_connections,
+        )
+
     if not is_debug and not is_testing:
         sentry_sdk.init(
             dsn=app.config["SENTRY_DSN"],
             release=app.config["GIT_COMMIT"],
-            integrations=[FlaskIntegration()])
+            integrations=[FlaskIntegration()],
+        )
 
     app.config["CSP_NONCE"] = csp_nonce()
     talisman = Talisman(
         app,
         content_security_policy=app.config["CSP_CONFIG"],
-        content_security_policy_nonce_in=app.config["CSP_NONCE_IN"])
+        content_security_policy_nonce_in=app.config["CSP_NONCE_IN"],
+    )
 
     Markdown(app, extensions=app.config["MD_EXT"])
-    csrf = SeaSurf(app) # validation will be active for all POST requests if not testing
+    csrf = SeaSurf(
+        app
+    )  # validation will be active for all POST requests if not testing
 
     # register the database commands
     from . import db
+
     db.init_app(app)
 
     @app.route("/error")
     @app.errorhandler(403)
-    @app.errorhandler(404) # "page not found" or access forbidden
-    @app.errorhandler(405) # "method not allowed"
+    @app.errorhandler(404)  # "page not found" or access forbidden
+    @app.errorhandler(405)  # "method not allowed"
     def just_error(error: Exception) -> Any:
         """
         The 404-error page with the specific HTTP field set.
         Any catched error are considered 404 to make guesses harder.
         The HTML page is intentionally lightweight to reduce load.
         """
-        return render_template(
-            "error.html",
-            is_prod=not app.config["DEBUG"]), 404
-    
+        return render_template("error.html", is_prod=not app.config["DEBUG"]), 404
+
     @app.errorhandler(500)
     def handle_500(e: Exception) -> Any:
         """
@@ -110,10 +115,14 @@ def create_app(is_testing: bool = False) -> Flask:
         https://docs.sentry.io/enriching-error-data/user-feedback/?platform=flask
         https://flask.palletsprojects.com/en/1.1.x/errorhandling/#unhandled-exceptions
         """
-        return render_template(
-            "internal_server_error.html",
-            sentry_event_id=sentry_sdk.last_event_id(),
-            is_prod=not app.config["DEBUG"]), 500
+        return (
+            render_template(
+                "internal_server_error.html",
+                sentry_event_id=sentry_sdk.last_event_id(),
+                is_prod=not app.config["DEBUG"],
+            ),
+            500,
+        )
 
     # apply the blueprints to the app
     cache.init_app(app)

@@ -32,15 +32,20 @@ from flask import session
 import pytest, time
 from flaskr.db import get_db
 
+
 def test_failed_login(client, auth, app):
     """ Make sure failed login connections work, anti-bruteforce and log as well. """
     # test untick box:
-    rv = client.post("/login", data=dict(
-        email="wrongemail@test.com",
-        password="test-bad-password",
-        captcha="empty",
-        copyrightNotice=True,
-    ), follow_redirects=True)
+    rv = client.post(
+        "/login",
+        data=dict(
+            email="wrongemail@test.com",
+            password="test-bad-password",
+            captcha="empty",
+            copyrightNotice=True,
+        ),
+        follow_redirects=True,
+    )
     assert b"Missing data" in rv.data
     time.sleep(2)
     # test email format:
@@ -65,7 +70,8 @@ def test_failed_login(client, auth, app):
         cursor = get_db().cursor()
         cursor.execute("SELECT * FROM members_audit_log")
         cursor.fetchone()
-        assert cursor.rowcount == 0 # empty table
+        assert cursor.rowcount == 0  # empty table
+
 
 def test_successful_login_logout(client, auth, app):
     """ Make sure login and logout work, log as well. """
@@ -80,9 +86,11 @@ def test_successful_login_logout(client, auth, app):
 
     with app.app_context():
         cursor = get_db().cursor()
-        cursor.execute("SELECT member_id FROM members_audit_log WHERE event_description='logged_in'")
+        cursor.execute(
+            "SELECT member_id FROM members_audit_log WHERE event_description='logged_in'"
+        )
         entry = cursor.fetchone()
-        assert entry[0] == 2 # successfull connection logged
+        assert entry[0] == 2  # successfull connection logged
 
     # test logout:
     rv = auth.logout()

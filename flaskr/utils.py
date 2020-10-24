@@ -30,27 +30,32 @@
 
 from .dependencies import *
 
+
 class JSONSecureCookie(SecureCookie):
     """ https://werkzeug.palletsprojects.com/en/0.15.x/contrib/securecookie/#security """
+
     serialization_method = json
+
 
 def get_static_package_config() -> Dict:
     """ Read the package.json file in the static directory and returns a dictionary. """
     with open(absolute_path("static/package.json")) as static_package:
         return json.loads(static_package.read())
 
+
 def secure_decode_query_string(s: bytes) -> str:
     """
     Convert to UTF string and remove the <>% characters that could make
     a Cross Site Scripting attack.
-    
+
     Args:
         s (ByteString): Basically request.query_string, which is the URL parameters as raw bytestring.
-    
+
     Returns:
         str: Should be the same string utf-8 decoded if there is no attack.
     """
-    return s.decode("utf-8").translate({ord(c): None for c in '<>'}).replace('%3C', '')
+    return s.decode("utf-8").translate({ord(c): None for c in "<>"}).replace("%3C", "")
+
 
 def current_year() -> str:
     """
@@ -60,6 +65,7 @@ def current_year() -> str:
         "19" if the current year is 2019.
     """
     return str(datetime.datetime.now().year)[2:]
+
 
 def anonymize_ip(real_ip: str) -> str:
     """
@@ -87,7 +93,8 @@ def anonymize_ip(real_ip: str) -> str:
     anonymized_ip[3] = "0"
     return ".".join(anonymized_ip)
 
-def absolute_path(secured_filename: str, curr_file:str = __file__) -> str:
+
+def absolute_path(secured_filename: str, curr_file: str = __file__) -> str:
     """
     Prepend ``secured_filename`` with the current path.
 
@@ -99,6 +106,7 @@ def absolute_path(secured_filename: str, curr_file:str = __file__) -> str:
         str: String which contains the full path to ``secured_filename``.
     """
     return os.path.join(os.path.dirname(os.path.realpath(curr_file)), secured_filename)
+
 
 def new_line_to_br(text: str) -> str:
     """
@@ -112,6 +120,7 @@ def new_line_to_br(text: str) -> str:
     """
     return re.sub(r"\n", "<br />", text, flags=re.UNICODE)
 
+
 def remove_whitespaces(text: str) -> str:
     """
     Remove all whitespaces (space, tab, new line) in ``text``.
@@ -122,7 +131,8 @@ def remove_whitespaces(text: str) -> str:
     Returns:
         str: Text without whitespaces.
     """
-    return re.sub(r"\s+", "", text, flags=re.UNICODE) # Python 2 AND 3 compatible
+    return re.sub(r"\s+", "", text, flags=re.UNICODE)  # Python 2 AND 3 compatible
+
 
 def email_is_valid(email_addr: str) -> bool:
     """
@@ -134,7 +144,12 @@ def email_is_valid(email_addr: str) -> bool:
     Returns:
         bool: True if valid, otherwise False.
     """
-    return email_addr != "" and re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email_addr) != None
+    return (
+        email_addr != ""
+        and re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email_addr)
+        != None
+    )
+
 
 def check_access_level_range(access_level: int) -> bool:
     """
@@ -148,6 +163,7 @@ def check_access_level_range(access_level: int) -> bool:
     """
     return access_level >= 0 and access_level <= 255
 
+
 def is_same_site() -> bool:
     """
     Check if the request comes from the same website.
@@ -156,7 +172,7 @@ def is_same_site() -> bool:
     only supported by Chrome-based browsers, that do not
     include the Referer when requested (contrary to Firefox-
     based browsers).
-    
+
     * Sec-Fetch-Site Spec: https://www.w3.org/TR/fetch-metadata/
     * Referer Spec: https://tools.ietf.org/html/rfc7231#section-5.5.2
 
@@ -167,6 +183,7 @@ def is_same_site() -> bool:
         return request.headers.get("Sec-Fetch-Site") == "same-origin"
     return request.referrer != None and request.url_root in str(request.referrer)
 
+
 def is_admin() -> bool:
     """
     Check user credentials.
@@ -175,6 +192,7 @@ def is_admin() -> bool:
         bool: True if the access level is maximum: admin.
     """
     return "access_level" in session and session["access_level"] == 255
+
 
 def file_is_pdf(filename: str) -> bool:
     """
@@ -188,6 +206,7 @@ def file_is_pdf(filename: str) -> bool:
     """
     return filename.endswith(".pdf")
 
+
 def book_title_to_url(title: str) -> str:
     """
     Transform a book title into its URL-friendly equivalent.
@@ -199,6 +218,7 @@ def book_title_to_url(title: str) -> str:
         String containing only the following characters ``a-zA-Z0-9_-``
     """
     return re.sub(r"[^a-zA-Z0-9_-]", "", re.sub(r" ", "_", title)).lower()
+
 
 def file_extension(filename: str, file_type: str = "photo") -> str:
     """
@@ -221,9 +241,17 @@ def file_extension(filename: str, file_type: str = "photo") -> str:
             return ext
     return ""
 
+
 def csp_dict_to_str(csp: Dict) -> str:
     """ Convert the ``csp`` to string for the HTML meta tag. """
-    return Markup("; ".join(k + " " + (csp[k] if isinstance(csp[k], str) else " ".join(csp[k])) for k in csp) + ";")
+    return Markup(
+        "; ".join(
+            k + " " + (csp[k] if isinstance(csp[k], str) else " ".join(csp[k]))
+            for k in csp
+        )
+        + ";"
+    )
+
 
 def csp_nonce() -> str:
     """
@@ -234,6 +262,7 @@ def csp_nonce() -> str:
     """
     return base64.b64encode(secrets.token_bytes(18)).decode("utf-8")
 
+
 def generate_newsletter_id() -> str:
     """
     Generate a random string of characters which include any lower/upper cases and digits.
@@ -241,7 +270,10 @@ def generate_newsletter_id() -> str:
     Returns:
         str: Random string.
     """
-    return "".join(secrets.choice(string.ascii_letters + string.digits) for _ in range(64))
+    return "".join(
+        secrets.choice(string.ascii_letters + string.digits) for _ in range(64)
+    )
+
 
 def random_text(size: int) -> str:
     """
@@ -253,7 +285,10 @@ def random_text(size: int) -> str:
     Returns:
         str: Random string.
     """
-    return "".join(secrets.choice(string.ascii_lowercase + string.digits) for _ in range(size))
+    return "".join(
+        secrets.choice(string.ascii_lowercase + string.digits) for _ in range(size)
+    )
+
 
 def random_filename(size: int, file_extension: str = "jpg") -> str:
     """
@@ -268,6 +303,7 @@ def random_filename(size: int, file_extension: str = "jpg") -> str:
     """
     return random_text(size) + "." + file_extension
 
+
 def actual_access_level() -> int:
     """
     Get the access level of the current session or the lowest one.
@@ -276,6 +312,7 @@ def actual_access_level() -> int:
         int: The access level or 0.
     """
     return session["access_level"] if "access_level" in session else 0
+
 
 def escape(text: str) -> str:
     """
@@ -288,6 +325,7 @@ def escape(text: str) -> str:
         str: Safe text.
     """
     return str(Markup.escape(text))
+
 
 def basic_json(success: bool, info: str, args: Dict = {}) -> FlaskResponse:
     """
@@ -306,17 +344,19 @@ def basic_json(success: bool, info: str, args: Dict = {}) -> FlaskResponse:
     r.update(args)
     return jsonify(r)
 
+
 def params_urlencode(params: Dict[str, Any]) -> str:
     """ Returns a string of 'key=value' pairs joined by '&'. Don't forget to add the extra '&' or '?' to the URL. """
     return "&".join([k + "=" + v for k, v in params.items()])
 
+
 def create_and_save(
-        raw_path: str,
-        max_size: Tuple[int, int],
-        filename_size: int,
-        image_quality: int,
-        upload_path: str
-    ) -> str:
+    raw_path: str,
+    max_size: Tuple[int, int],
+    filename_size: int,
+    image_quality: int,
+    upload_path: str,
+) -> str:
     """
     Create a smaller picture of ``raw_path`` which fit in ``max_size``. The file
     name is random with ``filename_size`` character, extension excluded.
@@ -333,14 +373,15 @@ def create_and_save(
     """
     image = Image.open(raw_path)
     image = image.convert("RGB")
-    image.thumbnail((
-        min(max_size[0], image.size[0]),
-        min(max_size[1], image.size[1])),
-        Image.ANTIALIAS)
+    image.thumbnail(
+        (min(max_size[0], image.size[0]), min(max_size[1], image.size[1])),
+        Image.ANTIALIAS,
+    )
     photo_filename = random_filename(filename_size)
     image.save(os.path.join(upload_path, photo_filename), "JPEG", quality=image_quality)
     image.close()
     return photo_filename
+
 
 def match_absolute_path(path: str) -> bool:
     """
@@ -354,9 +395,11 @@ def match_absolute_path(path: str) -> bool:
     """
     return re.match(r"http(s)*://*", path, re.IGNORECASE) != None
 
+
 def verbose_md_ext(extensions: List[str]) -> List[str]:
     """ Prepend `markdown.extensions.` to each element of the list ``extensions``. """
     return ["markdown.extensions.{0}".format(ext) for ext in extensions]
+
 
 def get_access_level_from_id(id: int, cursor: MySQLCursor) -> int:
     """
@@ -369,13 +412,18 @@ def get_access_level_from_id(id: int, cursor: MySQLCursor) -> int:
     Returns:
         int: Number or throw a ValueError exception if the member is not found.
     """
-    cursor.execute("""SELECT access_level
+    cursor.execute(
+        """SELECT access_level
         FROM members
-        WHERE member_id={id}""".format(id=str(id)))
+        WHERE member_id={id}""".format(
+            id=str(id)
+        )
+    )
     data = cursor.fetchone()
     if cursor.rowcount == 0 or not data:
         raise ValueError("Invalid member identifier!")
-    return data[0] # type: ignore[index]
+    return data[0]  # type: ignore[index]
+
 
 def get_image_size(path: str) -> Tuple[int, int]:
     """
@@ -391,6 +439,7 @@ def get_image_size(path: str) -> Tuple[int, int]:
     size = image.size
     image.close()
     return size
+
 
 def get_image_exif(path: str) -> Tuple:
     """
@@ -414,7 +463,9 @@ def get_image_exif(path: str) -> Tuple:
         iso: Union[int, None]
 
         if "EXIF DateTimeOriginal" in tags:
-            date_taken = datetime.datetime.strptime(str(tags["EXIF DateTimeOriginal"]), "%Y:%m:%d %H:%M:%S")
+            date_taken = datetime.datetime.strptime(
+                str(tags["EXIF DateTimeOriginal"]), "%Y:%m:%d %H:%M:%S"
+            )
         else:
             date_taken = None
         if "EXIF FocalLengthIn35mmFilm" in tags:
@@ -435,6 +486,7 @@ def get_image_exif(path: str) -> Tuple:
             iso = None
         return (date_taken, focal_length_35mm, exposure_time_s, f_number, iso)
 
+
 def friendly_datetime(ugly_datetime: str) -> str:
     """
     Format ``ugly_datetime`` in a more logical way.
@@ -445,10 +497,12 @@ def friendly_datetime(ugly_datetime: str) -> str:
     Returns:
         str: For exemple: "early morning, May 2018"
     """
-    formated_datetime = datetime.datetime.strptime(str(ugly_datetime), "%Y-%m-%d %H:%M:%S")
+    formated_datetime = datetime.datetime.strptime(
+        str(ugly_datetime), "%Y-%m-%d %H:%M:%S"
+    )
     hour = int(datetime.datetime.strftime(formated_datetime, "%H"))
     if hour < 5:
-        time =  "overnight"
+        time = "overnight"
     elif hour < 8:
         time = "early morning"
     elif hour < 12:
@@ -466,67 +520,82 @@ def friendly_datetime(ugly_datetime: str) -> str:
     month_year = datetime.datetime.strftime(formated_datetime, "%B %Y")
     return time + ", " + month_year
 
+
 def preview_image(image_path: str) -> bytes:
     """
     Create a tiny data:image/jpeg;base64-type image of ``image_path``.
     The tiny image is 42px wide and keeps the ratio of the original image.
     The image is black & white even if the original image is RGB.
     Idea from https://css-tricks.com/the-blur-up-technique-for-loading-background-images/
-    
+
     Args:
         image_path (str): Path to the image file.
-    
+
     Returns:
         bytes: encoded ASCII string or b'' in case of error.
     """
     try:
         image = Image.open(image_path)
-        image = image.convert("L") # black and white
+        image = image.convert("L")  # black and white
         preview_w = 42
-        preview_h = int(float(preview_w) * float(image.size[1]) / float(image.size[0])) # keep ratio
+        preview_h = int(
+            float(preview_w) * float(image.size[1]) / float(image.size[0])
+        )  # keep ratio
         image = image.resize((preview_w, preview_h))
         preview_buffer = io.BytesIO()
         image.save(preview_buffer, format="JPEG", quality=70)
-        preview_base64 = bytes("data:image/jpeg;base64,", encoding='utf-8') + base64.b64encode(preview_buffer.getvalue())
+        preview_base64 = bytes(
+            "data:image/jpeg;base64,", encoding="utf-8"
+        ) + base64.b64encode(preview_buffer.getvalue())
         image.close()
         return preview_base64
     except:
-        return b''
+        return b""
+
 
 def fracstr_to_numerator(text: str) -> int:
     """ Returns the numerator of ``text``. """
     return Fraction(text).limit_denominator().numerator
 
+
 def fracstr_to_denominator(text: str) -> int:
     """ Returns the denominator of ``text``. """
     return Fraction(text).limit_denominator().denominator
+
 
 def allowed_external_connections(csp_config: Dict) -> List[str]:
     """ Returns a list of 'https://' sources from ``csp_config``. """
     connections = []
     for directive, sources in csp_config.items():
         for source in sources:
-            if source.startswith('https://'):
+            if source.startswith("https://"):
                 connections.append(source)
     return list(dict.fromkeys(connections))
+
 
 def total_subscribers(cursor: MySQLCursor) -> int:
     """ Count the number of subscribers and returns a positive integer or 0. """
     cursor.execute("SELECT COUNT(newsletter_id) FROM members WHERE email IS NOT NULL")
     data = cursor.fetchone()
-    return data[0] if cursor.rowcount and data else 0 # type: ignore[index]
+    return data[0] if cursor.rowcount and data else 0  # type: ignore[index]
+
 
 def same_site(view: Any) -> Any:
     """ View decorator redirecting external requests to the 404-error page. """
+
     @functools.wraps(view)
     def wrapped_view(**kwargs):
-        if not is_same_site() and not (current_app.config["TESTING"] or current_app.config["DEBUG"]):
+        if not is_same_site() and not (
+            current_app.config["TESTING"] or current_app.config["DEBUG"]
+        ):
             ext = file_extension(str(request.url_rule))
             if ext in ["jpg", "jpeg", "png"]:
                 return tile_not_found("image/" + ext)
             abort(404)
         return view(**kwargs)
+
     return wrapped_view
+
 
 def replace_extension(filename_src: str, new_ext: str) -> str:
     """
@@ -535,12 +604,13 @@ def replace_extension(filename_src: str, new_ext: str) -> str:
     Args:
         filename_src (str): The filename with the old extension.
         new_ext (str): The new extension without dot.
-    
+
     Returns:
         str: The filename with the new extension.
     """
     pre, ext = os.path.splitext(filename_src)
     return ".".join([pre, new_ext])
+
 
 def tile_not_found(mimetype: str) -> FlaskResponse:
     """

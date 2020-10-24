@@ -34,12 +34,13 @@ from .db import get_db
 kofi_app = Blueprint("kofi_app", __name__)
 mysql = LocalProxy(get_db)
 
+
 @kofi_app.route("/webhook", methods=("POST",))
 def kofi_webhook() -> FlaskResponse:
     """
     Webhook for Ko-fi.com, the idea is to receive data (f.i. on donation
     success) and save it to offer commissioned content in the website.
-    
+
     API according to https://ko-fi.com/manage/webhooks:
         Here's an example of the data that will be sent when a payment
         is fully completed. If you don't have a server set up to receive
@@ -53,23 +54,28 @@ def kofi_webhook() -> FlaskResponse:
         "message":"Good luck with the integration!",
         "amount":"3.00",
         "url":"https://ko-fi.com"}
-    
+
     Note:
         Selling commissions on Ko-fi is possible, it cost 5% fee for Free
         account, and 0% fee for Gold account. More information:
         https://ko-fi.com/manage/commissionssettings
     """
     try:
-        data = json.loads(unquote_plus(request.get_data().decode("utf-8"))[len('data='):])
+        data = json.loads(
+            unquote_plus(request.get_data().decode("utf-8"))[len("data=") :]
+        )
     except Exception as e:
         return basic_json(False, "Cannot decode data!")
     try:
-        kofi_time = strptime(data.get("timestamp").split('.', 1)[0], '%Y-%m-%dT%H:%M:%S')
-        db_kofi_time = strftime('%Y-%m-%d %H:%M:%S', kofi_time)
+        kofi_time = strptime(
+            data.get("timestamp").split(".", 1)[0], "%Y-%m-%dT%H:%M:%S"
+        )
+        db_kofi_time = strftime("%Y-%m-%d %H:%M:%S", kofi_time)
     except Exception as e:
         return basic_json(False, "Cannot decode timestamp!")
     cursor = mysql.cursor()
-    cursor.execute("""INSERT INTO webhook(message_id, data_timestamp,
+    cursor.execute(
+        """INSERT INTO webhook(message_id, data_timestamp,
         type, from_name, message, amount, url, ip)
         VALUES ('{message_id}', '{data_timestamp}', '{kofi_type}',
         '{from_name}', '{message}', {amount}, '{url}', INET6_ATON('{ip}'))""".format(
@@ -80,6 +86,8 @@ def kofi_webhook() -> FlaskResponse:
             message=escape(data.get("message")),
             amount=float(data.get("amount")),
             url=escape(data.get("url")),
-            ip=request.remote_addr))
+            ip=request.remote_addr,
+        )
+    )
     mysql.commit()
     return basic_json(True, "Thank you!")

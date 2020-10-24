@@ -30,16 +30,24 @@
 
 import pytest
 
-@pytest.mark.parametrize("path", (
-    # LDS aerial:
-    ("/map/middleware/lds/set=2/a/0/0/0"),
-    # LDS topo:
-    ("/map/middleware/lds/layer=767/a/0/0/0"),
-    # IGN aerial:
-    ("/map/middleware/ign?layer=GEOGRAPHICALGRIDSYSTEMS.MAPS&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/jpeg&TileMatrix=11&TileCol=1023&TileRow=753"),
-    # IGN topo:
-    ("/map/middleware/ign?layer=ORTHOIMAGERY.ORTHOPHOTOS&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fjpeg&TileMatrix=11&TileCol=1026&TileRow=753")
-))
+
+@pytest.mark.parametrize(
+    "path",
+    (
+        # LDS aerial:
+        ("/map/middleware/lds/set=2/a/0/0/0"),
+        # LDS topo:
+        ("/map/middleware/lds/layer=767/a/0/0/0"),
+        # IGN aerial:
+        (
+            "/map/middleware/ign?layer=GEOGRAPHICALGRIDSYSTEMS.MAPS&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/jpeg&TileMatrix=11&TileCol=1023&TileRow=753"
+        ),
+        # IGN topo:
+        (
+            "/map/middleware/ign?layer=ORTHOIMAGERY.ORTHOPHOTOS&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fjpeg&TileMatrix=11&TileCol=1026&TileRow=753"
+        ),
+    ),
+)
 def test_map_proxy_link_ok(client, path):
     """ Ckeck the links availability. """
     rv = client.get(path)

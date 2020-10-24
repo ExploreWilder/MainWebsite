@@ -48,34 +48,46 @@ AMAZON_MARKETPLACES = (
     ("com", "United States", 6),
     ("com", "New Zealand", 7),
     ("co.jp", "Japan", 8),
-    ("com.au", "Australia", 9))
+    ("com.au", "Australia", 9),
+)
+
 
 class InlineLinkProcessor(Treeprocessor):
     def run(self, root):
-        for element in root.iter('a'):
+        for element in root.iter("a"):
             attrib = element.attrib
-            href = attrib['href']
-            if href.startswith('https://www.amazon.'):
-                links = href.split(',')
+            href = attrib["href"]
+            if href.startswith("https://www.amazon."):
+                links = href.split(",")
                 data_links = []
                 pattern = re.compile(r"https://www\.(amazon\.[a-z]+(\.[a-z]+)?)/")
                 for link in links:
                     amazon_website = re.match(pattern, link).group(1)
-                    domain = amazon_website.split('.', 1)[-1]
-                    marketplaces = [(m[1], m[2]) for m in AMAZON_MARKETPLACES if m[0] == domain]
+                    domain = amazon_website.split(".", 1)[-1]
+                    marketplaces = [
+                        (m[1], m[2]) for m in AMAZON_MARKETPLACES if m[0] == domain
+                    ]
                     for marketplace in marketplaces:
-                        data_links.append({
-                            'website': amazon_website,
-                            'marketplace': marketplace[0],
-                            'flagId': marketplace[1],
-                            'link': link})
-                product_name = attrib.get('title') if attrib.get('title') else element.text
-                element.set('href', '#')
-                element.set('data-amazon-product-name', product_name)
-                element.set('data-amazon-affiliate-links', str(data_links))
-                existing_classes = attrib.get('class') + ' ' if attrib.get('class') else ''
-                element.set('class', existing_classes + 'amazon-affiliate-link')
+                        data_links.append(
+                            {
+                                "website": amazon_website,
+                                "marketplace": marketplace[0],
+                                "flagId": marketplace[1],
+                                "link": link,
+                            }
+                        )
+                product_name = (
+                    attrib.get("title") if attrib.get("title") else element.text
+                )
+                element.set("href", "#")
+                element.set("data-amazon-product-name", product_name)
+                element.set("data-amazon-affiliate-links", str(data_links))
+                existing_classes = (
+                    attrib.get("class") + " " if attrib.get("class") else ""
+                )
+                element.set("class", existing_classes + "amazon-affiliate-link")
+
 
 class AmazonAffiliateLinksExtension(Extension):
     def extendMarkdown(self, md, md_globals):
-        md.treeprocessors.register(InlineLinkProcessor(md), 'inlinelinkprocessor', 15)
+        md.treeprocessors.register(InlineLinkProcessor(md), "inlinelinkprocessor", 15)

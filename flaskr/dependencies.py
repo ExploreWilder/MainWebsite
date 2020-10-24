@@ -73,7 +73,7 @@ from flask import (
     request,
     send_file,
     send_from_directory,
-    session
+    session,
 )
 from flask.cli import with_appcontext
 from flask_seasurf import SeaSurf
