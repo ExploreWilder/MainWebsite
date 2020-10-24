@@ -28,8 +28,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-from .utils import *
+"""
+Webhook for Ko-fi.com.
+"""
+
 from .db import get_db
+from .utils import *
 
 kofi_app = Blueprint("kofi_app", __name__)
 mysql = LocalProxy(get_db)
@@ -64,14 +68,14 @@ def kofi_webhook() -> FlaskResponse:
         data = json.loads(
             unquote_plus(request.get_data().decode("utf-8"))[len("data=") :]
         )
-    except Exception as e:
+    except Exception:
         return basic_json(False, "Cannot decode data!")
     try:
         kofi_time = strptime(
             data.get("timestamp").split(".", 1)[0], "%Y-%m-%dT%H:%M:%S"
         )
         db_kofi_time = strftime("%Y-%m-%d %H:%M:%S", kofi_time)
-    except Exception as e:
+    except Exception:
         return basic_json(False, "Cannot decode timestamp!")
     cursor = mysql.cursor()
     cursor.execute(

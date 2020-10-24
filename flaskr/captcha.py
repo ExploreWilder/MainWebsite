@@ -28,17 +28,27 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+"""
+3rd party-free CAPTCHA solution.
+"""
+
 from .utils import *
 
 
 class Captcha:
-    """ Create, check and kill a CAPTCHA. """
+    """
+    Create, check and kill a CAPTCHA.
+    NOTE: Only one CAPTCHA per client!
+    """
 
     #: File path to the current CAPTCHA. No CAPTCHA file if empty.
     filepath: str = ""
 
     #: Value of the CAPTCHA once generated. No CAPTCHA if empty.
     passcode: str = ""
+
+    #: The CAPTCHA image.
+    captcha: Any = None
 
     def __init__(self, app: Flask) -> None:
         """
@@ -62,7 +72,7 @@ class Captcha:
         """
         if self.config["TESTING"]:
             return True
-        if not "captcha_passcode" in session:
+        if "captcha_passcode" not in session:
             return False
         hashed_input = werkzeug.security.pbkdf2_bin(
             passcode.upper(), self.config["CAPTCHA_SALT"]
@@ -89,9 +99,12 @@ class Captcha:
         self.generate_passcode()
         offset = 0
         border_left = 10
-        for c in self.passcode:
+        for character in self.passcode:
             draw.text(
-                (border_left + 35 * offset, 2), c, self.random_colour(), font=font
+                (border_left + 35 * offset, 2),
+                character,
+                self._random_colour(),
+                font=font,
             )
             offset += 1
         draw = ImageDraw.Draw(self.captcha)
@@ -113,7 +126,7 @@ class Captcha:
             self.passcode, self.config["CAPTCHA_SALT"]
         )[:9]
 
-    def random_colour(self) -> Tuple[int, int, int]:
+    def _random_colour(self) -> Tuple[int, int, int]:  # pylint: disable=no-self-use
         """
         Generate a random colour as a tuple (R, G, B).
 
@@ -148,7 +161,7 @@ class Captcha:
         )
         try:
             self.captcha.save(self.filepath, "PNG")
-        except:  # directory
+        except (ValueError, OSError):  # directory
             abort(404)
         return send_file(self.filepath, mimetype="image/png")  # copy file into RAM
 

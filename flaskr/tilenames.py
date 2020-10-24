@@ -1,23 +1,30 @@
-#
-# Extract from: https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
-# Author: Oliver White, 2007
-# License: Public Domain
-#
+"""
+Tilename utils.
+Extract from: https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+Author: Oliver White, 2007
+License: Public Domain
+"""
 
-from math import *
+# pylint: disable=invalid-name; allow one letter variables (f.i. x, y, z)
+
+import math as mod_math
 
 
 def numTiles(z):
-    return pow(2, z)
+    return mod_math.pow(2, z)
 
 
 def sec(x):
-    return 1 / cos(x)
+    return 1 / mod_math.cos(x)
 
 
 def latlon2relativeXY(lat, lon):
     x = (lon + 180) / 360
-    y = (1 - log(tan(radians(lat)) + sec(radians(lat))) / pi) / 2
+    y = (
+        1
+        - mod_math.log(mod_math.tan(mod_math.radians(lat)) + sec(mod_math.radians(lat)))
+        / mod_math.pi
+    ) / 2
     return (x, y)
 
 
@@ -35,7 +42,7 @@ def tileXY(lat, lon, z):
 def xy2latlon(x, y, z):
     n = numTiles(z)
     relY = y / n
-    lat = mercatorToLat(pi * (1 - 2 * relY))
+    lat = mercatorToLat(mod_math.pi * (1 - 2 * relY))
     lon = -180.0 + 360.0 * x / n
     return (lat, lon)
 
@@ -45,8 +52,8 @@ def latEdges(y, z):
     unit = 1 / n
     relY1 = y * unit
     relY2 = relY1 + unit
-    lat1 = mercatorToLat(pi * (1 - 2 * relY1))
-    lat2 = mercatorToLat(pi * (1 - 2 * relY2))
+    lat1 = mercatorToLat(mod_math.pi * (1 - 2 * relY1))
+    lat2 = mercatorToLat(mod_math.pi * (1 - 2 * relY2))
     return (lat1, lat2)
 
 
@@ -65,7 +72,7 @@ def tileLatLonEdges(x, y, z):
 
 
 def mercatorToLat(mercatorY):
-    return degrees(atan(sinh(mercatorY)))
+    return mod_math.degrees(mod_math.atan(mod_math.sinh(mercatorY)))
 
 
 def tileSizePixels():

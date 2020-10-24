@@ -105,7 +105,7 @@ class BookProcessor:
             re.compile(r'href="#fn:([0-9]+)"'), self.custom_footnote, self.html
         )
         self.p_html_content.open("w", encoding="utf-8").write(self.html)
-        self.toc = self.md.toc
+        self.toc = self.md.toc  # type: ignore[attr-defined]
         self.p_html_toc.open("w", encoding="utf-8").write(self.toc)
 
     def remove_hr(self) -> str:

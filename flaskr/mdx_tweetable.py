@@ -56,9 +56,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-from __future__ import print_function, unicode_literals
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import re
 from urllib.parse import quote_plus
+
 from markdown.extensions import Extension
 from markdown.inlinepatterns import Pattern
 

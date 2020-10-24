@@ -28,9 +28,16 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-from .utils import *
-from twython import Twython
+"""
+Socials-related functions and routes.
+"""
+
 from xml.dom import minidom
+
+from twython import Twython
+from twython import TwythonError
+
+from .utils import *
 
 social_networks_app = Blueprint("social_networks_app", __name__)
 
@@ -89,10 +96,10 @@ def download_image(
     """
     path_file = os.path.join(data_store, hashed_filename)
     if not os.path.isfile(path_file):
-        r = requests.get(clear_url, timeout=timeout)
+        r = requests.get(clear_url, timeout=timeout)  # pylint: disable=invalid-name
         r.raise_for_status()
-        with open(path_file, "wb") as f:
-            f.write(r.content)
+        with open(path_file, "wb") as image_file:
+            image_file.write(r.content)
 
 
 def compress_timeline(timeline: List, salt: bytes) -> List:
@@ -143,7 +150,7 @@ def compress_timeline(timeline: List, salt: bytes) -> List:
 
 def get_dom_text(nodelist) -> str:
     """ Find out the text node of `nodelist` and return a string. """
-    rc = []
+    rc = []  # pylint: disable=invalid-name
     for node in nodelist:
         if node.nodeType == node.TEXT_NODE:
             rc.append(node.data)
@@ -216,7 +223,7 @@ def my_twitter_timeline() -> FlaskResponse:
             content = twitter.get_user_timeline(
                 screen_name=screen_name, json_encoded=True
             )
-        except:  # https://twython.readthedocs.io/en/latest/api.html#exceptions
+        except TwythonError:  # https://twython.readthedocs.io/en/latest/api.html#exceptions
             current_app.logger.exception(
                 "Failed to get the " + screen_name + " timeline from Twitter"
             )
@@ -230,7 +237,7 @@ def my_twitter_timeline() -> FlaskResponse:
 
     try:
         return send_from_directory(data_store, timeline_filename)
-    except:
+    except Exception:
         current_app.logger.exception(
             "Failed to locally retrieve the Twitter timeline @" + screen_name
         )
@@ -259,8 +266,10 @@ def my_mastodon_timeline() -> FlaskResponse:
         os.stat(old_timeline).st_mtime + delta
     ) < current_timestamp:
         try:
-            r = requests.get(account_url + ".rss", timeout=timeout)
-        except:
+            r = requests.get(  # pylint: disable=invalid-name
+                account_url + ".rss", timeout=timeout
+            )
+        except Exception:
             current_app.logger.exception(
                 "Failed to get the Mastodon timeline: " + account_url
             )
@@ -310,7 +319,7 @@ def my_mastodon_timeline() -> FlaskResponse:
 
     try:
         return send_from_directory(data_store, timeline_filename)
-    except:
+    except Exception:
         current_app.logger.exception(
             "Failed to locally retrieve the Mastodon timeline " + account_url
         )

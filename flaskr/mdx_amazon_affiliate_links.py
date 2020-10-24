@@ -34,9 +34,11 @@
 
 # Short links (from amzn.to) are not supported. Use full link only.
 
-import re, json
-from markdown.treeprocessors import Treeprocessor
+import json
+import re
+
 from markdown.extensions import Extension
+from markdown.treeprocessors import Treeprocessor
 
 AMAZON_MARKETPLACES = (
     ("fr", "France", 0),

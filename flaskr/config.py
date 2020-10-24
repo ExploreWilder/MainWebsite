@@ -28,10 +28,16 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+"""
+Global configuration for all modes.
+"""
+
+# pylint: disable=too-few-public-methods
+
 from .utils import *
 
 
-class Config(object):
+class Config:
     """ Configuration in debug/development mode. """
 
     #: Interactive debugger for unhandled exceptions and auto-reload on code changes.
@@ -154,8 +160,8 @@ class Config(object):
     MD_EXT: List[Any] = verbose_md_ext(
         ["admonition", "footnotes", "attr_list", "abbr", "toc", "def_list", "tables"]
     ) + [
-        AmazonAffiliateLinksExtension(),
-        TweetableExtension(
+        AmazonAffiliateLinksExtension(),  # type: ignore[list-item]
+        TweetableExtension(  # type: ignore[list-item]
             twitter_username=TWITTER_ACCOUNT["screen_name"], brand_name=BRAND_NAME
         ),
     ]
@@ -250,7 +256,7 @@ class Config(object):
     CSP_NONCE_IN: List[str] = ["script-src"]
 
 
-class Testing_config(object):
+class TestingConfig:
     """ Configuration to append. For remote/local testing purposes only. """
 
     #: Testing.
@@ -261,7 +267,7 @@ class Testing_config(object):
     REQUIRED_TIME_GAP: int = 1
 
 
-class Production_config(Config):
+class ProductionConfig(Config):
     """ Configuration in production mode (online) based on the debug-mode config. """
 
     #: Do not enable debug mode when deploying in production.

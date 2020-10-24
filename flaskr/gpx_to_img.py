@@ -28,12 +28,17 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-import gpxpy as mod_gpxpy
-import math as mod_math
+"""
+Create a map from GPX data.
+"""
+
 import json as mod_json
-import requests as mod_requests
-from urllib.parse import quote as mod_quote
+import math as mod_math
 from typing import Dict
+from urllib.parse import quote as mod_quote
+
+import gpxpy as mod_gpxpy
+import requests as mod_requests
 
 DEFAULT_MARGIN_POINTS_NO: int = 3
 DEFAULT_MAX_ITER: int = 20
@@ -61,7 +66,7 @@ class MyGPXTrackSegment(mod_gpxpy.gpx.GPXTrackSegment):
         """
         min_distance = 0
         max_distance = 1000
-        for i in range(max_iter):
+        for _ in range(max_iter):
             dicho = int((max_distance + min_distance) / 2)
             current_segment = self.clone()
             current_segment.simplify(dicho)

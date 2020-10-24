@@ -28,11 +28,20 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-import srtm, gpxpy, gpxpy.gpx
+"""
+Map-related functions and routes.
+For the complete mapproxy, refer to vts_proxy.py
+"""
 
-from .utils import *
+# pylint: disable=invalid-name; allow one letter variables (f.i. x, y, z)
+
+import gpxpy
+import gpxpy.gpx
+import srtm
+
 from .db import get_db
 from .gpx_to_img import gpx_to_src
+from .utils import *
 from .webtrack import WebTrack
 
 map_app = Blueprint("map_app", __name__)
@@ -261,8 +270,8 @@ def static_map(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
             create_static_map(
                 gpx_path, static_map_path, current_app.config["MAPBOX_STATIC_IMAGES"]
             )
-        except Exception as e:
-            return "{}".format(type(e).__name__), 500
+        except Exception as err:
+            return "{}".format(type(err).__name__), 500
     return send_from_directory(gpx_dir, gpx_filename + append_ext)
 
 
@@ -314,8 +323,8 @@ def webtrack_file(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
             gpx_to_webtrack_with_elevation(
                 gpx_path, webtrack_path, current_app.config["NASA_EARTHDATA"]
             )
-        except Exception as e:
-            return "{}".format(type(e).__name__), 500
+        except Exception as err:
+            return "{}".format(type(err).__name__), 500
     return send_from_directory(
         gpx_dir,
         replace_extension(gpx_filename, "webtrack"),
@@ -450,7 +459,9 @@ def gpx_to_webtrack_with_elevation(
             },
         }
 
-        webTrack = WebTrack(webtrack_path, full_profile)
+        webTrack = WebTrack(  # pylint: disable=unused-variable; saved to disk
+            webtrack_path, full_profile
+        )
 
 
 @map_app.route(
@@ -474,14 +485,16 @@ def proxy_lds(layer: str, a_d: str, z: int, x: int, y: int) -> FlaskResponse:
         x (int): X parameter of the XYZ request.
         y (int): Y parameter of the XYZ request.
     """
+    mimetype = "image/png"
     url = "https://tiles-{}.data-cdn.linz.govt.nz/services;key={}/tiles/v4/{}/EPSG:3857/{}/{}/{}.png".format(
         escape(a_d), current_app.config["LDS_API_KEY"], escape(layer), z, x, y
     )
     try:
         r = requests.get(url)
-    except:
-        abort(404)
-    return Response(r.content, mimetype="image/png")
+        r.raise_for_status()  # raise for not found tiles
+    except requests.exceptions.HTTPError:
+        return tile_not_found(mimetype)
+    return Response(r.content, mimetype=mimetype)
 
 
 @map_app.route("/middleware/ign", methods=("GET",))
@@ -494,6 +507,7 @@ def proxy_ign() -> FlaskResponse:
     Raises:
         404: in case of IGN error or if the request comes from another website and not in testing mode.
     """
+    mimetype = "image/jpeg"
     url = "https://{}:{}@wxs.ign.fr/{}/geoportail/wmts?{}".format(
         current_app.config["IGN"]["username"],
         current_app.config["IGN"]["password"],
@@ -502,6 +516,7 @@ def proxy_ign() -> FlaskResponse:
     )
     try:
         r = requests.get(url)
-    except:
-        abort(404)
-    return Response(r.content, mimetype="image/jpeg")
+        r.raise_for_status()  # raise for not found tiles
+    except requests.exceptions.HTTPError:
+        return tile_not_found(mimetype)
+    return Response(r.content, mimetype=mimetype)

@@ -28,6 +28,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+"""
+Common utilities.
+"""
+
 from .dependencies import *
 
 
@@ -43,7 +47,7 @@ def get_static_package_config() -> Dict:
         return json.loads(static_package.read())
 
 
-def secure_decode_query_string(s: bytes) -> str:
+def secure_decode_query_string(query_str: bytes) -> str:
     """
     Convert to UTF string and remove the <>% characters that could make
     a Cross Site Scripting attack.
@@ -54,7 +58,11 @@ def secure_decode_query_string(s: bytes) -> str:
     Returns:
         str: Should be the same string utf-8 decoded if there is no attack.
     """
-    return s.decode("utf-8").translate({ord(c): None for c in "<>"}).replace("%3C", "")
+    return (
+        query_str.decode("utf-8")
+        .translate({ord(c): None for c in "<>"})
+        .replace("%3C", "")
+    )
 
 
 def current_year() -> str:
@@ -147,7 +155,7 @@ def email_is_valid(email_addr: str) -> bool:
     return (
         email_addr != ""
         and re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email_addr)
-        != None
+        is not None
     )
 
 
@@ -161,7 +169,7 @@ def check_access_level_range(access_level: int) -> bool:
     Returns:
         bool: True if in the range [0, 255].
     """
-    return access_level >= 0 and access_level <= 255
+    return 0 <= access_level <= 255
 
 
 def is_same_site() -> bool:
@@ -181,7 +189,7 @@ def is_same_site() -> bool:
     """
     if "Sec-Fetch-Site" in request.headers:
         return request.headers.get("Sec-Fetch-Site") == "same-origin"
-    return request.referrer != None and request.url_root in str(request.referrer)
+    return request.referrer is not None and request.url_root in str(request.referrer)
 
 
 def is_admin() -> bool:
@@ -290,18 +298,18 @@ def random_text(size: int) -> str:
     )
 
 
-def random_filename(size: int, file_extension: str = "jpg") -> str:
+def random_filename(size: int, file_ext: str = "jpg") -> str:
     """
     Generate a random file name with the extension ``file_extension``.
 
     Args:
         size (int): The length of the filename, file extension excluded.
-        file_extension (string): The file extension. Default is jpg.
+        file_ext (string): The file extension. Default is jpg.
 
     Returns:
         str: A random file name with a specified extension.
     """
-    return random_text(size) + "." + file_extension
+    return random_text(size) + "." + file_ext
 
 
 def actual_access_level() -> int:
@@ -327,7 +335,9 @@ def escape(text: str) -> str:
     return str(Markup.escape(text))
 
 
-def basic_json(success: bool, info: str, args: Dict = {}) -> FlaskResponse:
+def basic_json(
+    success: bool, info: str, args: Union[Dict, None] = None
+) -> FlaskResponse:
     """
     Simplify JSON format by returning a preformated JSON.
 
@@ -339,10 +349,11 @@ def basic_json(success: bool, info: str, args: Dict = {}) -> FlaskResponse:
     Returns:
         JSON data and its content-type header.
     """
-    d = {"success": success, "info": info}
-    r = d.copy()
-    r.update(args)
-    return jsonify(r)
+    data = {"success": success, "info": info}
+    returned_data = data.copy()
+    if args:
+        returned_data.update(args)
+    return jsonify(returned_data)
 
 
 def params_urlencode(params: Dict[str, Any]) -> str:
@@ -393,7 +404,7 @@ def match_absolute_path(path: str) -> bool:
     Returns:
         bool: True for absolute URL, false for relative URL.
     """
-    return re.match(r"http(s)*://*", path, re.IGNORECASE) != None
+    return re.match(r"http(s)*://*", path, re.IGNORECASE) is not None
 
 
 def verbose_md_ext(extensions: List[str]) -> List[str]:
@@ -401,12 +412,12 @@ def verbose_md_ext(extensions: List[str]) -> List[str]:
     return ["markdown.extensions.{0}".format(ext) for ext in extensions]
 
 
-def get_access_level_from_id(id: int, cursor: MySQLCursor) -> int:
+def get_access_level_from_id(member_id: int, cursor: MySQLCursor) -> int:
     """
     Get the access level from the member ``id``.
 
     Args:
-        id (int): Member unique id.
+        member_id (int): Member unique id.
         cursor: Cursor to access the database.
 
     Returns:
@@ -416,7 +427,7 @@ def get_access_level_from_id(id: int, cursor: MySQLCursor) -> int:
         """SELECT access_level
         FROM members
         WHERE member_id={id}""".format(
-            id=str(id)
+            id=str(member_id)
         )
     )
     data = cursor.fetchone()
@@ -502,23 +513,23 @@ def friendly_datetime(ugly_datetime: str) -> str:
     )
     hour = int(datetime.datetime.strftime(formated_datetime, "%H"))
     if hour < 5:
-        time = "overnight"
+        h_time = "overnight"
     elif hour < 8:
-        time = "early morning"
+        h_time = "early morning"
     elif hour < 12:
-        time = "late morning"
+        h_time = "late morning"
     elif hour < 15:
-        time = "early afternoon"
+        h_time = "early afternoon"
     elif hour < 17:
-        time = "late afternoon"
+        h_time = "late afternoon"
     elif hour < 19:
-        time = "early evening"
+        h_time = "early evening"
     elif hour < 21:
-        time = "the evening"
+        h_time = "the evening"
     else:
-        time = "overnight"
+        h_time = "overnight"
     month_year = datetime.datetime.strftime(formated_datetime, "%B %Y")
-    return time + ", " + month_year
+    return h_time + ", " + month_year
 
 
 def preview_image(image_path: str) -> bytes:
@@ -549,7 +560,7 @@ def preview_image(image_path: str) -> bytes:
         ) + base64.b64encode(preview_buffer.getvalue())
         image.close()
         return preview_base64
-    except:
+    except OSError:
         return b""
 
 
@@ -566,7 +577,7 @@ def fracstr_to_denominator(text: str) -> int:
 def allowed_external_connections(csp_config: Dict) -> List[str]:
     """ Returns a list of 'https://' sources from ``csp_config``. """
     connections = []
-    for directive, sources in csp_config.items():
+    for _, sources in csp_config.items():
         for source in sources:
             if source.startswith("https://"):
                 connections.append(source)
@@ -608,7 +619,7 @@ def replace_extension(filename_src: str, new_ext: str) -> str:
     Returns:
         str: The filename with the new extension.
     """
-    pre, ext = os.path.splitext(filename_src)
+    pre, _ = os.path.splitext(filename_src)
     return ".".join([pre, new_ext])
 
 

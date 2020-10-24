@@ -28,19 +28,23 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-from .utils import *
+"""
+Main interfaces with the visitor.
+"""
+
+from .book_processor import BookProcessor
+from .cache import cache
 from .captcha import Captcha
 from .db import get_db
-from .book_processor import BookProcessor
 from .secure_email import SecureEmail
-from .cache import cache
+from .utils import *
 
 visitor_app = Blueprint("visitor_app", __name__)
 mysql = LocalProxy(get_db)
 
 
 def subscribe_newsletter(
-    cursor: MySQLCursor, session: Dict, email: str, name: str = ""
+    cursor: MySQLCursor, current_session: Dict, email: str, name: str = ""
 ) -> bool:
     """
     Subscribe `email` to the newsletter.
@@ -50,7 +54,7 @@ def subscribe_newsletter(
               already have a newsletter_id or the visitor already
               subscribed during the current session.
     """
-    if "subscribed" in session:
+    if "subscribed" in current_session:
         return False
 
     cursor.execute(
@@ -85,12 +89,12 @@ def subscribe_newsletter(
         )
         new_subscription = True
 
-    session["subscribed"] = True
+    current_session["subscribed"] = True
     return new_subscription
 
 
 def add_audit_log(
-    member_id: int, ip: str, event_description: str = "logged_in"
+    member_id: int, ip_addr: str, event_description: str = "logged_in"
 ) -> None:
     """
     Add an entry to the audit log.
@@ -110,7 +114,7 @@ def add_audit_log(
     cursor.execute(
         """INSERT INTO members_audit_log(member_id, event_description, ip)
         VALUES ({member_id}, '{event_description}', INET6_ATON('{ip}'))""".format(
-            member_id=member_id, event_description=event_description, ip=ip
+            member_id=member_id, event_description=event_description, ip=ip_addr
         )
     )
     mysql.commit()
@@ -235,30 +239,27 @@ def sitemap() -> Any:
     The sitemap only includes the main public pages and released and
     public stories.
     """
-    try:
-        pages = []
-        ten_days_ago = (
-            (datetime.datetime.now() - datetime.timedelta(days=7)).date().isoformat()
-        )
-        static_links = ["", "stories", "about", "contact"]
-        cursor = mysql.cursor()
-        cursor.execute(
-            "SELECT book_id, url FROM shelf WHERE access_level=0 AND status='released'"
-        )
-        open_books = cursor.fetchall()
-        dynamic_links = (
-            ["stories/" + str(book[0]) + "/" + book[1] for book in open_books]
-            if cursor.rowcount
-            else []
-        )
-        for link in static_links + dynamic_links:
-            pages.append([request.url_root + link, ten_days_ago])
-        sitemap_xml = render_template("sitemap.xml", pages=pages)
-        response = make_response(sitemap_xml)
-        response.headers["Content-Type"] = "application/xml"
-        return response
-    except Exception as e:
-        return str(e)
+    pages = []
+    ten_days_ago = (
+        (datetime.datetime.now() - datetime.timedelta(days=7)).date().isoformat()
+    )
+    static_links = ["", "stories", "about", "contact"]
+    cursor = mysql.cursor()
+    cursor.execute(
+        "SELECT book_id, url FROM shelf WHERE access_level=0 AND status='released'"
+    )
+    open_books = cursor.fetchall()
+    dynamic_links = (
+        ["stories/" + str(book[0]) + "/" + book[1] for book in open_books]
+        if cursor.rowcount
+        else []
+    )
+    for link in static_links + dynamic_links:
+        pages.append([request.url_root + link, ten_days_ago])
+    sitemap_xml = render_template("sitemap.xml", pages=pages)
+    response = make_response(sitemap_xml)
+    response.headers["Content-Type"] = "application/xml"
+    return response
 
 
 @visitor_app.route("/audit_log")
@@ -301,9 +302,9 @@ def shelf() -> Any:
             access_level=access_level
         )
     )
-    shelf = cursor.fetchall()
+    data_shelf = cursor.fetchall()
     formated_shelf = []
-    for book in shelf:  # put the JPEG preview into a blured SVG
+    for book in data_shelf:  # put the JPEG preview into a blured SVG
         book_list = list(book)
         try:
             card_size = get_image_size(
@@ -346,7 +347,7 @@ def story(book_id: int, story_url: str) -> Any:
         book_id (int): Book ID according to the `shelf` table.
         story_url (str): Book URL according to the table (case insensitive).
     """
-    story = escape(story_url).lower()
+    story_url = escape(story_url).lower()
     access_level = actual_access_level()
     cursor = mysql.cursor()
     cursor.execute(
@@ -361,7 +362,7 @@ def story(book_id: int, story_url: str) -> Any:
             id=book_id,
             access_level=access_level,
             cond_and_draft="" if access_level > 0 else "AND status='released'",
-            url=story,
+            url=story_url,
         )
     )
     data = cursor.fetchone()
@@ -374,16 +375,16 @@ def story(book_id: int, story_url: str) -> Any:
     book_ext = data[7]
     if book_ext == "md":
         try:
-            book_processor = BookProcessor(current_app, book_id, story, data[4])
+            book_processor = BookProcessor(current_app, book_id, story_url, data[4])
             book_content = book_processor.print_book()
-        except Exception as e:  # f.i. Markdown file not found
+        except FileNotFoundError:
             current_app.logger.exception("Failed to process Markdown file")
     else:
         book_content = BookProcessor.get_empty_book()
     book = {
         "id": book_id,
         "title": data[1],
-        "url": story,
+        "url": story_url,
         "description": {"md": data[5], "html": data[6]},
         "period": data[2],
         "status": data[3],
@@ -392,7 +393,7 @@ def story(book_id: int, story_url: str) -> Any:
         "content": book_content,
     }
     thumbnail_networks = (
-        request.url_root + "books/" + str(book_id) + "/" + story + "/card.jpg"
+        request.url_root + "books/" + str(book_id) + "/" + story_url + "/card.jpg"
     )
     return render_template(
         "story.html" if book_ext == "md" else "storytelling_map.html",
@@ -432,7 +433,7 @@ def send_mail() -> FlaskResponse:
     a kind of meaningless ghost.
     """
     is_detailed_feedback = "detailed_feedback" in str(request.url_rule)
-    if is_detailed_feedback and not "old_visit_id" in session:
+    if is_detailed_feedback and "old_visit_id" not in session:
         return basic_json(False, "Undefined feedback source!")
     if not all(
         x in request.form
@@ -464,11 +465,11 @@ def send_mail() -> FlaskResponse:
     if name == "":
         printable_name = "Unknown"
         answer = "Thanks a lot for your message!"
-        sender = email
+        # sender = email
     else:
         printable_name = name
         answer = "Thank you " + name + " for your message!"
-        sender = name + " <" + email + ">"
+        # sender = name + " <" + email + ">"
 
     if request.form.getlist("subjects[]"):
         dic = {
@@ -482,8 +483,8 @@ def send_mail() -> FlaskResponse:
         }
 
         selected_subjects = [dic.get(n, "") for n in request.form.getlist("subjects[]")]
-        li = "</li><li>".join(selected_subjects)
-        subject = "<p>Subjects:</p><ul><li>" + li + "</li></ul>"
+        li_elements = "</li><li>".join(selected_subjects)
+        subject = "<p>Subjects:</p><ul><li>" + li_elements + "</li></ul>"
     else:
         subject = "<p>No subject selected!</p>"
 
@@ -565,9 +566,15 @@ def send_mail() -> FlaskResponse:
         name=printable_name,
         email=email,
         ip=request.remote_addr,
-        platform=request.user_agent.platform if hasattr(request.user_agent, "platform") else "?",  # type: ignore[attr-defined]
-        browser=request.user_agent.browser if hasattr(request.user_agent, "browser") else "?",  # type: ignore[attr-defined]
-        version=request.user_agent.version if hasattr(request.user_agent, "version") else "?",  # type: ignore[attr-defined]
+        platform=request.user_agent.platform  # type: ignore[attr-defined]
+        if hasattr(request.user_agent, "platform")
+        else "?",
+        browser=request.user_agent.browser  # type: ignore[attr-defined]
+        if hasattr(request.user_agent, "browser")
+        else "?",
+        version=request.user_agent.version  # type: ignore[attr-defined]
+        if hasattr(request.user_agent, "version")
+        else "?",
         browser_time=escape(request.form["browser_time"]),
         win_res=escape(request.form["win_res"]),
         subscription="Yes" if subscribe_me else "No",
@@ -628,7 +635,7 @@ def create_password(
             member_id = int(request.form["member_id"])
             newsletter_id = escape(request.form["newsletter_id"])
             one_time_password = escape(request.form["one_time_password"])
-        except:
+        except KeyError:
             abort(404)
 
     cursor = mysql.cursor()
@@ -643,7 +650,7 @@ def create_password(
             one_time_password=one_time_password,
         )
     )
-    member_data = cursor.fetchone()
+    member_data = cursor.fetchone()  # pylint: disable=unused-variable
     if cursor.rowcount == 0:
         abort(404)
     if request.method == "POST":
@@ -734,7 +741,8 @@ def change_email(member_id: int = 0, hashed_url_email: str = "") -> Any:
 
     Args:
         member_id (int): Member ID according to the `members` table.
-        hashed_url_email (str): The new email address hashed and salted with a secret key so no one could guess.
+        hashed_url_email (str): The new email address hashed and salted with a
+                                secret key so no one could guess.
     """
     if "member_id" not in session:
         abort(404)
@@ -767,14 +775,14 @@ def change_email(member_id: int = 0, hashed_url_email: str = "") -> Any:
                 show_form=True,
                 is_prod=not current_app.config["DEBUG"],
             )
-        elif data[3] == new_email_address:
+        if data[3] == new_email_address:
             flash("Email already sent to the new email address!", "danger")
             return render_template(
                 "change_email_address.html",
                 show_form=True,
                 is_prod=not current_app.config["DEBUG"],
             )
-        elif not werkzeug.security.check_password_hash(data[0], current_password):
+        if not werkzeug.security.check_password_hash(data[0], current_password):
             flash("Wrong password!", "danger")
             return render_template(
                 "change_email_address.html",
@@ -858,7 +866,7 @@ def change_email(member_id: int = 0, hashed_url_email: str = "") -> Any:
             show_form=False,
             is_prod=not current_app.config["DEBUG"],
         )
-    elif hashed_url_email:  # try changing the email address:
+    if hashed_url_email:  # try changing the email address:
         if session["member_id"] != member_id:  # bad member connected or bad link
             abort(404)
         hashed_url_email = escape(hashed_url_email)
@@ -1047,16 +1055,18 @@ def unsubscribe_from_newsletter(member_id: int, newsletter_id: str) -> Any:
                 session.pop("email", None)
 
     username = member_data[0]
-    if username == None or username == "":
+    if username is None or username == "":
         welcome = ""
     else:
         welcome = " " + username
     flash(
         "Hi"
         + welcome
-        + "! You successfully unsubscribed from the newsletter. If you were a member, you lost your account!"
+        + "! You successfully unsubscribed from the newsletter."
+        + " If you were a member, you lost your account!"
     )
-    # render instead of redirect: https://github.com/pallets/flask/issues/1168#issuecomment-314146774
+    # render instead of redirect:
+    # https://github.com/pallets/flask/issues/1168#issuecomment-314146774
     return render_template("gallery.html", is_prod=not current_app.config["DEBUG"])
 
 
@@ -1118,7 +1128,7 @@ def fetch_photos() -> FlaskResponse:
                 row,
             )
         )
-        if photo["time"] != None:
+        if photo["time"] is not None:
             photo["time"] = friendly_datetime(photo["time"])
         formated_data.append(photo)
     return jsonify(formated_data)
@@ -1132,12 +1142,12 @@ def share_emotion_photo() -> FlaskResponse:
     Raises:
         404: if the request is not POST.
     """
-    if not "emotion" in request.form:
+    if "emotion" not in request.form:
         return basic_json(False, "Emotion required!")
     emotion = escape(request.form["emotion"])
-    if not emotion in current_app.config["EMOTIONS"]:
+    if emotion not in current_app.config["EMOTIONS"]:
         return basic_json(False, "Invalid emotion!")
-    if not "last_visit_photo_id" in session:
+    if "last_visit_photo_id" not in session:
         return basic_json(False, "Illogic request!")
     visit_id = int(session["last_visit_photo_id"])
     cursor = mysql.cursor()
@@ -1210,7 +1220,7 @@ def share_emotion_book() -> FlaskResponse:
         visitor_data = JSONSecureCookie.unserialize(
             raw_cookie, current_app.config["COOKIE_SECRET_KEY"]
         )
-        if not "id" in visitor_data:  # cookie compromised, bake a new one
+        if "id" not in visitor_data:  # cookie compromised, bake a new one
             visitor_data = bake()
     visitor_id = int(visitor_data["id"])
 
@@ -1219,8 +1229,10 @@ def share_emotion_book() -> FlaskResponse:
 
     # add a new entry into the database and update cookies
     cursor.execute(
-        """INSERT INTO visits(element_id, element_type, ip, visitor_id, member_id, emotion)
-        VALUES ({book_id}, 'shelf', INET6_ATON('{ip}'), {visitor_id}, {member_id}, '{emotion}')""".format(
+        """INSERT INTO visits(element_id, element_type, ip,
+        visitor_id, member_id, emotion)
+        VALUES ({book_id}, 'shelf', INET6_ATON('{ip}'),
+        {visitor_id}, {member_id}, '{emotion}')""".format(
             book_id=book_id,
             ip=anonymize_ip(request.remote_addr),
             visitor_id=visitor_id,
@@ -1451,7 +1463,8 @@ def reset_password(result: str = "", status: bool = True) -> Any:
                             )
                             secure_email.send(email, subject, text, html)
                     flash(
-                        "If you are a member, a password reset link has been sent to your email address: "
+                        "If you are a member, a password reset link "
+                        + "has been sent to your email address: "
                         + email
                     )
                     return redirect("/index")
@@ -1511,7 +1524,7 @@ def log_visit_photo() -> Any:
         visitor_data = JSONSecureCookie.unserialize(
             raw_cookie, current_app.config["COOKIE_SECRET_KEY"]
         )
-        if not "id" in visitor_data:  # cookie compromised, bake a new one
+        if "id" not in visitor_data:  # cookie compromised, bake a new one
             visitor_data = bake()
     visitor_id = int(visitor_data["id"])
 

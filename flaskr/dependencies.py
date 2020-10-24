@@ -28,6 +28,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+"""
+Globally used modules.
+"""
+
+# pylint: disable=unused-import
+
 import base64
 import datetime
 import functools
@@ -48,7 +54,13 @@ import sys
 import xml.etree.ElementTree as eltree
 from fractions import Fraction
 from pathlib import Path
-from time import gmtime, strftime, strptime, time
+from time import gmtime
+from time import strftime
+from time import strptime
+from time import time
+from urllib.parse import quote
+from urllib.parse import quote_plus
+from urllib.parse import unquote_plus
 
 import click
 import exifread
@@ -58,33 +70,33 @@ import pymysql
 import requests
 import sentry_sdk
 import werkzeug.security
-from flask import (
-    Blueprint,
-    Flask,
-    Markup,
-    abort,
-    current_app,
-    flash,
-    g,
-    jsonify,
-    make_response,
-    redirect,
-    render_template,
-    request,
-    send_file,
-    send_from_directory,
-    session,
-)
+from flask import Blueprint
+from flask import Flask
+from flask import Markup
+from flask import abort
+from flask import current_app
+from flask import flash
+from flask import g
+from flask import jsonify
+from flask import make_response
+from flask import redirect
+from flask import render_template
+from flask import request
+from flask import send_file
+from flask import send_from_directory
+from flask import session
 from flask.cli import with_appcontext
 from flask_seasurf import SeaSurf
 from flask_talisman import Talisman
 from flaskext.markdown import Markdown
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
 from secure_cookie.cookie import SecureCookie
 from sentry_sdk.integrations.flask import FlaskIntegration
 from werkzeug.local import LocalProxy
 from werkzeug.utils import secure_filename
-from urllib.parse import quote, quote_plus, unquote_plus
+
 from .mdx_amazon_affiliate_links import AmazonAffiliateLinksExtension
 from .mdx_tweetable import TweetableExtension
 from .typing import *

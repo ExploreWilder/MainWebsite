@@ -95,6 +95,18 @@ case ${tool} in
         black tests/
         deactivate
         ;;
+    isort)
+        source venv/bin/activate
+        # isort documentation:
+        # https://github.com/PyCQA/isort/wiki/isort-Settings
+        isort flaskr/ --force-single-line
+        deactivate
+        ;;
+    pylint)
+        source venv/bin/activate
+        pylint flaskr/ --disable=unused-wildcard-import,wildcard-import,R0801 --extension-pkg-whitelist=pyquadkey2.tilesystem
+        deactivate
+        ;;
     *)
         echo "`basename ${0}`:usage: [sentry-release]" \
             "| [init-db-localhost]" \
@@ -106,7 +118,9 @@ case ${tool} in
             "| [test-coverage-localhost]" \
             "| [test-localhost]" \
             "| [mypy]" \
-            "| [black]"
+            "| [black]" \
+            "| [isort]" \
+            "| [pylint]"
         exit 1
         ;;
 esac

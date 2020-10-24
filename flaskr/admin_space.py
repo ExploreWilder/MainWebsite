@@ -28,9 +28,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-from .utils import *
+"""
+Administration interface.
+"""
+
 from .db import get_db
 from .secure_email import SecureEmail
+from .utils import *
 from .visitor_space import fetch_audit_log
 
 admin_app = Blueprint("admin_app", __name__)
@@ -68,15 +72,18 @@ def revoke_member() -> FlaskResponse:
     if not "member_id" in request.form:
         return basic_json(False, "Member identifier required!")
     cursor = mysql.cursor()
-    id = int(request.form["member_id"])
+    member_id = int(request.form["member_id"])
     try:
-        access_level = get_access_level_from_id(id, cursor)
+        access_level = get_access_level_from_id(member_id, cursor)
     except ValueError as error:
         return basic_json(False, repr(error))
-    if access_level == 255 or access_level == 0:  # admin or already revoked
+    if access_level in (255, 0):  # admin or already revoked
         return basic_json(False, "Member cannot be revoked!")
     cursor.execute(
-        """UPDATE members SET access_level=0 WHERE member_id={id}""".format(id=id)
+        """UPDATE members SET access_level=0
+        WHERE member_id={id}""".format(
+            id=member_id
+        )
     )
     mysql.commit()
     return basic_json(True, "Member revoked!")
@@ -96,14 +103,19 @@ def delete_member() -> FlaskResponse:
     if not "member_id" in request.form:
         return basic_json(False, "Member identifier required!")
     cursor = mysql.cursor()
-    id = int(request.form["member_id"])
+    member_id = int(request.form["member_id"])
     try:
-        access_level = get_access_level_from_id(id, cursor)
+        access_level = get_access_level_from_id(member_id, cursor)
     except ValueError as error:
         return basic_json(False, repr(error))
     if access_level == 255:
         return basic_json(False, "Administrator cannot be deleted!")
-    cursor.execute("""DELETE FROM members WHERE member_id={id}""".format(id=id))
+    cursor.execute(
+        """DELETE FROM members
+        WHERE member_id={id}""".format(
+            id=member_id
+        )
+    )
     mysql.commit()
     return basic_json(True, "Member deleted!")
 
@@ -167,7 +179,7 @@ def members() -> Any:
         FROM members
         ORDER BY member_id DESC"""
     )
-    members = [
+    data_members = [
         list(member) + [fetch_audit_log(member[0], "logged_in")]
         for member in cursor.fetchall()
     ]
@@ -179,7 +191,7 @@ def members() -> Any:
     total_newsletter = cursor.fetchone()[0]
     return render_template(
         "members.html",
-        members=members,
+        members=data_members,
         access_level_read_info=current_app.config["ACCESS_LEVEL_READ_INFO"],
         total_newsletter=total_newsletter,
         is_prod=not current_app.config["DEBUG"],
@@ -288,9 +300,8 @@ def send_newsletter() -> FlaskResponse:
     news = escape(request.form["news"].strip())
     if news == "":
         return basic_json(False, "Please write something!")
-    md = markdown.Markdown(extensions=current_app.config["MD_EXT"])
     news_text = news
-    news_html = md.convert(news)
+    news_html = markdown.Markdown(extensions=current_app.config["MD_EXT"]).convert(news)
 
     cursor = mysql.cursor()
     cursor.execute(
@@ -403,7 +414,7 @@ def xhr_add_photo() -> FlaskResponse:
             raw=raw_filename
         )
     )
-    data = cursor.fetchone()
+    data = cursor.fetchone()  # pylint: disable=unused-variable
     if not cursor.rowcount == 0:  # the file name must be unique
         return basic_json(False, "Photo already in the database!")
     raw_path = os.path.join(current_app.config["GALLERY_FOLDER"], raw_filename)
@@ -483,6 +494,7 @@ def xhr_add_photo() -> FlaskResponse:
         image_exif = get_image_exif(raw_path)
     except IOError:
         return basic_json(False, "Cannot get metadata!")
+    position = "SELECT IF(COUNT(clone.photo_id), MAX(clone.position) + 1, 1) FROM gallery clone"
     cursor.execute(
         """INSERT INTO gallery(thumbnail_src, photo_l_src, photo_m_src,
         raw_src, title, description, access_level, position, photo_m_width,
@@ -500,7 +512,7 @@ def xhr_add_photo() -> FlaskResponse:
             title=escape(request.form["add-photo-title"]),
             description=escape(request.form["add-photo-description"]),
             access_level=access_level,
-            position="SELECT IF(COUNT(clone.photo_id), MAX(clone.position) + 1, 1) FROM gallery clone",
+            position=position,
             photo_m_width=photo_m_size[0],
             photo_m_height=photo_m_size[1],
             photo_l_width=photo_l_size[0],
@@ -550,8 +562,9 @@ def xhr_add_book() -> FlaskResponse:
     book_description_md = escape(request.form["add-book-description-md"].strip())
     if not book_description_md:
         return basic_json(False, "Missing description!")
-    md = markdown.Markdown(extensions=current_app.config["MD_EXT"])
-    book_description_html = md.convert(book_description_md)
+    book_description_html = markdown.Markdown(
+        extensions=current_app.config["MD_EXT"]
+    ).convert(book_description_md)
     book_dir_path = os.path.join(current_app.config["SHELF_FOLDER"], book_url)
     if os.path.exists(book_dir_path):
         return basic_json(False, "Book already existing in the shelf folder!")
@@ -563,7 +576,7 @@ def xhr_add_book() -> FlaskResponse:
             book_title=book_title, book_url=book_url
         )
     )
-    data = cursor.fetchone()
+    data = cursor.fetchone()  # pylint: disable=unused-variable
     if not cursor.rowcount == 0:  # the title and url must be unique
         return basic_json(False, "Book title already in the database!")
     if not ("add-book-file" in request.files and "add-book-thumbnail" in request.files):
@@ -579,8 +592,8 @@ def xhr_add_book() -> FlaskResponse:
         return basic_json(False, "Thumbnail must be JPG!")
     try:
         os.mkdir(book_dir_path)
-    except:
-        message = "Failed to create the book directory!"
+    except FileExistsError:
+        message = "Failed to create the book directory! Already existing path."
         current_app.logger.exception(message)
         return basic_json(False, message + " Error logged.")
     filename = secure_filename(
@@ -662,7 +675,9 @@ def manage_photos() -> Any:
         )
 
     def all_sums():
-        return """SUM(CASE WHEN {is_not_admin} AND v.element_type='gallery' THEN 1 ELSE 0 END) AS views,
+        return """SUM(CASE WHEN {is_not_admin}
+            AND v.element_type='gallery'
+            THEN 1 ELSE 0 END) AS views,
             {loves}, {likes}, {dislikes}, {hates}""".format(
             is_not_admin=is_not_admin,
             loves=sum_emotions("love"),
@@ -765,7 +780,9 @@ def manage_books() -> Any:
         )
 
     def all_sums() -> str:
-        return """SUM(CASE WHEN {is_not_admin} AND v.element_type='shelf' THEN 1 ELSE 0 END) AS views,
+        return """SUM(CASE WHEN {is_not_admin}
+            AND v.element_type='shelf'
+            THEN 1 ELSE 0 END) AS views,
             {loves}, {likes}, {dislikes}, {hates}""".format(
             is_not_admin=is_not_admin,
             loves=sum_emotions("love"),
@@ -881,15 +898,15 @@ def save_photo_metadata() -> FlaskResponse:
 
     try:
         focal_length = int(request.form["focal_length"])
-    except:
+    except (ValueError, TypeError):
         focal_length = None
     try:
         exposure_numerator = int(request.form["exposure_numerator"])
-    except:
+    except (ValueError, TypeError):
         exposure_numerator = None
     try:
         exposure_denominator = int(request.form["exposure_denominator"])
-    except:
+    except (ValueError, TypeError):
         exposure_denominator = None
     if exposure_numerator and exposure_denominator:
         exposure_time = str(exposure_numerator) + "/" + str(exposure_denominator)
@@ -897,11 +914,11 @@ def save_photo_metadata() -> FlaskResponse:
         exposure_time = None
     try:
         f_number = float(request.form["f"])
-    except:
+    except (ValueError, TypeError):
         f_number = None
     try:
         iso = int(request.form["iso"])
-    except:
+    except (ValueError, TypeError):
         iso = None
 
     access_level = int(request.form["access_level"])
@@ -974,15 +991,16 @@ def save_book_metadata() -> FlaskResponse:
     description_md = escape(request.form["input-description"].strip())
     if not description_md:
         return basic_json(False, "Missing description!")
-    md = markdown.Markdown(extensions=current_app.config["MD_EXT"])
-    description_html = md.convert(description_md)
+    description_html = markdown.Markdown(
+        extensions=current_app.config["MD_EXT"]
+    ).convert(description_md)
     period = escape(request.form["input-period"].strip())
     status = escape(request.form["input-status"]).lower()
-    if not status in ["released", "crowdfunding"]:
+    if status not in ["released", "crowdfunding"]:
         status = "draft"  # reset unknown or empty status to 'draft'
     try:
         crowdfunding_goal = float(request.form["input-crowdfunding-goal"])
-    except:
+    except (ValueError, TypeError):
         crowdfunding_goal = 0
     if status == "crowdfunding" and crowdfunding_goal <= 0:
         return basic_json(False, "Crowdfunding goal required or change status!")
@@ -1061,12 +1079,12 @@ def move_photo() -> FlaskResponse:
     cursor = mysql.cursor()
 
     # NOTICE: the photo on top has the highest 'position'.
-    def get_position_from_id(id: int) -> int:
+    def get_position_from_id(photo_id: int) -> int:
         cursor.execute(
             """SELECT position
             FROM gallery
             WHERE photo_id={id}""".format(
-                id=id
+                id=photo_id
             )
         )
         position = cursor.fetchone()
@@ -1154,12 +1172,12 @@ def move_book() -> FlaskResponse:
     cursor = mysql.cursor()
 
     # NOTICE: the book on top has the highest 'position'.
-    def get_position_from_id(id: int) -> int:
+    def get_position_from_id(book_id: int) -> int:
         cursor.execute(
             """SELECT position
             FROM shelf
             WHERE book_id={id}""".format(
-                id=id
+                id=book_id
             )
         )
         position = cursor.fetchone()
@@ -1318,7 +1336,7 @@ def delete_book() -> FlaskResponse:
             id=book_id, url=book_url
         )
     )
-    data = cursor.fetchone()
+    data = cursor.fetchone()  # pylint: disable=unused-variable
     if cursor.rowcount == 0:
         return basic_json(False, "Bad request!")
 

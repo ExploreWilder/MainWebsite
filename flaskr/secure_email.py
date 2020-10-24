@@ -28,10 +28,17 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-import dkim, smtplib
+"""
+Email sender with extra-security.
+"""
+
+import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate
+
+import dkim
+
 from .utils import *
 
 

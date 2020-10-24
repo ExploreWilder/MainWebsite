@@ -28,9 +28,18 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-from .utils import *
-from .tilenames import tileLatLonEdges  # bbox
+"""
+Mapproxy used by both the 2D and the 3D map viewers.
+This API gets xyz requests and sends tiles back.
+"""
+
+# pylint: disable=invalid-name; allow one letter variables (f.i. x, y, z)
+# pylint: disable=line-too-long; allow long URLs
+
 from pyquadkey2 import tilesystem  # Bing Maps QuadKey
+
+from .tilenames import tileLatLonEdges  # bbox
+from .utils import *
 
 vts_proxy_app = Blueprint("vts_proxy_app", __name__)
 
@@ -112,7 +121,7 @@ def vts_proxy_world_topo_otm(z: int, x: int, y: int) -> FlaskResponse:
         try:
             r = requests.get(url)
             # do not raise 404 error because the map coverage is global and the tile may be cached
-        except:
+        except requests.exceptions.HTTPError:
             return tile_not_found(mimetype)
         if r.status_code == 200:
             with open(cache_path, "wb") as tile:
@@ -142,7 +151,7 @@ def vts_proxy_world_topo_thunderforest(
     """
     mimetype = "image/png"
     layer = escape(layer)
-    if not layer in (
+    if layer not in (
         "cycle",
         "transport",
         "landscape",
@@ -160,7 +169,7 @@ def vts_proxy_world_topo_thunderforest(
     try:
         r = requests.get(url)
         r.raise_for_status()  # raise for not found tiles
-    except:
+    except requests.exceptions.HTTPError:
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)
 
@@ -194,7 +203,7 @@ def vts_proxy_ign(layer: str, z: int, x: int, y: int) -> FlaskResponse:
     try:
         r = requests.get(url, timeout=12)  # timeout to avoid freezing the map
         r.raise_for_status()  # raise for not found tiles
-    except:
+    except requests.exceptions.HTTPError:
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)
 
@@ -259,7 +268,7 @@ def vts_proxy_lds(layer: str, z: int, x: int, y: int) -> FlaskResponse:
     try:
         r = requests.get(url)
         r.raise_for_status()  # raise for not found tiles
-    except:
+    except requests.exceptions.HTTPError:
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)
 
@@ -281,7 +290,7 @@ def vts_proxy_canvec(z: int, x: int, y: int) -> FlaskResponse:
     try:
         r = requests.get(url)
         r.raise_for_status()  # raise for not found tiles
-    except:
+    except requests.exceptions.HTTPError:
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)
 
@@ -312,7 +321,7 @@ def vts_proxy_gebco(layer: str, z: int, x: int, y: int) -> FlaskResponse:
     try:
         r = requests.get(url)
         r.raise_for_status()  # raise for not found tiles
-    except:
+    except requests.exceptions.HTTPError:
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)
 
@@ -339,8 +348,7 @@ def vts_proxy_eumetsat(layer: str, z: int, x: int, y: int) -> FlaskResponse:
     else:
         return tile_not_found(mimetype)
 
-    current_utc_time = datetime.datetime.utcnow()
-    last_weather_update = current_utc_time - datetime.timedelta(hours=1)
+    last_weather_update = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
     to_quarter = last_weather_update.minute % 15
     if to_quarter:
         last_weather_update += datetime.timedelta(minutes=15 - to_quarter)
@@ -353,7 +361,7 @@ def vts_proxy_eumetsat(layer: str, z: int, x: int, y: int) -> FlaskResponse:
     try:
         r = requests.get(url)
         r.raise_for_status()  # raise for not found tiles
-    except:
+    except requests.exceptions.HTTPError:
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)
 
@@ -404,12 +412,12 @@ def download_bing_metadata(
                 "Failed to download the imagery metadata from Bing Maps ("
                 + str(r.status_code)
                 + " status code)"
-            )
+            ) from err
 
     try:
         metadata = json.loads(r.content)
-    except:
-        raise Exception("Failed to parse JSON metadata")
+    except Exception as err:
+        raise Exception("Failed to parse JSON metadata") from err
     if not all(x in metadata for x in ["authenticationResultCode", "statusCode"]):
         raise Exception("Missing result or status code")
     if metadata["authenticationResultCode"] != "ValidCredentials":
@@ -420,8 +428,8 @@ def download_bing_metadata(
         resource = metadata["resourceSets"][0]["resources"][0]
         image_url = resource["imageUrl"]
         subdomains = resource["imageUrlSubdomains"]
-    except:
-        raise Exception("Missing resources from the metadata")
+    except Exception as err:
+        raise Exception("Missing resources from the metadata") from err
 
     return (image_url.replace("http://", "https://"), subdomains)
 
@@ -463,11 +471,11 @@ def vts_proxy_bing_aerial(z: int, x: int, y: int) -> FlaskResponse:
         z < 1
     ):  # the lowest level of detail is 1, i.e. the tile 0/0/0.jpeg does not exist
         return tile_not_found(mimetype)
-    if not "BingImageryMetadata" in session:
+    if "BingImageryMetadata" not in session:
         try:
             metadata = download_bing_metadata(current_app.config["BING_API_KEY"])
             session["BingImageryMetadata"] = metadata
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
             return str(e), 500
     else:
         metadata = session["BingImageryMetadata"]
@@ -480,6 +488,6 @@ def vts_proxy_bing_aerial(z: int, x: int, y: int) -> FlaskResponse:
             )
         )
         r.raise_for_status()
-    except requests.exceptions.HTTPError as err:
+    except requests.exceptions.HTTPError:
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)

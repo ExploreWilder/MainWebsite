@@ -1,6 +1,6 @@
 # ExploreWilder
 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier) [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/) [![Checked with mypy](https://camo.githubusercontent.com/34b3a249cd6502d0a521ab2f42c8830b7cfd03fa/687474703a2f2f7777772e6d7970792d6c616e672e6f72672f7374617469632f6d7970795f62616467652e737667)](https://mypy.readthedocs.io/en/stable/introduction.html "Mypy is an optional static type checker for Python") [![Under BSD-3-Clause](https://img.shields.io/github/license/explorewilder/mainwebsite)](https://github.com/ExploreWilder/MainWebsite/blob/master/LICENCE.md)
 
 ## Demo
 
@@ -53,6 +53,7 @@ I used the following frameworks and tools:
 
 * A bunch of free software
 * Tests with [pytest](https://docs.pytest.org/en/latest/)
+* [Mypy](https://mypy.readthedocs.io/en/stable/introduction.html "Mypy is an optional static type checker for Python"), [Pylint](https://pylint.pycqa.org/en/latest/intro.html "Pylint is a tool that checks for errors in Python code"), [Black](https://github.com/psf/black "Black is the uncompromising Python code formatter")
 * [Sphinx](http://www.sphinx-doc.org/en/master/)
 * [Sentry](https://sentry.io/)
 * [Gulp](https://gulpjs.com/)

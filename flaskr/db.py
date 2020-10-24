@@ -28,6 +28,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+"""
+MySQL database management module.
+"""
+
 from .utils import *
 
 
@@ -44,8 +48,8 @@ def get_db():
                 current_app.config["MYSQL_DATABASE_PASSWORD"],
                 current_app.config["MYSQL_DATABASE_DB"],
             )
-        except pymysql.Error as e:
-            if e.args[0] == 1049:  # unknown database, create it
+        except pymysql.Error as err:
+            if err.args[0] == 1049:  # unknown database, create it
                 g.db = pymysql.connect(
                     current_app.config["MYSQL_DATABASE_HOST"],
                     current_app.config["MYSQL_DATABASE_USER"],
@@ -59,14 +63,14 @@ def get_db():
                 )
                 g.db.commit()
             else:
-                print("MySQL error %d: %s" % (e.args[0], e.args[1]))
+                print("MySQL error %d: %s" % (int(err.args[0]), err.args[1]))
 
     return g.db if "db" in g else None
 
 
-def close_db(error=None):
+def close_db(error=None):  # pylint: disable=unused-argument
     """ If this request connected to the database, close the connection. """
-    db = g.pop("db", None)
+    db = g.pop("db", None)  # pylint: disable=invalid-name
 
     if db is not None:
         db.close()
@@ -77,15 +81,14 @@ def load_from_file(file) -> bool:
     request_list = file.read().decode("utf8").split(";")  # split file in list
     request_list.pop()  # drop last empty entry
     if request_list is not False:
-        db = get_db()
+        db = get_db()  # pylint: disable=invalid-name
         if db:
             cursor = db.cursor()
-            for idx, sql_request in enumerate(request_list):
+            for _, sql_request in enumerate(request_list):
                 cursor.execute(sql_request)
             db.commit()
             return True
-        else:
-            return False
+        return False
     return True
 
 
@@ -94,8 +97,8 @@ def init_db() -> bool:
     Run the file schema.sql which clears the database.
     Ensure to be connected to the right database or data may be lost forever!
     """
-    with current_app.open_resource("schema.sql") as f:
-        return load_from_file(f)
+    with current_app.open_resource("schema.sql") as sql_file:
+        return load_from_file(sql_file)
 
 
 @click.command("init-db")

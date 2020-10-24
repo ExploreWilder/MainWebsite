@@ -28,14 +28,23 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-import io
+"""
+Utility module for the WebTrack format.
+WebTrack specifications:
+https://github.com/ExploreWilder/WebTrack.js/blob/main/SPEC.md
+"""
+
+# pylint: disable=invalid-name; allow one letter variables (f.i. c for character, n for number)
+# pylint: disable=too-few-public-methods; simple design
+
 import pyproj
+
 from .typing import *
 
 
 class WebTrack:
     """
-    Implementation of the Rich Geo Tracking Web Format (WebTrack for short).
+    Implementation of the WebTrack format.
     Refer to map.py for an example of use.
     TODO: read capability, or at least a format header check for map.webtrack_file()
     """
@@ -139,20 +148,21 @@ class WebTrack:
         for segment in segments:
             points = segment["points"]
             with_ele = segment["withEle"]
-            web_prev_point = None
-            error_lon, error_lat = 0, 0
+            web_prev_point: Union[Tuple[float, float], None] = None
             for point in points:
                 web_curr_point = self.proj.transform(point[0], point[1])  # lon, lat
                 if web_prev_point is None:
                     self._w_int32(web_curr_point[0])  # lon
                     self._w_int32(web_curr_point[1])  # lat
                 else:
-                    delta_lon = web_curr_point[0] - web_prev_point[0] + error_lon
-                    delta_lat = web_curr_point[1] - web_prev_point[1] + error_lat
+                    delta_lon = round(web_curr_point[0]) - round(
+                        web_prev_point[0]  # pylint: disable=unsubscriptable-object
+                    )
+                    delta_lat = round(web_curr_point[1]) - round(
+                        web_prev_point[1]  # pylint: disable=unsubscriptable-object
+                    )
                     self._w_int16(delta_lon)
                     self._w_int16(delta_lat)
-                    error_lon = delta_lon - round(delta_lon)
-                    error_lat = delta_lat - round(delta_lat)
                 web_prev_point = web_curr_point
                 self._w_uint16(point[2] / 10.0)
                 if with_ele:
