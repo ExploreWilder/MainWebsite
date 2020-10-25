@@ -188,7 +188,8 @@ function manage_subnav_click() {
         $(".map-viewer-interface .card-menu, #dropdownMenuBoundLayer").hide();
         if (current_menu_on_focus != new_menu_on_focus) {
             current_menu_on_focus = new_menu_on_focus;
-            $(current_menu_on_focus).show();
+            // using $("body").find(node) instead of $(node) prevent XSS attack (source: CodeQL)
+            $("body").find(current_menu_on_focus).show();
         } else {
             current_menu_on_focus = null;
         }
@@ -197,7 +198,8 @@ function manage_subnav_click() {
     });
 
     $("#goto-download-gpx").click(function () {
-        $($(this).attr("aria-controls")).modal("show");
+        let modal_el = $(this).attr("aria-controls");
+        $("body").find(modal_el).modal("show");
         $(this).blur();
         return true;
     });

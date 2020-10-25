@@ -115,6 +115,7 @@ SNIPPET_FACEBOOK = (
     'title="Copy the text, then click to share on Facebook" '
     'data-toggle="tooltip" '
     'href="https://www.facebook.com/sharer/sharer.php?u={urlq}" '
+    'rel="noopener noreferrer" '
     'role="button" '
     'target="_blank">'
     "{icon_facebook} Facebook</a>"
@@ -137,6 +138,7 @@ SNIPPET_LINKEDIN = (
     'title="Click to share on LinkedIn" '
     'data-toggle="tooltip" '
     'href="https://www.linkedin.com/shareArticle?mini=true&url={urlq}&title={quote}" '
+    'rel="noopener noreferrer" '
     'role="button" '
     'target="_blank">'
     "{icon_linkedin} LinkedIn</a>"
@@ -159,6 +161,7 @@ SNIPPET_TWITTER = (
     'title="Click to share on Twitter" '
     'data-toggle="tooltip" '
     'href="https://twitter.com/intent/tweet?text={quote}{via_username}&url={urlq}&hashtags={hashtags}" '
+    'rel="noopener noreferrer" '
     'role="button" '
     'target="_blank">'
     "{icon_twitter} Twitter</a>"
@@ -188,6 +191,7 @@ SNIPPET_VKONTAKTE = (
     'title="Click to share on VKontakte" '
     'data-toggle="tooltip" '
     'href="https://vk.com/share.php?url={urlq}&title={quote}" '
+    'rel="noopener noreferrer" '
     'role="button" '
     'target="_blank">'
     "{icon_vkontakte} VKontakte</a>"
@@ -210,6 +214,7 @@ SNIPPET_TUMBLR = (
     'title="Click to share on Tumblr" '
     'data-toggle="tooltip" '
     'href="http://www.tumblr.com/share/link?url={urlq}&amp;name={name}&amp;description={description}" '
+    'rel="noopener noreferrer" '
     'role="button" '
     'target="_blank">'
     "{icon_tumblr} Tumblr</a>"
