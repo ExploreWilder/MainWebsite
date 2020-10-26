@@ -28,31 +28,52 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+import os
 import pytest
+from flaskr import vts_proxy
+from flaskr import utils
+
+
+def test_otm(client):
+    """ Check the OpenTopoMap fetch and cache. """
+    tile_lost = open("../flaskr/static/images/tile404.png", "rb").read()
+
+    # force to fetch:
+    try:
+        os.remove(os.path.join(vts_proxy.OTM_CACHE, "0.png"))
+    except FileNotFoundError:
+        pass
+    rv = client.get("/map/vts_proxy/world/topo/otm/1/0/0.png")
+    assert rv.status_code == 200
+    assert rv.data != tile_lost
+
+    # test cache:
+    rv = client.get("/map/vts_proxy/world/topo/otm/1/0/0.png")
+    assert rv.status_code == 200
+    assert rv.data != tile_lost
 
 
 @pytest.mark.parametrize(
     "path",
     (
-        ("/map/vts_proxy/world/topo/otm/0/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/outdoors/0/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/landscape/0/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/cycle/0/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/transport/0/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/transport-dark/0/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/spinal-map/0/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/pioneer/0/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/mobile-atlas/0/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/neighbourhood/0/0/0.png"),
-        ("/map/vts_proxy/nz/satellite/0/0/0.png"),
-        ("/map/vts_proxy/nz/topo/0/0/0.png"),
-        ("/map/vts_proxy/ca/topo/0/0/0.png"),
-        ("/map/vts_proxy/fr/satellite/0/0/0.jpg"),
-        ("/map/vts_proxy/fr/topo/0/0/0.jpg"),
-        ("/map/vts_proxy/world/gebco/shaded/0/0/0.jpeg"),
-        ("/map/vts_proxy/world/gebco/flat/0/0/0.jpeg"),
-        ("/map/vts_proxy/eumetsat/meteosat_iodc_mpe/0/0/0.png"),
-        ("/map/vts_proxy/eumetsat/meteosat_0deg_h0b3/0/0/0.png"),
+        ("/map/vts_proxy/world/topo/thunderforest/outdoors/1/0/0.png"),
+        ("/map/vts_proxy/world/topo/thunderforest/landscape/1/0/0.png"),
+        ("/map/vts_proxy/world/topo/thunderforest/cycle/1/0/0.png"),
+        ("/map/vts_proxy/world/topo/thunderforest/transport/1/0/0.png"),
+        ("/map/vts_proxy/world/topo/thunderforest/transport-dark/1/0/0.png"),
+        ("/map/vts_proxy/world/topo/thunderforest/spinal-map/1/0/0.png"),
+        ("/map/vts_proxy/world/topo/thunderforest/pioneer/1/0/0.png"),
+        ("/map/vts_proxy/world/topo/thunderforest/mobile-atlas/1/0/0.png"),
+        ("/map/vts_proxy/world/topo/thunderforest/neighbourhood/1/0/0.png"),
+        ("/map/vts_proxy/nz/satellite/1/0/0.png"),
+        ("/map/vts_proxy/nz/topo/1/0/0.png"),
+        ("/map/vts_proxy/ca/topo/1/0/0.png"),
+        ("/map/vts_proxy/fr/satellite/1/0/0.jpg"),
+        ("/map/vts_proxy/fr/topo/1/0/0.jpg"),
+        ("/map/vts_proxy/world/gebco/shaded/1/0/0.jpeg"),
+        ("/map/vts_proxy/world/gebco/flat/1/0/0.jpeg"),
+        ("/map/vts_proxy/eumetsat/meteosat_iodc_mpe/1/0/0.png"),
+        ("/map/vts_proxy/eumetsat/meteosat_0deg_h0b3/1/0/0.png"),
         ("/map/vts_proxy/world/satellite/bing/3/3/5.jpeg"),
     ),
 )
@@ -62,7 +83,28 @@ def test_vts_proxy_link_ok(client, path):
     assert rv.status_code == 200
 
 
-@pytest.mark.parametrize("path", (("/map/vts_proxy/fr/underground/0/0/0"),))
+@pytest.mark.parametrize(
+    "path",
+    (
+        ("/map/vts_proxy/world/topo/otm/0/0/0.png"),
+        ("/map/vts_proxy/world/topo/thunderforest/pluton/1/0/0.png"),
+        ("/map/vts_proxy/nz/pluton/1/0/0.png"),
+        ("/map/vts_proxy/fr/pluton/1/0/0.jpg"),
+        ("/map/vts_proxy/world/gebco/pluton/1/0/0.jpeg"),
+        ("/map/vts_proxy/eumetsat/pluton/1/0/0.png"),
+        ("/map/vts_proxy/world/satellite/bing/0/3/5.jpeg"),
+    ),
+)
+def test_vts_proxy_bad_requests(client, path):
+    """ Test with bad layers or bad z. """
+    tile_ext = utils.file_extension(path)
+    tile_lost = open("../flaskr/static/images/tile404." + tile_ext, "rb").read()
+    rv = client.get(path)
+    assert rv.status_code == 200
+    assert rv.data == tile_lost
+
+
+@pytest.mark.parametrize("path", (("/map/vts_proxy/fr/underground/1/0/0"),))
 def test_vts_proxy_bad_link(client, path):
     """ Ckeck the links inavailability. """
     rv = client.get(path)

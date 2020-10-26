@@ -106,6 +106,8 @@ def vts_proxy_world_topo_otm(z: int, x: int, y: int) -> FlaskResponse:
     a week for complying the HTTP Expires value.
     """
     mimetype = "image/png"
+    if z < 1:
+        return tile_not_found(mimetype)
     cache_filename = tilesystem.tile_to_quadkey((x, y), z) + ".png"
     cache_path = os.path.join(OTM_CACHE, cache_filename)
     goto_cache = False
@@ -121,7 +123,7 @@ def vts_proxy_world_topo_otm(z: int, x: int, y: int) -> FlaskResponse:
         try:
             r = requests.get(url)
             # do not raise 404 error because the map coverage is global and the tile may be cached
-        except requests.exceptions.HTTPError:
+        except requests.exceptions.HTTPError:  # pragma: no cover
             return tile_not_found(mimetype)
         if r.status_code == 200:
             with open(cache_path, "wb") as tile:
@@ -169,7 +171,7 @@ def vts_proxy_world_topo_thunderforest(
     try:
         r = requests.get(url)
         r.raise_for_status()  # raise for not found tiles
-    except requests.exceptions.HTTPError:
+    except requests.exceptions.HTTPError:  # pragma: no cover
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)
 
@@ -203,7 +205,7 @@ def vts_proxy_ign(layer: str, z: int, x: int, y: int) -> FlaskResponse:
     try:
         r = requests.get(url, timeout=12)  # timeout to avoid freezing the map
         r.raise_for_status()  # raise for not found tiles
-    except requests.exceptions.HTTPError:
+    except requests.exceptions.HTTPError:  # pragma: no cover
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)
 
@@ -268,7 +270,7 @@ def vts_proxy_lds(layer: str, z: int, x: int, y: int) -> FlaskResponse:
     try:
         r = requests.get(url)
         r.raise_for_status()  # raise for not found tiles
-    except requests.exceptions.HTTPError:
+    except requests.exceptions.HTTPError:  # pragma: no cover
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)
 
@@ -290,7 +292,7 @@ def vts_proxy_canvec(z: int, x: int, y: int) -> FlaskResponse:
     try:
         r = requests.get(url)
         r.raise_for_status()  # raise for not found tiles
-    except requests.exceptions.HTTPError:
+    except requests.exceptions.HTTPError:  # pragma: no cover
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)
 
@@ -321,7 +323,7 @@ def vts_proxy_gebco(layer: str, z: int, x: int, y: int) -> FlaskResponse:
     try:
         r = requests.get(url)
         r.raise_for_status()  # raise for not found tiles
-    except requests.exceptions.HTTPError:
+    except requests.exceptions.HTTPError:  # pragma: no cover
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)
 
@@ -361,7 +363,7 @@ def vts_proxy_eumetsat(layer: str, z: int, x: int, y: int) -> FlaskResponse:
     try:
         r = requests.get(url)
         r.raise_for_status()  # raise for not found tiles
-    except requests.exceptions.HTTPError:
+    except requests.exceptions.HTTPError:  # pragma: no cover
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)
 
@@ -407,7 +409,7 @@ def download_bing_metadata(
         try:
             r = s.get(metadata_url, timeout=timeout)
             r.raise_for_status()
-        except requests.exceptions.HTTPError as err:
+        except requests.exceptions.HTTPError as err:  # pragma: no cover
             raise Exception(
                 "Failed to download the imagery metadata from Bing Maps ("
                 + str(r.status_code)
@@ -416,7 +418,7 @@ def download_bing_metadata(
 
     try:
         metadata = json.loads(r.content)
-    except Exception as err:
+    except json.JSONDecodeError as err:
         raise Exception("Failed to parse JSON metadata") from err
     if not all(x in metadata for x in ["authenticationResultCode", "statusCode"]):
         raise Exception("Missing result or status code")
@@ -488,6 +490,6 @@ def vts_proxy_bing_aerial(z: int, x: int, y: int) -> FlaskResponse:
             )
         )
         r.raise_for_status()
-    except requests.exceptions.HTTPError:
+    except requests.exceptions.HTTPError:  # pragma: no cover
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)
