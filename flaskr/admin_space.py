@@ -68,7 +68,7 @@ def revoke_member() -> FlaskResponse:
         404: if the user is not admin or the request is not POST.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     if not "member_id" in request.form:
         return basic_json(False, "Member identifier required!")
     cursor = mysql.cursor()
@@ -99,7 +99,7 @@ def delete_member() -> FlaskResponse:
         404: if the user is not admin or the request is not POST.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     if not "member_id" in request.form:
         return basic_json(False, "Member identifier required!")
     cursor = mysql.cursor()
@@ -130,7 +130,7 @@ def change_access_level() -> FlaskResponse:
         404: if the user is not admin or the request is not POST.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     if not all(x in request.form for x in ["member_id", "new_access_level"]):
         return basic_json(False, "Missing data!")
     new_access_level = int(request.form["new_access_level"])
@@ -171,7 +171,7 @@ def members() -> Any:
         404: if the user is not admin.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     cursor = mysql.cursor()
     cursor.execute(
         """SELECT member_id, username, email, access_level,
@@ -208,7 +208,7 @@ def send_password_creation() -> FlaskResponse:
         404: if the user is not admin.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     if not "member_id" in request.form:
         return basic_json(False, "Missing data!")
     member_id = int(request.form["member_id"])
@@ -276,7 +276,7 @@ def send_password_creation() -> FlaskResponse:
             url_unsubscribe=url_unsubscribe,
             url_create_password=url_create_password,
         )
-        secure_email.send(email, subject, text, html)
+        secure_email.send(email, subject, text, html)  # pragma: no cover
     return basic_json(True, "E-mail sent to the member!")
 
 
@@ -290,7 +290,7 @@ def send_newsletter() -> FlaskResponse:
         404: if the user is not admin.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     if not all(x in request.form for x in ["subject", "news"]):
         return basic_json(False, "Missing data!")
     short_subject = escape(request.form["subject"].strip())
@@ -342,7 +342,7 @@ def send_newsletter() -> FlaskResponse:
                 subject=short_subject,
                 url_unsubscribe=url_unsubscribe,
             )
-            secure_email.send(email, subject, text, html)
+            secure_email.send(email, subject, text, html)  # pragma: no cover
             total_emails_sent += 1
     return basic_json(
         True, "News sent to the " + str(total_emails_sent) + " subscriber(s)!"
@@ -359,7 +359,7 @@ def add_photo() -> Any:
         404: if the user is not admin.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     return render_template("add_photo.html", is_prod=not current_app.config["DEBUG"])
 
 
@@ -373,7 +373,7 @@ def add_book() -> Any:
         404: if the user is not admin.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     return render_template("add_book.html", is_prod=not current_app.config["DEBUG"])
 
 
@@ -388,7 +388,7 @@ def xhr_add_photo() -> FlaskResponse:
         404: if the user is not admin or the request is not POST.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     if not all(
         x in request.form
         for x in ["add-photo-access-level", "add-photo-title", "add-photo-description"]
@@ -546,7 +546,7 @@ def xhr_add_book() -> FlaskResponse:
         404: if the user is not admin or the request is not POST.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     if not all(
         x in request.form
         for x in ["add-book-access-level", "add-book-title", "add-book-description-md"]
@@ -638,7 +638,7 @@ def manage_photos() -> Any:
         404: if the user is not admin.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     cursor = mysql.cursor()
     order_by = request.args.get("orderby", "position", type=str)
     current_page = request.args.get("page", 1, type=int)
@@ -745,7 +745,7 @@ def manage_books() -> Any:
         404: if the user is not admin.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     cursor = mysql.cursor()
     current_page = request.args.get("page", 1, type=int)
     cursor.execute(
@@ -870,7 +870,7 @@ def save_photo_metadata() -> FlaskResponse:
         404: if the user is not admin or the request is not POST.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     if not all(
         x in request.form
         for x in [
@@ -962,7 +962,7 @@ def save_book_metadata() -> FlaskResponse:
         404: if the user is not admin or the request is not POST.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     if not (
         all(
             x in request.form
@@ -1068,7 +1068,7 @@ def move_photo() -> FlaskResponse:
         404: if the user is not admin or the request is not POST.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     if not all(
         x in request.form for x in ["dropped_id", "id_above_drop", "id_below_drop"]
     ):
@@ -1161,7 +1161,7 @@ def move_book() -> FlaskResponse:
         404: if the user is not admin or the request is not POST.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     if not all(
         x in request.form for x in ["dropped_id", "id_above_drop", "id_below_drop"]
     ):
@@ -1254,7 +1254,7 @@ def delete_photo() -> FlaskResponse:
         404: if the user is not admin or the request is not POST.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     if not "photo_id" in request.form:
         return basic_json(False, "Bad request, missing identifier!")
     photo_id = int(request.form["photo_id"])
@@ -1297,7 +1297,7 @@ def move_into_wastebasket() -> FlaskResponse:
         404: if the user is not admin or the request is not POST.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     if not "photo_filename" in request.form:
         return basic_json(False, "Bad request, missing file name!")
     photo_filename = secure_filename(escape(request.form["photo_filename"]))
@@ -1320,7 +1320,7 @@ def delete_book() -> FlaskResponse:
         404: if the user is not admin or the request is not POST.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     if not ("book_id" in request.form and "book_url" in request.form):
         return basic_json(False, "Bad request!")
     book_id = int(request.form["book_id"])
@@ -1364,7 +1364,7 @@ def lost_photos() -> Any:
         404: if the user is not admin.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     cursor = mysql.cursor()
     gallery_folder = current_app.config["GALLERY_FOLDER"]
 
@@ -1419,7 +1419,7 @@ def photo_admin_dir(filename: str) -> FlaskResponse:
         filename (str): File name of the file located in the gallery folder/directory.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     filename = secure_filename(escape(filename))
     return send_from_directory(current_app.config["GALLERY_FOLDER"], filename)
 
@@ -1434,7 +1434,7 @@ def statistics() -> Any:
         404: if the user is not admin.
     """
     if not is_admin():
-        abort(404)
+        abort(404)  # pragma: no cover
     cursor = mysql.cursor()
     monthly_visits = {}
     for element_type in ["gallery", "shelf"]:

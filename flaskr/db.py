@@ -48,7 +48,7 @@ def get_db():
                 current_app.config["MYSQL_DATABASE_PASSWORD"],
                 current_app.config["MYSQL_DATABASE_DB"],
             )
-        except pymysql.Error as err:
+        except pymysql.Error as err:  # pragma: no cover
             if err.args[0] == 1049:  # unknown database, create it
                 g.db = pymysql.connect(
                     current_app.config["MYSQL_DATABASE_HOST"],

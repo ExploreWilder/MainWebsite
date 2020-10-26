@@ -35,7 +35,7 @@
 from .utils import *
 
 
-class Captcha:
+class Captcha:  # pragma: no cover; the tester cannot see the CAPTCHA
     """
     Create, check and kill a CAPTCHA.
     NOTE: Only one CAPTCHA per client!
@@ -161,7 +161,7 @@ class Captcha:
         )
         try:
             self.captcha.save(self.filepath, "PNG")
-        except (ValueError, OSError):  # directory
+        except (ValueError, OSError):
             abort(404)
         return send_file(self.filepath, mimetype="image/png")  # copy file into RAM
 

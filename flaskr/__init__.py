@@ -40,7 +40,7 @@ try:
     from .secret_config import Config
     from .secret_config import ProductionConfig
     from .secret_config import TestingConfig
-except ImportError:
+except ImportError:  # pragma: no cover
     from .config import ProductionConfig, Config, TestingConfig  # type: ignore[misc]
 
 from . import db
@@ -83,7 +83,7 @@ def create_app(is_testing: bool = False) -> Flask:
         )
 
     if not is_debug and not is_testing:
-        sentry_sdk.init(
+        sentry_sdk.init(  # pragma: no cover
             dsn=app.config["SENTRY_DSN"],
             release=app.config["GIT_COMMIT"],
             integrations=[FlaskIntegration()],
@@ -126,7 +126,7 @@ def create_app(is_testing: bool = False) -> Flask:
         https://docs.sentry.io/enriching-error-data/user-feedback/?platform=flask
         https://flask.palletsprojects.com/en/1.1.x/errorhandling/#unhandled-exceptions
         """
-        return (
+        return (  # pragma: no cover
             render_template(
                 "internal_server_error.html",
                 sentry_event_id=sentry_sdk.last_event_id(),

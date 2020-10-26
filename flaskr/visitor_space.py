@@ -459,7 +459,9 @@ def send_mail() -> FlaskResponse:
     message = new_line_to_br(escape(request.form["message"].strip()))
     if message == "":
         return basic_json(False, "Please write something!")
-    if not Captcha(current_app).check(escape(request.form["captcha"])):
+    if not Captcha(current_app).check(
+        escape(request.form["captcha"])
+    ):  # pragma: no cover
         return basic_json(False, "Invalid CAPTCHA, try again!")
     name = escape(request.form["name"].strip())
     if name == "":
@@ -587,7 +589,7 @@ def send_mail() -> FlaskResponse:
             open(current_app.config["DKIM_PATH_PRIVATE_KEY"]).read(),
             current_app.config["DKIM_SELECTOR"],
         )
-        secure_email.send(mailto, "Contact Form", "", content)
+        secure_email.send(mailto, "Contact Form", "", content)  # pragma: no cover
     else:
         print(content)
     session["last_message"] = int(time())
@@ -845,7 +847,7 @@ def change_email(member_id: int = 0, hashed_url_email: str = "") -> Any:
                 new_email_address=new_email_address,
                 url_update_email_address=url_update_email_address,
             )
-            secure_email.send(
+            secure_email.send(  # pragma: no cover
                 new_email_address, "Update Your Email Address", text, html
             )
 
@@ -1292,7 +1294,9 @@ def login(result: str = "", status: bool = True) -> Any:
             ):
                 result = "Missing data!"
                 status = False
-            elif not Captcha(current_app).check(escape(request.form["captcha"])):
+            elif not Captcha(current_app).check(
+                escape(request.form["captcha"])
+            ):  # pragma: no cover
                 result = "Invalid CAPTCHA, try again!"
                 status = False
             else:
@@ -1385,7 +1389,9 @@ def reset_password(result: str = "", status: bool = True) -> Any:
             if not all(x in request.form for x in ["email", "captcha"]):
                 result = "Missing data!"
                 status = False
-            elif not Captcha(current_app).check(escape(request.form["captcha"])):
+            elif not Captcha(current_app).check(
+                escape(request.form["captcha"])
+            ):  # pragma: no cover
                 result = "Invalid CAPTCHA, try again!"
                 status = False
             else:
@@ -1461,7 +1467,9 @@ def reset_password(result: str = "", status: bool = True) -> Any:
                                 url_unsubscribe=url_unsubscribe,
                                 url_create_password=url_create_password,
                             )
-                            secure_email.send(email, subject, text, html)
+                            secure_email.send(
+                                email, subject, text, html
+                            )  # pragma: no cover
                     flash(
                         "If you are a member, a password reset link "
                         + "has been sent to your email address: "
