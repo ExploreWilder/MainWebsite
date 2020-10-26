@@ -97,6 +97,5 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from werkzeug.local import LocalProxy
 from werkzeug.utils import secure_filename
 
-from .mdx_amazon_affiliate_links import AmazonAffiliateLinksExtension
 from .mdx_tweetable import TweetableExtension
 from .typing import *

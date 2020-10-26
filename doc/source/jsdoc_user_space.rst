@@ -99,7 +99,6 @@ Interface
 .. js:autofunction:: book_zoom_images
 .. js:autofunction:: open_modal_copyright
 .. js:autofunction:: open_modal_privacy_policy
-.. js:autofunction:: amazon_affiliate_links_selection
 .. js:autofunction:: cookie_policy_decision
 .. js:autofunction:: cookie_policy_consent
 .. js:autofunction:: show_subscribe_newsletter_toast

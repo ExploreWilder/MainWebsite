@@ -1261,46 +1261,6 @@ function open_modal_privacy_policy() {
 }
 
 /**
- * Setup the "Amazon Affiliate Links" modal and show it.
- */
-function amazon_affiliate_links_selection() {
-    var links = JSON.parse(
-        this.dataset.amazonAffiliateLinks.replace(/'/g, '"')
-    );
-    var product_name = this.dataset.amazonProductName;
-    console.log(
-        "Open 'Amazon Affiliate Links' modal for this product: " + product_name
-    );
-    $(".amazon-product-name").empty().append(product_name);
-    $("#list-amazon-affiliate-links").empty();
-    for (var i = 0; i < links.length; i++) {
-        var link = links[i];
-        var title =
-            "See this product in " +
-            link["website"] +
-            " (Amazon in " +
-            link["marketplace"] +
-            ")";
-        var a = $("<a></a>")
-            .attr("href", link["link"])
-            .attr("rel", "nofollow")
-            .attr("title", title)
-            .attr("target", "_blank")
-            .addClass("flag-" + link["flagId"] + " animate-shadow")
-            .tooltip({
-                animation: true,
-                placement: "bottom",
-                container: "#modal-amazon-affiliate-links",
-                trigger: "hover",
-            });
-        var li = $("<li></li>").append(a);
-        $("#list-amazon-affiliate-links").append(li);
-    }
-    $("#modal-amazon-affiliate-links").modal("show");
-    return false;
-}
-
-/**
  * Apply the visitor's decision. will be remembered for ``offset_months`` months.
  */
 function cookie_policy_decision(decision) {
@@ -1846,11 +1806,6 @@ $(function () {
         url_anchor_to_this_id
     );
     $("#onclick-password-reset").click(login_to_password_reset_form);
-    $("body").on(
-        "click",
-        "a.amazon-affiliate-link",
-        amazon_affiliate_links_selection
-    ); // also apply to dynamically added elements
     cookie_policy_consent();
     subscribe_newsletter();
 

@@ -160,7 +160,6 @@ class Config:
     MD_EXT: List[Any] = verbose_md_ext(
         ["admonition", "footnotes", "attr_list", "abbr", "toc", "def_list", "tables"]
     ) + [
-        AmazonAffiliateLinksExtension(),  # type: ignore[list-item]
         TweetableExtension(  # type: ignore[list-item]
             twitter_username=TWITTER_ACCOUNT["screen_name"], brand_name=BRAND_NAME
         ),

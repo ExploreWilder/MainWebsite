@@ -1230,41 +1230,6 @@ a.tooltip-networks i:hover {
 }
 
 /*
- * AMAZON AFFILIATE
- */
-
-#modal-amazon-affiliate-links {
-    .tooltip-inner {
-        max-width: 100% !important;
-        width: 100%;
-    }
-    h3 {
-        font-size: 1.5rem !important;
-    }
-}
-
-ul#list-amazon-affiliate-links {
-    list-style-type: none;
-    text-align: center;
-    padding: 0;
-    li {
-        display: inline;
-    }
-}
-
-each(range(0, 9), {
-    .flag-@{value} {
-        background-image: url('/static/images/all_flags.png');
-        background-repeat: no-repeat;
-        background-position: 0 -(@value * 76px);
-        height: 76px;
-        width: 130px;
-        display: inline-block;
-        margin: 0.5em;
-    }
-});
-
-/*
  * SENTRY
  */
 
