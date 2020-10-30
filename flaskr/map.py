@@ -492,7 +492,7 @@ def proxy_lds(layer: str, a_d: str, z: int, x: int, y: int) -> FlaskResponse:
     try:
         r = requests.get(url)
         r.raise_for_status()  # raise for not found tiles
-    except requests.exceptions.HTTPError:
+    except requests.exceptions.HTTPError:  # pragma: no cover
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)
 
@@ -517,6 +517,6 @@ def proxy_ign() -> FlaskResponse:
     try:
         r = requests.get(url)
         r.raise_for_status()  # raise for not found tiles
-    except requests.exceptions.HTTPError:
+    except requests.exceptions.HTTPError:  # pragma: no cover
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)

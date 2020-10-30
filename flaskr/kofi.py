@@ -40,7 +40,7 @@ mysql = LocalProxy(get_db)
 
 
 @kofi_app.route("/webhook", methods=("POST",))
-def kofi_webhook() -> FlaskResponse:
+def kofi_webhook() -> FlaskResponse:  # pragma: no cover; tested online through the Ko-fi interface.
     """
     Webhook for Ko-fi.com, the idea is to receive data (f.i. on donation
     success) and save it to offer commissioned content in the website.
