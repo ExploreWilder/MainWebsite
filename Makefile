@@ -61,6 +61,7 @@ check: mypy pylint
 # documentation: https://github.com/PyCQA/isort/wiki/isort-Settings
 isort: venv
 	${PYTHON} -m isort flaskr/ --force-single-line
+	${PYTHON} -m isort tests/ --force-single-line
 
 black: venv
 	${PYTHON} -m black flaskr/
@@ -78,7 +79,10 @@ coverage: venv
 	@cd tests && \
 	export FLASK_DEBUG=True && \
 	../${PYTHON} -m coverage run -m pytest && \
-	../${PYTHON} -m coverage html --include="../flaskr/*" --directory="../doc/htmlcov"
+	../${PYTHON} -m coverage html --include="../flaskr/*" --directory="../doc/htmlcov" && \
+	../${PYTHON} -m coverage json --include="../flaskr/*" && \
+	../${PYTHON} coverage_to_readme.py && \
+	rm coverage.json
 	@echo "Open file: file://${PWD}/doc/htmlcov/index.html"
 
 run: venv

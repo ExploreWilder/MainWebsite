@@ -30,9 +30,10 @@
 
 import os
 from filecmp import cmp
+
 import pytest
+
 from flaskr.map import gpx_to_webtrack_with_elevation
-from flaskr.webtrack import WebTrack
 
 
 def test_gpx_to_webtrack(app):

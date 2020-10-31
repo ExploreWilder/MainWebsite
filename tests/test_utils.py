@@ -29,9 +29,9 @@
 #
 
 import pytest
+
 from flaskr import utils
 from flaskr.db import get_db
-from flaskr.dependencies import *
 
 
 @pytest.mark.parametrize(

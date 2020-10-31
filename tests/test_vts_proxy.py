@@ -29,9 +29,11 @@
 #
 
 import os
+
 import pytest
-from flaskr import vts_proxy
+
 from flaskr import utils
+from flaskr import vts_proxy
 
 
 def test_otm(client):

@@ -28,7 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-import pytest, os
+import pytest
 
 
 @pytest.mark.parametrize(

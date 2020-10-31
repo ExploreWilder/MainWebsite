@@ -28,8 +28,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-import pytest, os
 from urllib.parse import urlparse
+
 import gpxpy
 
 from flaskr.gpx_to_img import gpx_to_src

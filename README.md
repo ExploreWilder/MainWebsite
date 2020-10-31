@@ -52,7 +52,7 @@ I used the following frameworks and tools:
 ### Developer side:
 
 * A bunch of free software
-* Tests with [pytest](https://docs.pytest.org/en/latest/)
+* [Tests](tests/) with [pytest](https://docs.pytest.org/en/latest/)
 * [Mypy](https://mypy.readthedocs.io/en/stable/introduction.html "Mypy is an optional static type checker for Python"), [Pylint](https://pylint.pycqa.org/en/latest/intro.html "Pylint is a tool that checks for errors in Python code"), [Black](https://github.com/psf/black "Black is the uncompromising Python code formatter")
 * [Sphinx](http://www.sphinx-doc.org/en/master/)
 * [Sentry](https://sentry.io/)

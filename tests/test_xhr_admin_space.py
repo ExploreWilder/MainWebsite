@@ -28,12 +28,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-import pytest, os, filecmp, shutil
-from io import StringIO
+import filecmp
+import os
+import shutil
 from pathlib import Path
+
 from flask import session
-from flaskr.db import get_db
+
 from flaskr import utils
+from flaskr.db import get_db
 
 
 def test_move_into_wastebasket(files, client, auth, app):

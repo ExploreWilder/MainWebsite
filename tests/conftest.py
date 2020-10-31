@@ -28,8 +28,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-import os, pytest, shutil
-from flaskr import create_app, db
+import os
+import shutil
+
+import pytest
+
+from flaskr import create_app
+from flaskr import db
 
 
 @pytest.fixture(scope="session")

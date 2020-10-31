@@ -28,8 +28,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+import time
+
 from flask import session
-import pytest, time
+
 from flaskr.db import get_db
 
 

@@ -28,10 +28,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+import json
 import os
 import time
-import json
 from urllib.parse import urlparse
+
 from flaskr.social_networks import encode_media_origin
 
 

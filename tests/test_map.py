@@ -28,8 +28,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-import pytest, os
+import os
+
+import pytest
 from PIL import Image
+
 from flaskr.map import create_static_map
 
 

@@ -33,9 +33,10 @@ Test conversions with an independant/3rd-party library:
 mercantile by Mapbox: https://github.com/mapbox/mercantile
 """
 
-import random, math
-import pytest
+import random
+
 import mercantile
+
 from flaskr import tilenames
 
 

@@ -28,9 +28,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-from flask import json, session
-import pytest, time
+import time
+
 import werkzeug.security
+from flask import json
+from flask import session
+
 from flaskr.db import get_db
 from flaskr.visitor_space import subscribe_newsletter
 
