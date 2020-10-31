@@ -90,9 +90,12 @@ Run as user:
     
     mkdir dkimpy
     cd dkimpy
-    wget https://launchpad.net/dkimpy/1.0/1.0.4/+download/dkimpy-1.0.4.tar.gz
-    tar -zxvf dkimpy-1.0.4.tar.gz
-    cd dkimpy-1.0.4
+    dkim_major_version=1.0
+    dkim_minor_version=5
+    dkim_version=${dkim_major_version}.${dkim_minor_version}
+    wget https://launchpad.net/dkimpy/${dkim_major_version}/${dkim_version}/+download/dkimpy-${dkim_version}.tar.gz
+    tar -zxvf dkimpy-${dkim_version}.tar.gz
+    cd dkimpy-${dkim_version}
     python3 setup.py install --single-version-externally-managed --record=/dev/null
     cd ../..
     

@@ -582,16 +582,8 @@ def send_mail() -> FlaskResponse:
         subscription="Yes" if subscribe_me else "No",
         server_time=strftime("%a %B %d %Y %H:%M:%S GMT+0000", gmtime()),
     )
-    if not current_app.config["DEBUG"]:
-        secure_email = SecureEmail(
-            current_app.config["EMAIL_USER"],
-            current_app.config["EMAIL_DOMAIN"],
-            open(current_app.config["DKIM_PATH_PRIVATE_KEY"]).read(),
-            current_app.config["DKIM_SELECTOR"],
-        )
-        secure_email.send(mailto, "Contact Form", "", content)  # pragma: no cover
-    else:
-        print(content)
+    secure_email = SecureEmail(current_app)
+    secure_email.send(mailto, "Contact Form", "", content)
     session["last_message"] = int(time())
 
     if subscribe_me:
@@ -826,30 +818,22 @@ def change_email(member_id: int = 0, hashed_url_email: str = "") -> Any:
         url_update_email_address = (
             request.host_url + "change_email/" + str(member_id) + "/" + hashed_email
         )
-        if not current_app.config["DEBUG"]:
-            secure_email = SecureEmail(
-                current_app.config["EMAIL_USER"],
-                current_app.config["EMAIL_DOMAIN"],
-                open(current_app.config["DKIM_PATH_PRIVATE_KEY"]).read(),
-                current_app.config["DKIM_SELECTOR"],
-            )
-            text = render_template(
-                "email_update_email_address.txt",
-                welcome=welcome,
-                old_email_address=old_email_address,
-                new_email_address=new_email_address,
-                url_update_email_address=url_update_email_address,
-            )
-            html = render_template(
-                "email_update_email_address.html",
-                welcome=welcome,
-                old_email_address=old_email_address,
-                new_email_address=new_email_address,
-                url_update_email_address=url_update_email_address,
-            )
-            secure_email.send(  # pragma: no cover
-                new_email_address, "Update Your Email Address", text, html
-            )
+        secure_email = SecureEmail(current_app)
+        text = render_template(
+            "email_update_email_address.txt",
+            welcome=welcome,
+            old_email_address=old_email_address,
+            new_email_address=new_email_address,
+            url_update_email_address=url_update_email_address,
+        )
+        html = render_template(
+            "email_update_email_address.html",
+            welcome=welcome,
+            old_email_address=old_email_address,
+            new_email_address=new_email_address,
+            url_update_email_address=url_update_email_address,
+        )
+        secure_email.send(new_email_address, "Update Your Email Address", text, html)
 
         # set the new email address without changing the current one:
         cursor.execute(
@@ -1444,32 +1428,22 @@ def reset_password(result: str = "", status: bool = True) -> Any:
                             + "/"
                             + newsletter_id
                         )
-                        if not current_app.config["DEBUG"]:
-                            secure_email = SecureEmail(
-                                current_app.config["EMAIL_USER"],
-                                current_app.config["EMAIL_DOMAIN"],
-                                open(
-                                    current_app.config["DKIM_PATH_PRIVATE_KEY"]
-                                ).read(),
-                                current_app.config["DKIM_SELECTOR"],
-                            )
-                            text = render_template(
-                                "email_password_reset.txt",
-                                welcome=welcome,
-                                subject=subject,
-                                url_unsubscribe=url_unsubscribe,
-                                url_create_password=url_create_password,
-                            )
-                            html = render_template(
-                                "email_password_reset.html",
-                                welcome=welcome,
-                                subject=subject,
-                                url_unsubscribe=url_unsubscribe,
-                                url_create_password=url_create_password,
-                            )
-                            secure_email.send(
-                                email, subject, text, html
-                            )  # pragma: no cover
+                        secure_email = SecureEmail(current_app)
+                        text = render_template(
+                            "email_password_reset.txt",
+                            welcome=welcome,
+                            subject=subject,
+                            url_unsubscribe=url_unsubscribe,
+                            url_create_password=url_create_password,
+                        )
+                        html = render_template(
+                            "email_password_reset.html",
+                            welcome=welcome,
+                            subject=subject,
+                            url_unsubscribe=url_unsubscribe,
+                            url_create_password=url_create_password,
+                        )
+                        secure_email.send(email, subject, text, html)
                     flash(
                         "If you are a member, a password reset link "
                         + "has been sent to your email address: "

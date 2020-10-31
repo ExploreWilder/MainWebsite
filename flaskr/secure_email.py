@@ -46,7 +46,7 @@ class SecureEmail:
     """ Handle the SMTP connection and send DKIM-signed emails. """
 
     #: The *From* field of the email as ``self.user``@``self.domain``. String-type.
-    mailfrom: str
+    mail_from: str
 
     #: The username of the *From* field. String-type.
     user: str
@@ -63,31 +63,41 @@ class SecureEmail:
     #: The SMTP socket. Open with ``__init__()`` and closed with ``__del__()``.
     socket: smtplib.SMTP
 
-    def __init__(
-        self, user: str, domain: str, dkim_private_key: str, dkim_selector: str
-    ) -> None:
+    def __init__(self, app) -> None:
         """
         Configure the email account and open an SMTP connection.
         The SMTP host is `localhost`.
         More information: https://docs.python.org/3/library/smtplib.html#smtplib.SMTP
 
         Args:
-            user (str): The username of the *From* field, f.i. `hello` in `hello@example.com`.
-            domain (str): The domain name of the *From* field, f.i. `example.com` in `hello@example.com`.
-            dkim_private_key (str): The DKIM private ASCII key.
-            dkim_selector (str): The DKIM selector.
+            app: Contains the configuration with the following fields:
+                * EMAIL_USER (str): The username of the *From* field, f.i. `hello` in `hello@example.com`.
+                * EMAIL_DOMAIN (str): The domain name of the *From* field, f.i. `example.com` in `hello@example.com`.
+                * DKIM_PATH_PRIVATE_KEY (str): Path to the DKIM private ASCII key.
+                * DKIM_SELECTOR (str): The DKIM selector.
+                * DEBUG or TESTING (bool): Write the message in stdout instead of sending the e-mail.
 
         Raises:
             smtplib exception.
         """
-        self.user = user
-        self.domain = domain
-        self.mailfrom = user + "@" + domain
-        self.dkim_private_key = dkim_private_key.encode()
-        self.dkim_selector = dkim_selector.encode()
-        self.socket = smtplib.SMTP("localhost")
+        self.debug = app.config["DEBUG"] or app.config["TESTING"]
+        self.user = app.config["EMAIL_USER"]
+        self.domain = app.config["EMAIL_DOMAIN"]
+        self.mail_from = self.user + "@" + self.domain
+        self.dkim_private_key = (
+            open(app.config["DKIM_PATH_PRIVATE_KEY"]).read().encode()
+        )
+        self.dkim_selector = app.config["DKIM_SELECTOR"].encode()
+        if not self.debug:  # pragma: no cover
+            self.socket = smtplib.SMTP("localhost")
 
-    def send(self, mailto: str, subject: str, text: str, html: str) -> None:
+    def get_mail_from(self) -> str:
+        """ Returns the webmaster email according to the configuration. """
+        return self.mail_from
+
+    def send(
+        self, mailto: str, subject: str, text: str, html: str
+    ) -> Optional[MIMEMultipart]:
         """
         Create and send a text/HTML email. Multiple calls use the same SMTP session.
         A `Message-ID`, `Date`, and `DKIM-Signature` fields are added to the email.
@@ -100,9 +110,12 @@ class SecureEmail:
 
         Raises:
             smtplib exception.
+
+        Returns:
+            Dict: The created message if in debug or testing mode. None otherwise.
         """
         message = MIMEMultipart("alternative")
-        message["From"] = self.mailfrom
+        message["From"] = self.mail_from
         message["To"] = mailto
         message["Date"] = formatdate()  # better ranking on SpamAssassin
         message["Message-ID"] = (
@@ -121,10 +134,14 @@ class SecureEmail:
         )
         sig = sig.decode()
         message["DKIM-Signature"] = sig[len("DKIM-Signature: ") :]
-        self.socket.sendmail(message["From"], message["To"], message.as_string())
+        if not self.debug:  # pragma: no cover
+            self.socket.sendmail(message["From"], message["To"], message.as_string())
+            return None
+        return message
 
     def __del__(self) -> None:
         """
         Terminate the SMTP session and close the connection.
         """
-        self.socket.quit()
+        if not self.debug:  # pragma: no cover
+            self.socket.quit()

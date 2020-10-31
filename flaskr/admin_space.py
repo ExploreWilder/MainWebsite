@@ -256,12 +256,7 @@ def send_password_creation() -> FlaskResponse:
     )
     welcome = "Hi" + ("!" if (not username) else (" " + username + "!"))
     if not current_app.config["DEBUG"]:
-        secure_email = SecureEmail(
-            current_app.config["EMAIL_USER"],
-            current_app.config["EMAIL_DOMAIN"],
-            open(current_app.config["DKIM_PATH_PRIVATE_KEY"]).read(),
-            current_app.config["DKIM_SELECTOR"],
-        )
+        secure_email = SecureEmail(current_app)
         text = render_template(
             "email_password_creation.txt",
             welcome=welcome,
@@ -276,7 +271,7 @@ def send_password_creation() -> FlaskResponse:
             url_unsubscribe=url_unsubscribe,
             url_create_password=url_create_password,
         )
-        secure_email.send(email, subject, text, html)  # pragma: no cover
+        secure_email.send(email, subject, text, html)
     return basic_json(True, "E-mail sent to the member!")
 
 
@@ -313,37 +308,31 @@ def send_newsletter() -> FlaskResponse:
     data = cursor.fetchall()
     total_emails_sent = 0
 
-    if not current_app.config["DEBUG"]:
-        secure_email = SecureEmail(
-            current_app.config["EMAIL_USER"],
-            current_app.config["EMAIL_DOMAIN"],
-            open(current_app.config["DKIM_PATH_PRIVATE_KEY"]).read(),
-            current_app.config["DKIM_SELECTOR"],
+    secure_email = SecureEmail(current_app)
+    for member in data:
+        username = member[1]
+        newsletter_id = member[0]
+        email = member[2]
+        member_id = member[3]
+        url_unsubscribe = (
+            request.host_url + "unsubscribe/" + str(member_id) + "/" + newsletter_id
         )
-        for member in data:
-            username = member[1]
-            newsletter_id = member[0]
-            email = member[2]
-            member_id = member[3]
-            url_unsubscribe = (
-                request.host_url + "unsubscribe/" + str(member_id) + "/" + newsletter_id
-            )
-            text = render_template(
-                "email_newsletter.txt",
-                username=username,
-                news=news_text,
-                subject=short_subject,
-                url_unsubscribe=url_unsubscribe,
-            )
-            html = render_template(
-                "email_newsletter.html",
-                username=username,
-                news=news_html,
-                subject=short_subject,
-                url_unsubscribe=url_unsubscribe,
-            )
-            secure_email.send(email, subject, text, html)  # pragma: no cover
-            total_emails_sent += 1
+        text = render_template(
+            "email_newsletter.txt",
+            username=username,
+            news=news_text,
+            subject=short_subject,
+            url_unsubscribe=url_unsubscribe,
+        )
+        html = render_template(
+            "email_newsletter.html",
+            username=username,
+            news=news_html,
+            subject=short_subject,
+            url_unsubscribe=url_unsubscribe,
+        )
+        secure_email.send(email, subject, text, html)
+        total_emails_sent += 1
     return basic_json(
         True, "News sent to the " + str(total_emails_sent) + " subscriber(s)!"
     )
