@@ -36,6 +36,8 @@ from xml.dom import minidom
 
 from twython import Twython
 from twython import TwythonError
+from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import NotFound
 
 from .utils import *
 
@@ -167,6 +169,7 @@ def send_media(network: str, origin: str, filename: str) -> FlaskResponse:
 
     Args:
         network (str): Social platform name in small cap, "twitter" or "mastodon".
+        origin (str): Encoded URL to the original file.
         filename (str): The filename of the image (locally) saved, excluding the directory.
 
     Returns:
@@ -191,7 +194,7 @@ def send_media(network: str, origin: str, filename: str) -> FlaskResponse:
         if reverse_filename == filename:
             download_image(origin_url, reverse_filename, data_store, timeout)
         else:
-            abort(404)  # compromized origin
+            abort(404)  # compromised origin
 
     return send_from_directory(data_store, filename)
 
@@ -223,7 +226,8 @@ def my_twitter_timeline() -> FlaskResponse:
             content = twitter.get_user_timeline(
                 screen_name=screen_name, json_encoded=True
             )
-        except TwythonError:  # https://twython.readthedocs.io/en/latest/api.html#exceptions
+        # https://twython.readthedocs.io/en/latest/api.html#exceptions
+        except TwythonError:  # pragma: no cover
             current_app.logger.exception(
                 "Failed to get the " + screen_name + " timeline from Twitter"
             )
@@ -237,7 +241,7 @@ def my_twitter_timeline() -> FlaskResponse:
 
     try:
         return send_from_directory(data_store, timeline_filename)
-    except Exception:
+    except (NotFound, BadRequest):  # pragma: no cover; system error
         current_app.logger.exception(
             "Failed to locally retrieve the Twitter timeline @" + screen_name
         )
@@ -269,7 +273,8 @@ def my_mastodon_timeline() -> FlaskResponse:
             r = requests.get(  # pylint: disable=invalid-name
                 account_url + ".rss", timeout=timeout
             )
-        except Exception:
+            r.raise_for_status()
+        except requests.exceptions.HTTPError:  # pragma: no cover
             current_app.logger.exception(
                 "Failed to get the Mastodon timeline: " + account_url
             )
@@ -319,7 +324,7 @@ def my_mastodon_timeline() -> FlaskResponse:
 
     try:
         return send_from_directory(data_store, timeline_filename)
-    except Exception:
+    except (NotFound, BadRequest):  # pragma: no cover; system error
         current_app.logger.exception(
             "Failed to locally retrieve the Mastodon timeline " + account_url
         )
