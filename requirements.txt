@@ -17,3 +17,4 @@ Flask-Caching
 sentry-sdk[flask]==0.16.2
 twython
 pyquadkey2
+polyline

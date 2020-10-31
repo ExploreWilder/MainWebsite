@@ -32,13 +32,11 @@
 Create a map from GPX data.
 """
 
-import json as mod_json
-import math as mod_math
 from typing import Dict
-from urllib.parse import quote as mod_quote
+from urllib.parse import quote_plus as mod_quote_plus
 
 import gpxpy as mod_gpxpy
-import requests as mod_requests
+import polyline as mod_polyline
 
 DEFAULT_MARGIN_POINTS_NO: int = 3
 DEFAULT_MAX_ITER: int = 20
@@ -110,7 +108,6 @@ def gpx_to_src(
     Args:
         gpx: GPX data.
         conf (Dict): Mapbox username, style_id, image width/height, access token, logo visibility.
-        points_no (int): The number of points to expect.
         margin_points_no (int): The bound around the expected number of points, the lesser the slower.
         max_iter (int): Limit the number of calls to 'simplify' to avoid infinite loop if the margin is too small.
     """
@@ -125,22 +122,35 @@ def gpx_to_src(
     )
     coordinates = []
     for point in merged_segments.points:
-        coordinates.append([point.longitude, point.latitude])
+        coordinates.append((point.latitude, point.longitude))
 
-    str_geojson = mod_json.dumps(
-        mod_json.loads(
-            mod_json.dumps({"type": "LineString", "coordinates": coordinates}),
-            parse_float=lambda x: round(
-                float(x), 3
-            ),  # limit the precision to no more than 6 decimals places
-        ),
-        separators=(",", ":"),
-    )  # remove whitespaces
-
-    return "https://api.mapbox.com/styles/v1/{}/{}/static/geojson({})/auto/{}x{}{}?access_token={}&logo={}".format(
+    point_fmt = "{}-{}+{}({:.7},{:.7})"
+    path_fmt = "path-{}+{}-{}({})"
+    return (
+        "https://api.mapbox.com/styles/v1/{}/{}/static/"
+        + point_fmt
+        + ","
+        + point_fmt
+        + ","
+        + path_fmt
+        + "/auto/{}x{}{}?access_token={}&logo={}"
+    ).format(
         conf["username"],
         conf["style_id"],
-        mod_quote(str_geojson),
+        conf["style"]["start"]["name"],
+        conf["style"]["start"]["label"],
+        conf["style"]["start"]["color"],
+        coordinates[0][1],
+        coordinates[0][0],
+        conf["style"]["end"]["name"],
+        conf["style"]["end"]["label"],
+        conf["style"]["end"]["color"],
+        coordinates[-1][1],
+        coordinates[-1][0],
+        conf["style"]["path"]["stroke_width"],
+        conf["style"]["path"]["stroke_color"],
+        conf["style"]["path"]["stroke_opacity"],
+        mod_quote_plus(mod_polyline.encode(coordinates)),
         conf["width"],
         conf["height"],
         "@2x" if conf["@2x"] else "",

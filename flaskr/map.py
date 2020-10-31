@@ -221,6 +221,7 @@ def create_static_map(
         gpx = gpxpy.parse(gpx_file)
     url = gpx_to_src(gpx, static_image_settings)
     r = requests.get(url)
+    r.raise_for_status()
     with open(static_map_path, "wb") as static_image:
         static_image.write(r.content)
 

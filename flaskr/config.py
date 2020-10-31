@@ -207,7 +207,24 @@ class Config:
         "@2x": True,
         "access_token": "pk.UNDISCLOSED.UNDISCLOSED",
         "logo": False,
-        "points": 150,
+        "points": 250,
+        "style": {
+            "start": {
+                "name": "pin-s",  # Marker shape and size. Options are pin-s and pin-l.
+                "label": "rocket",  # Marker symbol: https://labs.mapbox.com/maki-icons/
+                "color": "0f0",  # A 3- or 6-digit hexadecimal color code.
+            },
+            "end": {
+                "name": "pin-s",  # Marker shape and size. Options are pin-s and pin-l.
+                "label": "embassy",  # Marker symbol: https://labs.mapbox.com/maki-icons/
+                "color": "00f",  # A 3- or 6-digit hexadecimal color code.
+            },
+            "path": {
+                "stroke_width": 3,  # A positive number for the line stroke width
+                "stroke_color": "f00",  # A 3- or 6-digit hexadecimal color code for the line stroke
+                "stroke_opacity": 0.8,  # A number between 0 (transparent) and 1 (opaque) for line stroke opacity
+            },
+        },
     }
     #: Content Security Policy Configuration.
     CSP_CONFIG: Dict[str, Union[str, List[str]]] = {
