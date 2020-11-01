@@ -96,7 +96,7 @@ class StorytellingMap {
     constructor(book_id, book_dir, book_filename, debug_mode) {
         this.#book_id = book_id;
         this.#book_dir = book_dir;
-        this.#book_path = `/books/${book_id}/${book_dir}/`;
+        this.#book_path = `/stories/${book_id}/`;
         this.#book_filename = book_filename;
         this.#debug_mode = debug_mode;
         this.story = document.getElementById("storytelling-map-story");

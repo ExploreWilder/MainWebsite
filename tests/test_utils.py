@@ -51,10 +51,10 @@ def test_anonymize_ip(real_ip, anonimized_ip):
 @pytest.mark.parametrize(
     "real_ip",
     (
-        ("127.0.0.1.0"),
-        ("3.2.1"),
-        ("34.88.06.35.8"),
-        ("43.674"),
+        "127.0.0.1.0",
+        "3.2.1",
+        "34.88.06.35.8",
+        "43.674",
     ),
 )
 def test_anonymize_invalid_ip(real_ip):
@@ -69,9 +69,9 @@ def test_anonymize_invalid_ip(real_ip):
 @pytest.mark.parametrize(
     "pdf",
     (
-        ("file.pdf"),
-        ("dignvoend.pdf"),
-        ("hello.pdf.pdf"),
+        "file.pdf",
+        "dignvoend.pdf",
+        "hello.pdf.pdf",
     ),
 )
 def test_file_is_pdf(pdf):
@@ -82,9 +82,9 @@ def test_file_is_pdf(pdf):
 @pytest.mark.parametrize(
     "pdf",
     (
-        ("file.pedf"),
-        ("dignvoendpdf"),
-        ("hello.pdf.txt"),
+        "file.pedf",
+        "dignvoendpdf",
+        "hello.pdf.txt",
     ),
 )
 def test_file_is_not_pdf(pdf):
@@ -95,8 +95,8 @@ def test_file_is_not_pdf(pdf):
 @pytest.mark.parametrize(
     "path",
     (
-        ("http://hello.com"),
-        ("https://hello.com/abc"),
+        "http://hello.com",
+        "https://hello.com/abc",
     ),
 )
 def test_match_absolute_path(path):
@@ -107,8 +107,8 @@ def test_match_absolute_path(path):
 @pytest.mark.parametrize(
     "path",
     (
-        ("file:///home"),
-        ("/index"),
+        "file:///home",
+        "/index",
     ),
 )
 def test_not_match_absolute_path(path):
@@ -119,10 +119,10 @@ def test_not_match_absolute_path(path):
 @pytest.mark.parametrize(
     "email",
     (
-        ("user@test.com"),
-        ("user+newsletter@test.fr"),
-        ("user+newsletter@test.cern"),
-        ("user+test@127.0.0.1"),  # dodgy but valid
+        "user@test.com",
+        "user+newsletter@test.fr",
+        "user+newsletter@test.cern",
+        "user+test@127.0.0.1",  # dodgy but valid
     ),
 )
 def test_valid_emails(email):
@@ -138,10 +138,10 @@ def test_get_image_exif_with_no_exif():
 @pytest.mark.parametrize(
     "email",
     (
-        ("user@test"),
-        ("user@test+c.om"),
-        ("us er@test.com"),
-        ("user@127.0.0.1:42"),  # too dodgy
+        "user@test",
+        "user@test+c.om",
+        "us er@test.com",
+        "user@127.0.0.1:42",  # too dodgy
     ),
 )
 def test_invalid_emails(email):
@@ -172,12 +172,12 @@ def test_is_admin(client, auth):
 @pytest.mark.parametrize(
     "str",
     (
-        ("hello"),
-        (" hello "),
-        ("\nhello"),
-        ("\nhello"),
-        ("hel lo"),
-        ("hello\t"),
+        "hello",
+        " hello ",
+        "\nhello",
+        "\nhello",
+        "hel lo",
+        "hello\t",
     ),
 )
 def test_remove_whitespaces(str):

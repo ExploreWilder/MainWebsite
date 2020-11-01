@@ -29,7 +29,8 @@ help:
 	@echo -e "$V make check ---------→ check type annotations with mypy and lint with pylint.                 $V"
 	@echo -e "$V make isort ---------→ sort Python imports.                                                   $V"
 	@echo -e "$V make black ---------→ format the Python project.                                             $V"
-	@echo -e "$V make format --------→ sort Python imports and format the Python project.                     $V"
+	@echo -e "$V make prettier ------→ format the JavaScript project.                                         $V"
+	@echo -e "$V make format --------→ sort Python imports and format the Python & JavaScript projects.       $V"
 	@echo -e "$V make test ----------→ test the Python project with pytest.                                   $V"
 	@echo -e "$V make coverage ------→ test coverage of the Python project.                                   $V"
 	@echo -e "$V make run -----------→ run the app on http://127.0.0.1:5000/ (press CTRL+C to quit).          $V"
@@ -67,7 +68,11 @@ black: venv
 	${PYTHON} -m black flaskr/
 	${PYTHON} -m black tests/
 
-format: isort black
+prettier:
+	@cd flaskr/static && \
+	npm run prettier
+
+format: isort black prettier
 
 # for debug purpose, add the --setup-show flag to pytest
 test: venv

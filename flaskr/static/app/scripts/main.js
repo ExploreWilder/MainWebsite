@@ -1176,20 +1176,13 @@ function is_on_screen(elem) {
  * Replace title in img with a Bootstrap tooltip, displayed on the left side for
  * medium screen or on the bottom for smaller screen.
  * NOTICE: the placement does not change when the window is resized.
- * @see book_zoom_images()
  */
 function book_tooltip() {
-    $("#content-book p:not(.can-zoom-in)").tooltip({
+    $("#content-book p").tooltip({
         animation: true,
         container: "#content-book",
         placement: "bottom",
         trigger: "hover",
-    });
-    $("#content-book p.can-zoom-in").tooltip({
-        animation: true,
-        container: "#content-book",
-        placement: "bottom",
-        trigger: "manual", // triggered by book_zoom_images()
     });
     $("sup a").tooltip({
         animation: true,

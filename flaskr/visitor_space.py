@@ -182,7 +182,7 @@ def photo_dir(photo_id: int, filename: str) -> FlaskResponse:
     return send_from_directory(current_app.config["GALLERY_FOLDER"], filename)
 
 
-@visitor_app.route("/books/locked.jpg")
+@visitor_app.route("/stories/locked.jpg")
 @same_site
 def image_of_locked_books() -> FlaskResponse:
     """
@@ -193,41 +193,39 @@ def image_of_locked_books() -> FlaskResponse:
     )
 
 
-@visitor_app.route("/books/<int:book_id>/<path:sub_dir>")
-def book_dir(book_id: int, sub_dir: str) -> FlaskResponse:
+@visitor_app.route("/stories/<int:book_id>/<string:filename>.<string:ext>")
+def book_dir(book_id: int, filename: str, ext: str) -> FlaskResponse:
     """
     Make documents of a book reachable by the user. PDF file is sent as attachment.
+    The extension is separated from the filename in order to identify this route
+    with the story book defined with story().
     Check a few things before to send the file:
     * The book is in the database,
     * The user is allowed to access the book.
     """
-    sub_dir = escape(sub_dir)
-    url = secure_filename(sub_dir.split("/", 1)[0].lower())
+    ext = escape(ext)
+    filename = secure_filename(escape(filename)) + "." + ext
     cursor = mysql.cursor()
     cursor.execute(
-        """SELECT access_level
+        """SELECT access_level, url
         FROM shelf
-        WHERE book_id={id} AND url='{url}'""".format(
-            id=book_id, url=url
+        WHERE book_id={id}""".format(
+            id=book_id
         )
     )
     data = cursor.fetchone()
     if cursor.rowcount == 0 or actual_access_level() < data[0]:
         abort(404)
-    is_gpx = sub_dir.endswith(".gpx")
     if (
-        is_gpx
+        ext == "gpx"
         and actual_access_level() < current_app.config["ACCESS_LEVEL_DOWNLOAD_GPX"]
     ):
         abort(404)
-    is_geojson = sub_dir.endswith(".geojson")
-    attached = file_is_pdf(sub_dir) or is_gpx
-    mimetype = "application/geo+json" if is_geojson else None
     return send_from_directory(
-        current_app.config["SHELF_FOLDER"],
-        sub_dir,
-        as_attachment=attached,
-        mimetype=mimetype,
+        os.path.join(current_app.config["SHELF_FOLDER"], data[1]),
+        filename,
+        as_attachment=ext in ("gpx", "pdf"),
+        mimetype="application/geo+json" if ext == "geojson" else None,
     )
 
 

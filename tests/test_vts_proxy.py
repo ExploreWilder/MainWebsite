@@ -58,25 +58,25 @@ def test_otm(client):
 @pytest.mark.parametrize(
     "path",
     (
-        ("/map/vts_proxy/world/topo/thunderforest/outdoors/1/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/landscape/1/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/cycle/1/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/transport/1/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/transport-dark/1/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/spinal-map/1/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/pioneer/1/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/mobile-atlas/1/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/neighbourhood/1/0/0.png"),
-        ("/map/vts_proxy/nz/satellite/1/0/0.png"),
-        ("/map/vts_proxy/nz/topo/1/0/0.png"),
-        ("/map/vts_proxy/ca/topo/1/0/0.png"),
-        ("/map/vts_proxy/fr/satellite/1/0/0.jpg"),
-        ("/map/vts_proxy/fr/topo/1/0/0.jpg"),
-        ("/map/vts_proxy/world/gebco/shaded/1/0/0.jpeg"),
-        ("/map/vts_proxy/world/gebco/flat/1/0/0.jpeg"),
-        ("/map/vts_proxy/eumetsat/meteosat_iodc_mpe/1/0/0.png"),
-        ("/map/vts_proxy/eumetsat/meteosat_0deg_h0b3/1/0/0.png"),
-        ("/map/vts_proxy/world/satellite/bing/3/3/5.jpeg"),
+        "/map/vts_proxy/world/topo/thunderforest/outdoors/1/0/0.png",
+        "/map/vts_proxy/world/topo/thunderforest/landscape/1/0/0.png",
+        "/map/vts_proxy/world/topo/thunderforest/cycle/1/0/0.png",
+        "/map/vts_proxy/world/topo/thunderforest/transport/1/0/0.png",
+        "/map/vts_proxy/world/topo/thunderforest/transport-dark/1/0/0.png",
+        "/map/vts_proxy/world/topo/thunderforest/spinal-map/1/0/0.png",
+        "/map/vts_proxy/world/topo/thunderforest/pioneer/1/0/0.png",
+        "/map/vts_proxy/world/topo/thunderforest/mobile-atlas/1/0/0.png",
+        "/map/vts_proxy/world/topo/thunderforest/neighbourhood/1/0/0.png",
+        "/map/vts_proxy/nz/satellite/1/0/0.png",
+        "/map/vts_proxy/nz/topo/1/0/0.png",
+        "/map/vts_proxy/ca/topo/1/0/0.png",
+        "/map/vts_proxy/fr/satellite/1/0/0.jpg",
+        "/map/vts_proxy/fr/topo/1/0/0.jpg",
+        "/map/vts_proxy/world/gebco/shaded/1/0/0.jpeg",
+        "/map/vts_proxy/world/gebco/flat/1/0/0.jpeg",
+        "/map/vts_proxy/eumetsat/meteosat_iodc_mpe/1/0/0.png",
+        "/map/vts_proxy/eumetsat/meteosat_0deg_h0b3/1/0/0.png",
+        "/map/vts_proxy/world/satellite/bing/3/3/5.jpeg",
     ),
 )
 def test_vts_proxy_link_ok(client, path):
@@ -88,13 +88,13 @@ def test_vts_proxy_link_ok(client, path):
 @pytest.mark.parametrize(
     "path",
     (
-        ("/map/vts_proxy/world/topo/otm/0/0/0.png"),
-        ("/map/vts_proxy/world/topo/thunderforest/pluton/1/0/0.png"),
-        ("/map/vts_proxy/nz/pluton/1/0/0.png"),
-        ("/map/vts_proxy/fr/pluton/1/0/0.jpg"),
-        ("/map/vts_proxy/world/gebco/pluton/1/0/0.jpeg"),
-        ("/map/vts_proxy/eumetsat/pluton/1/0/0.png"),
-        ("/map/vts_proxy/world/satellite/bing/0/3/5.jpeg"),
+        "/map/vts_proxy/world/topo/otm/0/0/0.png",
+        "/map/vts_proxy/world/topo/thunderforest/pluton/1/0/0.png",
+        "/map/vts_proxy/nz/pluton/1/0/0.png",
+        "/map/vts_proxy/fr/pluton/1/0/0.jpg",
+        "/map/vts_proxy/world/gebco/pluton/1/0/0.jpeg",
+        "/map/vts_proxy/eumetsat/pluton/1/0/0.png",
+        "/map/vts_proxy/world/satellite/bing/0/3/5.jpeg",
     ),
 )
 def test_vts_proxy_bad_requests(client, path):
@@ -106,7 +106,7 @@ def test_vts_proxy_bad_requests(client, path):
     assert rv.data == tile_lost
 
 
-@pytest.mark.parametrize("path", (("/map/vts_proxy/fr/underground/1/0/0"),))
+@pytest.mark.parametrize("path", ("/map/vts_proxy/fr/underground/1/0/0",))
 def test_vts_proxy_bad_link(client, path):
     """ Ckeck the links inavailability. """
     rv = client.get(path)

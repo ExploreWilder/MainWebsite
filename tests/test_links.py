@@ -37,7 +37,7 @@ import pytest
         ("/stories"),
         ("/about"),
         ("/captcha.png"),
-        ("/books/locked.jpg"),
+        ("/stories/locked.jpg"),
         ("/sitemap.xml"),
     ),
 )

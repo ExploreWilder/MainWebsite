@@ -99,9 +99,6 @@ Run as user:
     python3 setup.py install --single-version-externally-managed --record=/dev/null
     cd ../..
     
-    python -m pip install git+https://github.com/maxcountryman/flask-seasurf.git
-    python -m pip install git+https://github.com/ExploreWilder/mdx_sections.git
-    
     pip3 install -r requirements.txt
     pip3 install -r require_dev.txt # for development only
 

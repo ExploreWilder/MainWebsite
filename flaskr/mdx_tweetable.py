@@ -357,7 +357,7 @@ class TweetableExtension(Extension):
 
         self.setConfigs(kwargs)
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         tweetable_md_pattern = TweetablePattern(
             TWEETABLE_RE, self.getConfigs(), markdown_instance=md
         )

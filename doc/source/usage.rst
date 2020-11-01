@@ -68,12 +68,7 @@ Updates
 Python
 ^^^^^^
 
-Run:
-
-.. code-block:: none
-
-    pip install --upgrade pip
-    pip install --use-feature=2020-resolver -r requirements.txt -U
+Run: ``make py-update``
 
 JavaScript / CSS / Fonts
 ^^^^^^^^^^^^^^^^^^^^^^^^

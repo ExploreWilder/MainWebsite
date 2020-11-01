@@ -34,44 +34,42 @@ import pytest
 @pytest.mark.parametrize(
     "path",
     (
-        ("/admin/members/revoke"),
-        ("/admin/members/delete"),
-        ("/admin/members/change_access_level"),
-        ("/admin/members/list"),
-        ("/admin/members/send_password_creation"),
-        ("/admin/members/send_newsletter"),
-        ("/admin/photos/add/form"),
-        ("/admin/books/add/form"),
-        ("/admin/photos/add/request"),
-        ("/admin/books/add/request"),
-        ("/admin/photos/list"),
-        ("/admin/books/list"),
-        ("/admin/photos/metadata"),
-        ("/admin/books/metadata"),
-        ("/admin/photos/move"),
-        ("/admin/books/move"),
-        ("/admin/photos/delete"),
-        ("/admin/books/delete"),
-        ("/admin/photos/lost"),
-        ("/admin/photos/move_into_wastebasket"),
-        ("/admin/photos/open/test_1zy071k164o6rjjjynvms47kr16a9h.jpg"),
-        ("/admin/statistics"),
-        ("/photos/3/test_74gdf8hpw41i4qbpnl7b.jpg"),  # access level = 1
-        ("/photos/3/test_wkd6xdrmbt9io96zcygpg12gt.jpg"),  # access level = 1
-        ("/photos/4/test_1zy071k164o6rjjjynvms47kr16a9h.jpg"),  # access level = 240
-        (
-            "/photos/4/test_b4f6add9a5657725d156a94cde808ce8a5d4cf38.tif"
-        ),  # access level = 240
-        ("/books/5/fifth_story/test_image.jpg"),  # access level = 1
-        ("/stories/5/fifth_story"),  # access level = 1
-        ("/map/viewer/4/fourth_story/my_track/fr"),  # access level = 1
-        ("/map/player/4/fourth_story/my_track/fr"),  # access level = 1
-        ("/map/webtracks/4/fourth_story/my_track.webtrack"),  # access level = 1
-        ("/change_password"),  # restricted to members
-        ("/change_email"),  # restricted to members
-        ("/audit_log"),  # restricted to members
-        ("/social_networks/twitter/my_timeline"),  # POST only
-        ("/social_networks/mastodon/my_timeline"),  # POST only
+        "/admin/members/revoke",
+        "/admin/members/delete",
+        "/admin/members/change_access_level",
+        "/admin/members/list",
+        "/admin/members/send_password_creation",
+        "/admin/members/send_newsletter",
+        "/admin/photos/add/form",
+        "/admin/books/add/form",
+        "/admin/photos/add/request",
+        "/admin/books/add/request",
+        "/admin/photos/list",
+        "/admin/books/list",
+        "/admin/photos/metadata",
+        "/admin/books/metadata",
+        "/admin/photos/move",
+        "/admin/books/move",
+        "/admin/photos/delete",
+        "/admin/books/delete",
+        "/admin/photos/lost",
+        "/admin/photos/move_into_wastebasket",
+        "/admin/photos/open/test_1zy071k164o6rjjjynvms47kr16a9h.jpg",
+        "/admin/statistics",
+        "/photos/3/test_74gdf8hpw41i4qbpnl7b.jpg",  # access level = 1
+        "/photos/3/test_wkd6xdrmbt9io96zcygpg12gt.jpg",  # access level = 1
+        "/photos/4/test_1zy071k164o6rjjjynvms47kr16a9h.jpg",  # access level = 240
+        "/photos/4/test_b4f6add9a5657725d156a94cde808ce8a5d4cf38.tif",  # access level = 240
+        "/stories/5/test_image.jpg",  # access level = 1
+        "/stories/5/fifth_story",  # access level = 1
+        "/map/viewer/4/fourth_story/my_track/fr",  # access level = 1
+        "/map/player/4/fourth_story/my_track/fr",  # access level = 1
+        "/map/webtracks/4/fourth_story/my_track.webtrack",  # access level = 1
+        "/change_password",  # restricted to members
+        "/change_email",  # restricted to members
+        "/audit_log",  # restricted to members
+        "/social_networks/twitter/my_timeline",  # POST only
+        "/social_networks/mastodon/my_timeline",  # POST only
     ),
 )
 def test_restricted_access_denied(files, client, path):
@@ -86,17 +84,17 @@ def test_restricted_access_denied(files, client, path):
 @pytest.mark.parametrize(
     "path",
     (
-        ("/index"),  # access level = 0
-        ("/photos/3/test_74gdf8hpw41i4qbpnl7b.jpg"),  # access level = 1
-        ("/photos/3/test_wkd6xdrmbt9io96zcygpg12gt.jpg"),  # access level = 1
-        ("/books/5/fifth_story/test_image.jpg"),  # access level = 1
-        ("/stories/5/fifth_story"),  # access level = 1
-        ("/map/viewer/4/fourth_story/my_track/fr"),  # access level = 1
-        ("/map/player/4/fourth_story/my_track/fr"),  # access level = 1
-        ("/books/4/fourth_story/my_track.gpx"),  # access level = 1
-        ("/change_password"),
-        ("/change_email"),
-        ("/audit_log"),
+        "/index",  # access level = 0
+        "/photos/3/test_74gdf8hpw41i4qbpnl7b.jpg",  # access level = 1
+        "/photos/3/test_wkd6xdrmbt9io96zcygpg12gt.jpg",  # access level = 1
+        "/stories/5/test_image.jpg",  # access level = 1
+        "/stories/5/fifth_story",  # access level = 1
+        "/map/viewer/4/fourth_story/my_track/fr",  # access level = 1
+        "/map/player/4/fourth_story/my_track/fr",  # access level = 1
+        "/stories/4/my_track.gpx",  # access level = 1
+        "/change_password",
+        "/change_email",
+        "/audit_log",
     ),
 )
 def test_member_access_granted(files, client, auth, path):
@@ -122,33 +120,31 @@ def test_webtrack_failed(client, auth):
 @pytest.mark.parametrize(
     "path",
     (
-        ("/admin/members/revoke"),
-        ("/admin/members/delete"),
-        ("/admin/members/change_access_level"),
-        ("/admin/members/list"),
-        ("/admin/members/send_password_creation"),
-        ("/admin/members/send_newsletter"),
-        ("/admin/photos/add/form"),
-        ("/admin/books/add/form"),
-        ("/admin/photos/add/request"),
-        ("/admin/books/add/request"),
-        ("/admin/photos/list"),
-        ("/admin/books/list"),
-        ("/admin/photos/metadata"),
-        ("/admin/books/metadata"),
-        ("/admin/photos/move"),
-        ("/admin/books/move"),
-        ("/admin/photos/delete"),
-        ("/admin/books/delete"),
-        ("/admin/photos/lost"),
-        ("/admin/photos/move_into_wastebasket"),
-        ("/admin/photos/open/test_1zy071k164o6rjjjynvms47kr16a9h.jpg"),
-        ("/admin/statistics"),
-        ("/photos/4/test_1zy071k164o6rjjjynvms47kr16a9h.jpg"),  # access level = 240
-        (
-            "/photos/4/test_b4f6add9a5657725d156a94cde808ce8a5d4cf38.tif"
-        ),  # access level = 240
-        ("/create_password"),
+        "/admin/members/revoke",
+        "/admin/members/delete",
+        "/admin/members/change_access_level",
+        "/admin/members/list",
+        "/admin/members/send_password_creation",
+        "/admin/members/send_newsletter",
+        "/admin/photos/add/form",
+        "/admin/books/add/form",
+        "/admin/photos/add/request",
+        "/admin/books/add/request",
+        "/admin/photos/list",
+        "/admin/books/list",
+        "/admin/photos/metadata",
+        "/admin/books/metadata",
+        "/admin/photos/move",
+        "/admin/books/move",
+        "/admin/photos/delete",
+        "/admin/books/delete",
+        "/admin/photos/lost",
+        "/admin/photos/move_into_wastebasket",
+        "/admin/photos/open/test_1zy071k164o6rjjjynvms47kr16a9h.jpg",
+        "/admin/statistics",
+        "/photos/4/test_1zy071k164o6rjjjynvms47kr16a9h.jpg",  # access level = 240
+        "/photos/4/test_b4f6add9a5657725d156a94cde808ce8a5d4cf38.tif",  # access level = 240
+        "/create_password",
     ),
 )
 def test_member_access_denied(files, client, auth, path):
@@ -164,14 +160,14 @@ def test_member_access_denied(files, client, auth, path):
 @pytest.mark.parametrize(
     "path",
     (
-        ("/members/list"),
-        ("/photos/add/form"),
-        ("/books/add/form"),
-        ("/photos/list"),
-        ("/books/list"),
-        ("/photos/lost"),
-        ("/photos/open/test_74gdf8hpw41i4qbpnl7b.jpg"),
-        ("/statistics"),
+        "/members/list",
+        "/photos/add/form",
+        "/books/add/form",
+        "/photos/list",
+        "/books/list",
+        "/photos/lost",
+        "/photos/open/test_74gdf8hpw41i4qbpnl7b.jpg",
+        "/statistics",
     ),
 )
 def test_admin_access_granted(files, client, auth, path):

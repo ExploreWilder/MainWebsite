@@ -57,7 +57,12 @@ class BookProcessor:
         self.p_md_book = Path(self.path_to_md_book)
         self.p_html_content = Path(self.path_to_md_book + ".html")
         self.p_html_toc = Path(self.path_to_md_book + ".toc.html")
-        self.md = markdown.Markdown(extensions=app.config["BOOK_MD_EXT"])
+        self.md = markdown.Markdown(
+            extensions=app.config["BOOK_MD_EXT"]
+            + [
+                FigureExtension(src_path=self.path_to_book_dir),
+            ]
+        )
         self.static_map_height = (
             100
             * app.config["MAPBOX_STATIC_IMAGES"]["height"]
@@ -91,10 +96,7 @@ class BookProcessor:
 
     def convert(self) -> None:
         with self.p_md_book.open("r", encoding="utf-8") as fd:
-            content = re.sub(
-                re.compile(r"!\[([^\]]*)]\(([^\)]*)\)"), self.img, fd.read()
-            )
-        self.html = self.md.convert(content)
+            self.html = self.md.convert(fd.read())
         self.html = self.remove_hr()
         self.html = re.sub(
             re.compile(r'<p><a href="~([^~]+)~">([^<]+)</a></p>'),
@@ -110,23 +112,6 @@ class BookProcessor:
 
     def remove_hr(self) -> str:
         return self.html.replace("<hr />", "")
-
-    def img(self, match_obj: re.Match) -> str:
-        """ Prepend the absolute path to images. """
-        text = match_obj.group(1)
-        image_tag_content = match_obj.group(2).split(" ", 1)
-        image_filename = image_tag_content[0]
-        image_legend = image_tag_content[1]
-        link = os.path.join("/books", str(self.book_id), self.book_url, image_filename)
-        with Image.open(os.path.join(self.path_to_book_dir, image_filename)) as im:
-            return """<p style="position:relative; width:100%; height:0; padding-top:{image_height}%"
-                title={image_legend}><img style="position:absolute; top:0; left:0; width:100%;"
-                src="{link}" alt="{text}"></p>""".format(
-                text=text,
-                link=link,
-                image_legend=image_legend,
-                image_height=100 * im.size[1] / im.size[0],
-            )
 
     def custom_link(self, match_obj: re.Match) -> str:
         """ Create button to something (map or video). """

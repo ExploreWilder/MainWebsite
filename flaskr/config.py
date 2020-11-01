@@ -280,7 +280,7 @@ class TestingConfig:
     #: Use a different database because tests drop all tables.
     MYSQL_DATABASE_DB: str = "UNDISCLOSED"
     #: Required elapsed time before the user can re-submit.
-    REQUIRED_TIME_GAP: int = 1
+    REQUIRED_TIME_GAP: int = 2
     #: Path to the DKIM private key.
     DKIM_PATH_PRIVATE_KEY: str = absolute_path("../tests/random_rsa_private_key.txt")
 

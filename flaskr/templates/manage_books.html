@@ -79,7 +79,7 @@
                             <div class="col-lg-6 col-xl-2">
                                 <div class="my-3 text-center">
                                     <img class="thumbnail-book"
-                                         src="{{ url_for('visitor_app.book_dir', book_id=book[0], sub_dir=book[1]+'/card.jpg') }}"
+                                         src="{{ url_for('visitor_app.book_dir', book_id=book[0], filename='card', ext='jpg') }}"
                                          alt=""
                                          data-book-id="{{ book[0] }}" />
                                 </div>
@@ -281,7 +281,7 @@
                                                     {% for file_name in files %}
                                                     <tr>
                                                         <td>
-                                                            <a href="/books/{{ book[0] }}/{{ book[1] }}/{{ file_name }}" target="_blank">
+                                                            <a href="/stories/{{ book[0] }}/{{ file_name }}" target="_blank">
                                                                 {% if file_type == "image" %}
                                                                 <i class="fas fa-file-image" title="Image"></i>
                                                                 {% elif file_type == "gpx" %}
