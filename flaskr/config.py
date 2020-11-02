@@ -158,7 +158,7 @@ class Config:
     }
     #: More Markdown extensions: https://python-markdown.github.io/extensions/
     MD_EXT: List[Any] = verbose_md_ext(
-        ["admonition", "footnotes", "attr_list", "abbr", "toc", "def_list", "tables"]
+        ["admonition", "attr_list", "abbr", "toc", "def_list", "tables"]
     ) + [
         TweetableExtension(  # type: ignore[list-item]
             twitter_username=TWITTER_ACCOUNT["screen_name"], brand_name=BRAND_NAME

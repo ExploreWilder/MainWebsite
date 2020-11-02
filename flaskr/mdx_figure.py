@@ -163,6 +163,7 @@ class FigureExtension(Extension):
         self.setConfigs(kwargs)
 
     def extendMarkdown(self, md):
+        """ Add pieces to Markdown. """
         md.parser.blockprocessors.register(
             FigureProcessor(md.parser, self.getConfigs()), "figure_processor", 175
         )

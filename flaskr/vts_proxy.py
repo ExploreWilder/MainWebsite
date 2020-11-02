@@ -203,8 +203,10 @@ def vts_proxy_ign(layer: str, z: int, x: int, y: int) -> FlaskResponse:
     )
 
     try:
-        r = requests.get(url, timeout=12)  # timeout to avoid freezing the map
-        r.raise_for_status()  # raise for not found tiles
+        # timeout to avoid freezing the map, 12 seconds is sometimes not enough!
+        r = requests.get(url, timeout=12)
+        # raise for not found tiles
+        r.raise_for_status()
     except requests.exceptions.HTTPError:  # pragma: no cover
         return tile_not_found(mimetype)
     return Response(r.content, mimetype=mimetype)

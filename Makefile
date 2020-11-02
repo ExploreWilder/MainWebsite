@@ -1,7 +1,7 @@
 VENV_NAME   ?=venv
 VENV_ACTIVATE=. ${VENV_NAME}/bin/activate
 PYTHON       =${VENV_NAME}/bin/python3
-PYLINT_FLAGS =--disable=unused-wildcard-import,wildcard-import,R0801 --extension-pkg-whitelist=pyquadkey2.tilesystem
+PYLINT_FLAGS =--disable=unused-wildcard-import,wildcard-import,line-too-long,R0801 --extension-pkg-whitelist=pyquadkey2.tilesystem
 SPHINX_FLAGS =SPHINXBUILD="../${PYTHON} -m sphinx"
 SENTRY_CLI   =./flaskr/static/node_modules/.bin/sentry-cli
 GIT_VERSION  =`${SENTRY_CLI} releases propose-version`
