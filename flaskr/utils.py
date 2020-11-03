@@ -188,7 +188,9 @@ def is_same_site() -> bool:
         True if the page loaded comes from the same website. False otherwise.
     """
     if "Sec-Fetch-Site" in request.headers:
-        return request.headers.get("Sec-Fetch-Site") == "same-origin"
+        return (
+            request.headers.get("Sec-Fetch-Site") == "same-origin"
+        )  # pragma: no cover; tested on Chrome
     return request.referrer is not None and request.url_root in str(request.referrer)
 
 
@@ -252,7 +254,7 @@ def file_extension(filename: str, file_type: str = "photo") -> str:
 
 def csp_dict_to_str(csp: Dict) -> str:
     """ Convert the ``csp`` to string for the HTML meta tag. """
-    return Markup(
+    return Markup(  # pragma: no cover; not used
         "; ".join(
             k + " " + (csp[k] if isinstance(csp[k], str) else " ".join(csp[k]))
             for k in csp
@@ -598,7 +600,7 @@ def same_site(view: Any) -> Any:
     def wrapped_view(**kwargs):
         if not is_same_site() and not (
             current_app.config["TESTING"] or current_app.config["DEBUG"]
-        ):
+        ):  # pragma: no cover
             ext = file_extension(str(request.url_rule))
             if ext in ["jpg", "jpeg", "png"]:
                 return tile_not_found("image/" + ext)

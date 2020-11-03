@@ -1,0 +1,68 @@
+<blockquote class="tweetable">
+    <div class="btn-group dropdown dropdown-share-on-social-network tweetable-buttons px-1 ml-3">
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                type="button"
+                id="dropdownMenuShareSocialMediaButtonsMD{{ id }}"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false">
+            <i class="fas fa-share-alt"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right share-on-social-network"
+             aria-labelledby="dropdownMenuShareSocialMediaButtonsMD{{ id }}">
+            <a class="dropdown-item tweetable-button"
+               title="Click to share on Twitter"
+               data-toggle="tooltip"
+               href="https://twitter.com/intent/tweet?text={{ quoteq }}{%if twitter_username %}&amp;via={{ twitter_username }}{% endif %}&amp;url={{ urlq }}&amp;hashtags={{ hashtags }}"
+               rel="noopener noreferrer"
+               role="button"
+               target="_blank">
+                <i class="fab fa-twitter"></i> Twitter
+            </a>
+            <a class="dropdown-item tweetable-button"
+               title="Copy the text, then click to share on Facebook"
+               data-toggle="tooltip"
+               href="https://www.facebook.com/sharer/sharer.php?u={{ urlq }}"
+               rel="noopener noreferrer"
+               role="button"
+               target="_blank">
+                <i class="fab fa-facebook-f"></i> Facebook
+            </a>
+            <a class="dropdown-item tweetable-button"
+               title="Click to share on VKontakte"
+               data-toggle="tooltip"
+               href="https://vk.com/share.php?url={{ urlq }}&amp;title={{ description }}"
+               rel="noopener noreferrer"
+               role="button"
+               target="_blank">
+                <i class="fab fa-vk"></i> VKontakte
+            </a>
+            <a class="dropdown-item tweetable-button"
+               title="Click to share on Tumblr"
+               data-toggle="tooltip"
+               href="http://www.tumblr.com/share/link?url={{ urlq }}&amp;name={{ name_tumblr }}&amp;description={{ description }}"
+               rel="noopener noreferrer"
+               role="button"
+               target="_blank">
+                <i class="fab fa-tumblr"></i> Tumblr
+            </a>
+            <a class="dropdown-item tweetable-button"
+               title="Click to share on LinkedIn"
+               data-toggle="tooltip"
+               href="https://www.linkedin.com/shareArticle?mini=true&amp;url={{ urlq }}&amp;title={{ quoteq }}"
+               rel="noopener noreferrer"
+               role="button"
+               target="_blank">
+                <i class="fab fa-linkedin-in"></i> LinkedIn
+            </a>
+            <a class="dropdown-item tweetable-button"
+               title="Click to share via email"
+               data-toggle="tooltip"
+               role="button"
+               href="mailto:?subject={{ email_subject }}&amp;body={{ email_body }}">
+                <i class="fas fa-envelope"></i> Email
+            </a>
+        </div>
+    </div>
+    <p>{{ quote }}</p>
+</blockquote>

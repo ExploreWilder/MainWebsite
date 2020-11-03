@@ -124,16 +124,11 @@ var autoprefix = new LessAutoprefix({ browsers: ["last 2 versions"] });
 var uglify = require("gulp-uglify");
 var concat = require("gulp-concat");
 var babel = require("gulp-babel");
-var notify = require("gulp-notify");
 var changed = require("gulp-changed");
 var rename = require("gulp-rename");
-const removeUseStrict = require("gulp-remove-use-strict");
+var removeUseStrict = require("gulp-remove-use-strict");
 
-var all_root_tasks = ["default", "styles"];
-
-gulp.task("alert_style", function () {
-    return gulp.src(".").pipe(notify("Style tasks done."));
-});
+var all_root_tasks = ["styles"];
 
 gulp.task("icons", function () {
     return gulp
@@ -164,16 +159,8 @@ gulp.task("styles", function () {
             })
         ) // minify CSS
         .pipe(sourcemaps.write("./")) // source maps in the same directory as the compiled CSS files
-        .pipe(gulp.dest(css_dest)) // compiled CSS directory
-        .pipe(
-            notify({
-                onLast: true, // only happen on the last file of the stream (skip the map file notification)
-                title: "Style tasks done",
-                message: "CSS bundle files generated",
-            })
-        );
+        .pipe(gulp.dest(css_dest)); // compiled CSS directory
 });
-gulp.watch("./app/styles/*.less", gulp.series("styles"));
 
 gulp.task("sentry", function () {
     // includes both @sentry/browser and @sentry/tracing
@@ -187,12 +174,10 @@ gulp.task("sentry", function () {
 gulp.task("vts_config", function () {
     return gulp.src(vts_config).pipe(gulp.dest(js_dest + "map_player_config/"));
 });
-gulp.watch(vts_config, gulp.series("vts_config"));
 
 gulp.task("vts_style", function () {
     return gulp.src(vts_style).pipe(gulp.dest(css_dest));
 });
-gulp.watch(vts_style, gulp.series("vts_style"));
 
 gulp.task("mapbox_style", function () {
     return gulp
@@ -217,17 +202,9 @@ vendor_scripts.forEach(function (element) {
             .pipe(concat(element.name + ".vendor.bundle.js"))
             .pipe(uglify())
             .pipe(sourcemaps.write("."))
-            .pipe(gulp.dest(js_dest))
-            .pipe(
-                notify({
-                    onLast: true,
-                    title: "Updated <%= file.relative %>",
-                    message: "JS bundle file generated",
-                })
-            );
+            .pipe(gulp.dest(js_dest));
     });
     all_root_tasks.push(task_name);
-    gulp.watch(element.scripts, gulp.series(task_name));
 });
 
 app_scripts.forEach(function (element) {
@@ -250,21 +227,28 @@ app_scripts.forEach(function (element) {
             .pipe(concat(element.name + ".app.bundle.js"))
             .pipe(uglify())
             .pipe(sourcemaps.write("."))
-            .pipe(gulp.dest(js_dest))
-            .pipe(
-                notify({
-                    onLast: true,
-                    title: "Updated <%= file.relative %>",
-                    message: "JS bundle file generated",
-                })
-            );
+            .pipe(gulp.dest(js_dest));
     });
     all_root_tasks.push(task_name);
-    gulp.watch(element.scripts, gulp.series(task_name));
+});
+
+gulp.task("watch", function () {
+    gulp.watch("./app/styles/*.less", gulp.series("styles"));
+    gulp.watch(vts_config, gulp.series("vts_config"));
+    gulp.watch(vts_style, gulp.series("vts_style"));
+    vendor_scripts.forEach(function (element) {
+        gulp.watch(
+            element.scripts,
+            gulp.series(element.name + "_vendor_scripts")
+        );
+    });
+    app_scripts.forEach(function (element) {
+        gulp.watch(element.scripts, gulp.series(element.name + "_app_scripts"));
+    });
 });
 
 gulp.task(
-    "default",
+    "really_static",
     gulp.parallel(
         "icons",
         "jquery_ui_images",
@@ -276,4 +260,6 @@ gulp.task(
     )
 );
 
-gulp.task("run-all", gulp.parallel(all_root_tasks));
+gulp.task("default", gulp.series("really_static", "watch"));
+
+gulp.task("build", gulp.parallel(["really_static", ...all_root_tasks]));

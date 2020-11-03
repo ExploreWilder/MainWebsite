@@ -30,6 +30,7 @@
 
 import textwrap
 import xml.etree.ElementTree as eTree
+from urllib.parse import quote_plus
 
 import markdown
 import pytest
@@ -39,6 +40,8 @@ from flaskr.book_processor import BookProcessor
 from flaskr.book_processor import ButtonMarkdownExtension
 from flaskr.book_processor import CustomFootnoteExtension
 from flaskr.book_processor import StaticMapMarkdownExtension
+from flaskr.book_processor import TweetableExtension
+from flaskr.book_processor import TweetablePattern
 
 
 @pytest.mark.parametrize(
@@ -69,13 +72,13 @@ from flaskr.book_processor import StaticMapMarkdownExtension
             """\
                 Example:
                 
-                [Great Story](~video~)
+                [https://example.com/myvideo](~video~ "Great Story")
             """,
             """\
                 <p>Example:</p>
                 <p>
                 <a class="btn btn-light btn-outline-secondary btn-block" 
-                href="Great Story" 
+                href="https://example.com/myvideo" 
                 rel="noopener noreferrer" 
                 role="button" 
                 target="_blank" 
@@ -135,7 +138,6 @@ def test_static_map_markdown_extension(app) -> None:
             / app.config["MAPBOX_STATIC_IMAGES"]["width"]
         )
         book_id = 42
-        book_url = "love_letter"
         gpx = "Great Hike"
         country_code = "nz"
         md = markdown.Markdown(
@@ -143,7 +145,6 @@ def test_static_map_markdown_extension(app) -> None:
                 StaticMapMarkdownExtension(
                     map_height=map_height,
                     book_id=book_id,
-                    book_url=book_url,
                 ),
             ]
         )
@@ -155,7 +156,6 @@ def test_static_map_markdown_extension(app) -> None:
                     "clickable_static_map.html",
                     image_height=map_height,
                     book_id=book_id,
-                    book_url=book_url,
                     gpx_file=gpx.replace(" ", "_"),
                     gpx_title=gpx,
                     country_code=country_code,
@@ -163,6 +163,92 @@ def test_static_map_markdown_extension(app) -> None:
             )
         ).decode()
         assert produced_html == "<p>\n" + expected_html + "\n</p>"
+
+
+def test_tweetable(app) -> None:
+    """ Test the tweetable Markdown extension. """
+    with app.app_context():  # render_template() needs the app context
+        default_url = "https://example.com/awesome_article.html#conclusion"
+        quote = "Python forever!"
+        quoted_quote = '"' + quote + '"'
+        hashtags = ["#love", "#hate"]
+        brand_name = "Bob"
+        twitter_username = "Roger"
+        description = quote_plus(
+            (quoted_quote + TweetablePattern.format_hashtags(hashtags)).encode("utf-8")
+        )
+        email_body = quote_plus(
+            (
+                quoted_quote
+                + TweetablePattern.format_hashtags(hashtags)
+                + " - "
+                + default_url
+            ).encode("utf-8")
+        )
+        md = markdown.Markdown(
+            extensions=[
+                TweetableExtension(
+                    twitter_username=twitter_username,
+                    brand_name=brand_name,
+                    default_url=default_url,
+                ),
+            ]
+        )
+        produced_html = md.convert(
+            textwrap.dedent(
+                """\
+                [tweetable hashtags="#love #hate"]
+                Python forever!
+                [/tweetable]
+                """
+            )
+        )
+        expected_html = render_template(
+            "mdx_tweetable_snippet.html",
+            id=0,
+            url=default_url,
+            urlq=quote_plus(default_url),
+            quote=quote,
+            quoteq=quote_plus(quoted_quote.encode("utf-8")),
+            hashtags=TweetablePattern.format_hashtags(
+                hashtags, separator=",", strip_hash=True
+            ),
+            brand_name=brand_name,
+            twitter_username=twitter_username,
+            description=description,
+            email_subject=quote_plus("Quote from " + brand_name),
+            email_body=email_body,
+            name_tumblr=quote_plus("Quote from " + brand_name),
+        )
+        assert produced_html == expected_html
+        custom_url = "https://example.com/good_article"
+        description = quote_plus(quoted_quote.encode("utf-8"))
+        email_body = quote_plus((quoted_quote + " - " + custom_url).encode("utf-8"))
+        produced_html = md.convert(
+            textwrap.dedent(
+                """\
+                [tweetable url="https://example.com/good_article"]
+                Python forever!
+                [/tweetable]
+                """
+            )
+        )
+        expected_html = render_template(
+            "mdx_tweetable_snippet.html",
+            id=1,
+            url=custom_url,
+            urlq=quote_plus(custom_url),
+            quote=quote,
+            quoteq=quote_plus(quoted_quote.encode("utf-8")),
+            hashtags="",
+            brand_name=brand_name,
+            twitter_username=twitter_username,
+            description=description,
+            email_subject=quote_plus("Quote from " + brand_name),
+            email_body=email_body,
+            name_tumblr=quote_plus("Quote from " + brand_name),
+        )
+        assert produced_html == expected_html
 
 
 @pytest.mark.parametrize(

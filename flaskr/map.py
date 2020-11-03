@@ -226,15 +226,14 @@ def create_static_map(
         static_image.write(r.content)
 
 
-@map_app.route("/static_map/<int:book_id>/<string:book_url>/<string:gpx_name>.jpg")
-def static_map(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
+@map_app.route("/static_map/<int:book_id>/<string:gpx_name>.jpg")
+def static_map(book_id: int, gpx_name: str) -> FlaskResponse:
     """
     Print a static map and create it if not already existing or not up to date.
     Keep this route open to external requests since it's used as thumbnail for the social platforms.
 
     Args:
         book_id (int): Book ID based on the 'shelf' database table.
-        book_url (str): Book URL based on the 'shelf' database table.
         gpx_name (str): Name of the GPX file in the /tracks directory WITHOUT file extension.
 
     Returns:
@@ -243,23 +242,27 @@ def static_map(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
     Raises:
         500: failed to create the image.
     """
-    book_url = escape(book_url)
     cursor = mysql.cursor()
     cursor.execute(
-        """SELECT access_level
+        """SELECT access_level, url
         FROM shelf
-        WHERE book_id={book_id} AND url='{book_url}'""".format(
-            book_id=book_id, book_url=book_url
+        WHERE book_id={book_id}""".format(
+            book_id=book_id
         )
     )
     data = cursor.fetchone()
     if cursor.rowcount == 0 or actual_access_level() < data[0]:
         abort(404)
+    book_url = data[1]
     gpx_filename = secure_filename(escape(gpx_name) + ".gpx")
     gpx_dir = os.path.join(
         current_app.config["SHELF_FOLDER"], secure_filename(book_url)
     )
     gpx_path = os.path.join(gpx_dir, gpx_filename)
+    if not os.path.isfile(gpx_path):
+        abort(404)
+    if os.stat(gpx_path).st_size == 0:
+        return "empty GPX file", 500
     append_ext = "_static_map.jpg"
     static_map_path = gpx_path + append_ext
     if (
@@ -271,22 +274,20 @@ def static_map(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
             create_static_map(
                 gpx_path, static_map_path, current_app.config["MAPBOX_STATIC_IMAGES"]
             )
-        except Exception as err:
+        except Exception as err:  # pragma: no cover
             return "{}".format(type(err).__name__), 500
     return send_from_directory(gpx_dir, gpx_filename + append_ext)
 
 
-@map_app.route("/webtracks/<int:book_id>/<string:book_url>/<string:gpx_name>.webtrack")
+@map_app.route("/webtracks/<int:book_id>/<string:gpx_name>.webtrack")
 @same_site
-def webtrack_file(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
+def webtrack_file(book_id: int, gpx_name: str) -> FlaskResponse:
     """
     Print a profile file and create it if not already existing or not up to date.
 
     Args:
         book_id (int): Book ID based on the 'shelf' database table.
-        book_url (str): Book URL based on the 'shelf' database table.
         gpx_name (str): Name of the GPX file in the /tracks directory WITHOUT file extension.
-        country (str): Country code (f.i. "nz".) NOT USED.
 
     Returns:
         JSON file containing the profile and statistics.
@@ -295,25 +296,27 @@ def webtrack_file(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
         404: if the request comes from another website and not in testing mode.
         500: failed to create the elevation profile.
     """
-    book_url = escape(book_url)
     cursor = mysql.cursor()
     cursor.execute(
-        """SELECT access_level
+        """SELECT access_level, url
         FROM shelf
-        WHERE book_id={book_id} AND url='{book_url}'""".format(
-            book_id=book_id, book_url=book_url
+        WHERE book_id={book_id}""".format(
+            book_id=book_id
         )
     )
     data = cursor.fetchone()
     if cursor.rowcount == 0 or actual_access_level() < data[0]:
         abort(404)
+    book_url = data[1]
     gpx_filename = secure_filename(escape(gpx_name) + ".gpx")
     gpx_dir = os.path.join(
         current_app.config["SHELF_FOLDER"], secure_filename(book_url)
     )
     gpx_path = os.path.join(gpx_dir, gpx_filename)
-    if not os.path.isfile(gpx_path) or os.stat(gpx_path).st_size == 0:
-        return "GPX file missing or empty", 500
+    if not os.path.isfile(gpx_path):
+        abort(404)
+    if os.stat(gpx_path).st_size == 0:
+        return "empty GPX file", 500
     webtrack_path = replace_extension(gpx_path, "webtrack")
     if (
         not os.path.isfile(webtrack_path)
@@ -324,7 +327,7 @@ def webtrack_file(book_id: int, book_url: str, gpx_name: str) -> FlaskResponse:
             gpx_to_webtrack_with_elevation(
                 gpx_path, webtrack_path, current_app.config["NASA_EARTHDATA"]
             )
-        except Exception as err:
+        except Exception as err:  # pragma: no cover
             return "{}".format(type(err).__name__), 500
     return send_from_directory(
         gpx_dir,
@@ -345,7 +348,7 @@ class CustomFileHandler(srtm.data.FileHandler):
         result = absolute_path("../srtm_cache")
 
         if not os.path.exists(result):
-            os.makedirs(result)
+            os.makedirs(result)  # pragma: no cover
 
         return result
 

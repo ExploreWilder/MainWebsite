@@ -255,23 +255,22 @@ def send_password_creation() -> FlaskResponse:
         + one_time_password
     )
     welcome = "Hi" + ("!" if (not username) else (" " + username + "!"))
-    if not current_app.config["DEBUG"]:
-        secure_email = SecureEmail(current_app)
-        text = render_template(
-            "email_password_creation.txt",
-            welcome=welcome,
-            subject=subject,
-            url_unsubscribe=url_unsubscribe,
-            url_create_password=url_create_password,
-        )
-        html = render_template(
-            "email_password_creation.html",
-            welcome=welcome,
-            subject=subject,
-            url_unsubscribe=url_unsubscribe,
-            url_create_password=url_create_password,
-        )
-        secure_email.send(email, subject, text, html)
+    secure_email = SecureEmail(current_app)
+    text = render_template(
+        "email_password_creation.txt",
+        welcome=welcome,
+        subject=subject,
+        url_unsubscribe=url_unsubscribe,
+        url_create_password=url_create_password,
+    )
+    html = render_template(
+        "email_password_creation.html",
+        welcome=welcome,
+        subject=subject,
+        url_unsubscribe=url_unsubscribe,
+        url_create_password=url_create_password,
+    )
+    secure_email.send(email, subject, text, html)
     return basic_json(True, "E-mail sent to the member!")
 
 
@@ -451,7 +450,7 @@ def xhr_add_photo() -> FlaskResponse:
             quality=current_app.config["PHOTO_QUALITY"],
         )
         image.close()
-    except IOError:
+    except IOError:  # pragma: no cover
         return basic_json(False, "Cannot create thumbnail!")
     try:
         photo_l_filename = create_and_save(
@@ -461,7 +460,7 @@ def xhr_add_photo() -> FlaskResponse:
             current_app.config["PHOTO_QUALITY"],
             current_app.config["GALLERY_FOLDER"],
         )
-    except IOError:
+    except IOError:  # pragma: no cover
         return basic_json(False, "Cannot create the large photo!")
     try:
         photo_m_filename = create_and_save(
@@ -471,7 +470,7 @@ def xhr_add_photo() -> FlaskResponse:
             current_app.config["PHOTO_QUALITY"],
             current_app.config["GALLERY_FOLDER"],
         )
-    except IOError:
+    except IOError:  # pragma: no cover
         return basic_json(False, "Cannot create the medium photo!")
     try:
         photo_l_size = get_image_size(
@@ -481,7 +480,7 @@ def xhr_add_photo() -> FlaskResponse:
             os.path.join(current_app.config["GALLERY_FOLDER"], photo_m_filename)
         )
         image_exif = get_image_exif(raw_path)
-    except IOError:
+    except IOError:  # pragma: no cover
         return basic_json(False, "Cannot get metadata!")
     position = "SELECT IF(COUNT(clone.photo_id), MAX(clone.position) + 1, 1) FROM gallery clone"
     cursor.execute(
@@ -1441,7 +1440,6 @@ def statistics() -> Any:
             )
         )
         monthly_visits[element_type] = cursor.fetchall()
-    print(monthly_visits["gallery"])
     return render_template(
         "statistics.html",
         gallery_monthly_visits=json.dumps(monthly_visits["gallery"]),

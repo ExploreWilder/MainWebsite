@@ -167,8 +167,8 @@ function create_elevation_chart(profile) {
 /**
  * Returns the path of the WebTrack file.
  */
-function get_webtrack_url(book_id, book_url, gpx_name) {
-    return `/map/webtracks/${book_id}/${book_url}/${gpx_name}.webtrack`;
+function get_webtrack_url(book_id, gpx_name) {
+    return `/map/webtracks/${book_id}/${gpx_name}.webtrack`;
 }
 
 /**

@@ -46,6 +46,7 @@ from markdown.extensions.footnotes import NBSP_PLACEHOLDER
 from markdown.extensions.footnotes import FootnoteExtension
 from markdown.extensions.footnotes import FootnoteInlineProcessor
 from markdown.inlinepatterns import LinkInlineProcessor
+from markdown.inlinepatterns import Pattern
 
 from .utils import *
 
@@ -53,6 +54,22 @@ NOIMG = r"(?<!\!)"
 
 # [text](~*~) or [text](<~*~>) or [text](~*~ "title")
 BUTTON_LINK_RE = NOIMG + r"\["
+
+TWEETABLE_RE = r"""
+\[tweetable
+  (?:\s+
+    (?:
+        url=["'](?P<url>[^"']+)["']
+      |
+        hashtags=["'](?P<hashtags>[^"']+)["']
+    )
+  \s*)*
+\]
+  (?P<quote>[^\[]+)
+\[/tweetable\]
+"""
+
+HASHTAGS_RE = re.compile(r"^(?:(#\w+)(?:\s+(#\w+))*)?", re.UNICODE)
 
 
 class ButtonInlineProcessor(LinkInlineProcessor):
@@ -257,6 +274,110 @@ class CustomFootnoteExtension(FootnoteExtension):
         return div
 
 
+class TweetablePattern(Pattern):
+    """InlinePattern for tweetable quotes"""
+
+    def __init__(self, pattern, config, markdown_instance=None):
+        super().__init__(pattern)
+        self.inc = 0
+        self.pattern = pattern
+        self.compiled_re = re.compile(
+            "^(.*?)%s(.*?)$" % pattern, re.DOTALL | re.UNICODE | re.VERBOSE
+        )
+
+        # Api for Markdown to pass safe_mode into instance
+        self.safe_mode = False
+        if markdown_instance:
+            self.m_markdown = markdown_instance
+
+        self.config = config
+
+    @staticmethod
+    def format_hashtags(hashtags, separator=" ", strip_hash=False):
+        """ Transform an array of hashtags into a string. Remove the # if existing. """
+        return separator.join(hashtags).replace("#" if strip_hash else "", "")
+
+    def handleMatch(self, m):
+        my_quote, url, hashtags = [
+            "" if m.group(a) is None else m.group(a).strip()
+            for a in ("quote", "url", "hashtags")
+        ]
+        hashtags = [
+            h for h in re.match(HASHTAGS_RE, hashtags).groups() if h is not None
+        ]
+        if not url.startswith("http"):
+            url = self.config["default_url"]
+        quoted_quote = '"' + my_quote + '"'
+        snippet = render_template(
+            "mdx_tweetable_snippet.html",
+            id=self.inc,
+            url=url,
+            urlq=quote_plus(url),
+            quote=my_quote,
+            quoteq=quote_plus(quoted_quote.encode("utf-8")),
+            hashtags=self.format_hashtags(hashtags, separator=",", strip_hash=True),
+            brand_name=self.config["brand_name"],
+            twitter_username=self.config["twitter_username"],
+            description=quote_plus(
+                (quoted_quote + self.format_hashtags(hashtags)).encode("utf-8")
+            ),
+            email_subject=quote_plus(
+                "Quote" + (" from " + self.config["brand_name"])
+                if self.config["brand_name"]
+                else ""
+            ),
+            email_body=quote_plus(
+                (quoted_quote + self.format_hashtags(hashtags) + " - " + url).encode(
+                    "utf-8"
+                )
+            ),
+            name_tumblr=quote_plus(
+                "Quote" + (" from " + self.config["brand_name"])
+                if self.config["brand_name"]
+                else ""
+            ),
+        )
+        self.inc += 1
+        placeholder = self.m_markdown.htmlStash.store(snippet)
+        return placeholder
+
+
+class TweetableExtension(Extension):
+    """
+    This Markdown extension creates blockquotes with social network buttons.
+    The idea is to embed shareable quotes right into the text in order to
+    increase content sharing since people prefer to quote a story rather than
+    its headline.
+
+    This extension is greatly inspired by the following one:
+    * Source: https://github.com/max-arnold/markdown-tweetable
+    * Copyright: © 2014 Max Arnold
+    * Licence: MIT
+    """
+
+    def __init__(self, **kwargs):
+        self.config = {
+            "twitter_username": [
+                kwargs.get("twitter_username", None),
+                "Twitter account username.",
+            ],
+            "brand_name": [kwargs.get("brand_name", None), "Website brand name."],
+            "default_url": [
+                kwargs.get("default_url", None),
+                "URL to share if set to # in the quote.",
+            ],
+        }
+        super().__init__(**kwargs)
+        self.setConfigs(kwargs)
+
+    def extendMarkdown(self, md):
+        tweetable_md_pattern = TweetablePattern(
+            TWEETABLE_RE, self.getConfigs(), markdown_instance=md
+        )
+        md.inlinePatterns.register(tweetable_md_pattern, "tweetable", 165)
+        md.registerExtension(self)
+
+
 class BookProcessor:
     """
     Process a Markdown story.
@@ -273,7 +394,12 @@ class BookProcessor:
     toc: Optional[str] = None
 
     def __init__(
-        self, app: Flask, book_id: int, book_url: str, book_filename: str
+        self,
+        app: Flask,
+        default_url: str,
+        book_id: int,
+        book_url: str,
+        book_filename: str,
     ) -> None:
         """
         Args:
@@ -288,10 +414,12 @@ class BookProcessor:
         self.p_html_content = Path(self.path_to_md_book + ".html")
         self.p_html_toc = Path(self.path_to_md_book + ".toc.html")
         self.markdown = markdown.Markdown(
-            extensions=app.config["BOOK_MD_EXT"]
+            extensions=app.config["MD_EXT"]
             + [
-                FigureExtension(src_path=self.path_to_book_dir),
+                "mdx_sections",
                 ButtonMarkdownExtension(),
+                CustomFootnoteExtension(),
+                FigureExtension(src_path=self.path_to_book_dir),
                 StaticMapMarkdownExtension(
                     map_height=(
                         100
@@ -301,7 +429,11 @@ class BookProcessor:
                     book_id=book_id,
                     book_url=book_url,
                 ),
-                CustomFootnoteExtension(),
+                TweetableExtension(
+                    twitter_username=app.config["TWITTER_ACCOUNT"]["screen_name"],
+                    brand_name=app.config["BRAND_NAME"],
+                    default_url=default_url,
+                ),
             ]
         )
         self.current_app = app

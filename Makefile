@@ -15,9 +15,9 @@ $(error $(CONFIG_FILE) not found. See $(CONFIG_FILE).example)
 endif
 include $(CONFIG_FILE)
 
-.PHONY: help mypy pylint check isort black format test coverage run doc \
-		doc-checklinks cloc gulp dist git-hash commit push push-force \
-		reset ssh py-update
+.PHONY: help mypy pylint check isort black prettier format test coverage run doc \
+		doc-checklinks cloc gulp dist git-hash commit push push-force reset \
+		ssh py-update js-update touch-books
 
 .DEFAULT: help
 help:
@@ -46,6 +46,8 @@ help:
 	@echo -e "$V make reset ---------→ initialise the database.                                               $V"
 	@echo -e "$V make ssh -----------→ connect to the server with SSH.                                        $V"
 	@echo -e "$V make py-update -----→ update pip and all Python dependencies (dev+prod).                     $V"
+	@echo -e "$V make js-update -----→ update all JavaScript dependencies (dev+prod), and run 'make dist'.    $V"
+	@echo -e "$V make touch-books ---→ touch .md files in the books shelf to force the future update.         $V"
 	@echo -e "\033[0;36m\`~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'$B"
 	@echo -e "\nAny trouble? 🤔 Please raise an issue on GitHub: ${GIT_REPO}\n"
 
@@ -114,11 +116,11 @@ cloc:
 
 gulp:
 	@cd flaskr/static && \
-	gulp
+	gulp --no-color
 
 dist:
 	@cd flaskr/static && \
-	gulp run-all
+	gulp build --no-color
 
 git-hash:
 	@echo -e "\033[1;32mRelease version: ${GIT_VERSION}$B 🚀"
@@ -149,3 +151,11 @@ ssh:
 py-update: venv
 	@pip install --upgrade pip && \
 	${foreach file, ${PY_REQ}, pip install --use-feature=2020-resolver -r ${file} -U}
+
+js-update:
+	@cd flaskr/static && \
+	npm update --dev
+	@make dist
+
+touch-books:
+	@find books/ -type f -name "*.md" -exec touch {} +

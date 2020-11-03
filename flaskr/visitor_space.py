@@ -178,7 +178,7 @@ def photo_dir(photo_id: int, filename: str) -> FlaskResponse:
         and (not is_same_site())
         and (not current_app.config["TESTING"])
     ):
-        abort(404)
+        abort(404)  # pragma: no cover
     return send_from_directory(current_app.config["GALLERY_FOLDER"], filename)
 
 
@@ -373,7 +373,10 @@ def story(book_id: int, story_url: str) -> Any:
     book_ext = data[7]
     if book_ext == "md":
         try:
-            book_processor = BookProcessor(current_app, book_id, story_url, data[4])
+            print(request.url_rule)
+            book_processor = BookProcessor(
+                current_app, request.url, book_id, story_url, data[4]
+            )
             book_content = book_processor.print_book()
         except FileNotFoundError:
             current_app.logger.exception("Failed to process Markdown file")

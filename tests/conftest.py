@@ -30,6 +30,7 @@
 
 import os
 import shutil
+from shutil import copyfile
 
 import pytest
 
@@ -84,14 +85,13 @@ def files():
             os.mknod(os.path.join("../books", "fourth_story", "my_track.gpx"))
         except:
             pass
+
+        # Create a GPX file in an open book - see test_map.py
         try:
-            with open(
-                os.path.join("../books", "fourth_story", "my_track.gpx_profile.bin"),
-                "x",
-            ) as f:
-                print(
-                    "something", file=f
-                )  # that is to avoid profile update and external urllib requests
+            copyfile(
+                "Gillespie_Circuit.gpx",
+                os.path.join("../books", "first_story", "test_Gillespie_Circuit.gpx"),
+            )
         except:
             pass
 

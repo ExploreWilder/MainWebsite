@@ -64,6 +64,8 @@ import pytest
         "/stories/5/fifth_story",  # access level = 1
         "/map/viewer/4/fourth_story/my_track/fr",  # access level = 1
         "/map/player/4/fourth_story/my_track/fr",  # access level = 1
+        "/stories/4/my_track.gpx",  # access level = ACCESS_LEVEL_DOWNLOAD_GPX=200
+        "/stories/42/my_track.gpx",  # bad book ID
         "/map/webtracks/4/fourth_story/my_track.webtrack",  # access level = 1
         "/change_password",  # restricted to members
         "/change_email",  # restricted to members
@@ -91,7 +93,6 @@ def test_restricted_access_denied(files, client, path):
         "/stories/5/fifth_story",  # access level = 1
         "/map/viewer/4/fourth_story/my_track/fr",  # access level = 1
         "/map/player/4/fourth_story/my_track/fr",  # access level = 1
-        "/stories/4/my_track.gpx",  # access level = 1
         "/change_password",
         "/change_email",
         "/audit_log",
@@ -105,16 +106,6 @@ def test_member_access_granted(files, client, auth, path):
     auth.login()
     rv = client.get(path)
     assert rv.status_code == 200
-
-
-def test_webtrack_failed(client, auth):
-    """
-    Ask for a restricted WebTrack that cannot be created because the GPX file is missing.
-    """
-    auth.login()
-    rv = client.get("/map/webtracks/4/fourth_story/my_track.webtrack")
-    assert rv.status_code == 500
-    assert b"GPX file missing or empty" in rv.data
 
 
 @pytest.mark.parametrize(
@@ -144,6 +135,7 @@ def test_webtrack_failed(client, auth):
         "/admin/statistics",
         "/photos/4/test_1zy071k164o6rjjjynvms47kr16a9h.jpg",  # access level = 240
         "/photos/4/test_b4f6add9a5657725d156a94cde808ce8a5d4cf38.tif",  # access level = 240
+        "/stories/4/my_track.gpx",  # access level = ACCESS_LEVEL_DOWNLOAD_GPX=200
         "/create_password",
     ),
 )
@@ -160,19 +152,21 @@ def test_member_access_denied(files, client, auth, path):
 @pytest.mark.parametrize(
     "path",
     (
-        "/members/list",
-        "/photos/add/form",
-        "/books/add/form",
-        "/photos/list",
-        "/books/list",
-        "/photos/lost",
-        "/photos/open/test_74gdf8hpw41i4qbpnl7b.jpg",
-        "/statistics",
+        "/admin/members/list",
+        "/admin/photos/add/form",
+        "/admin/books/add/form",
+        "/admin/photos/list",
+        "/admin/books/list",
+        "/admin/photos/lost",
+        "/admin/photos/open/test_74gdf8hpw41i4qbpnl7b.jpg",
+        "/admin/statistics",
+        "/map/player/4/fourth_story/my_track/fr",  # pass with gpx_download_path
+        "/map/viewer/4/fourth_story/my_track/fr",  # pass with gpx_download_path
     ),
 )
 def test_admin_access_granted(files, client, auth, path):
     """ Test pages not fetched otherwise. """
     auth.login("root@test.com", "admin")
-    rv = client.get("/admin" + path)
+    rv = client.get(path)
     assert rv.status_code == 200
     auth.logout()

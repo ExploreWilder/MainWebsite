@@ -157,17 +157,9 @@ class Config:
         "connection_timeout": 5,  # seconds to wait before giving up the timeline download
     }
     #: More Markdown extensions: https://python-markdown.github.io/extensions/
-    MD_EXT: List[Any] = verbose_md_ext(
+    MD_EXT: List[str] = verbose_md_ext(
         ["admonition", "attr_list", "abbr", "toc", "def_list", "tables"]
-    ) + [
-        TweetableExtension(  # type: ignore[list-item]
-            twitter_username=TWITTER_ACCOUNT["screen_name"], brand_name=BRAND_NAME
-        ),
-    ]
-    #: Additional extensions for processing the stories.
-    BOOK_MD_EXT: List[Any] = MD_EXT + [
-        "mdx_sections",
-    ]
+    )
     #: Publicly available country-specific layers accessible by the map viewer app.
     MAP_LAYERS: List[str] = ["NZ", "FR", "CA", "NO", "CH"]
     #: LDS API key.
@@ -281,6 +273,8 @@ class TestingConfig:
     MYSQL_DATABASE_DB: str = "UNDISCLOSED"
     #: Required elapsed time before the user can re-submit.
     REQUIRED_TIME_GAP: int = 2
+    #: Required access level to be able to download a .gpx file.
+    ACCESS_LEVEL_DOWNLOAD_GPX: int = 200
     #: Path to the DKIM private key.
     DKIM_PATH_PRIVATE_KEY: str = absolute_path("../tests/random_rsa_private_key.txt")
 

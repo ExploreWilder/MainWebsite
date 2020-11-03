@@ -36,6 +36,69 @@ from PIL import Image
 from flaskr.map import create_static_map
 
 
+def test_webtrack_failed(files, client, app, auth):
+    """
+    Test the WebTrack access.
+    """
+    # unknown book:
+    rv = client.get("/map/webtracks/42/test_Gillespie_Circuit.webtrack")
+    assert rv.status_code == 404
+
+    # restricted book:
+    rv = client.get("/map/webtracks/4/my_track.webtrack")
+    assert rv.status_code == 404
+
+    # unknown track:
+    rv = client.get("/map/webtracks/1/test_Unknown.webtrack")
+    assert rv.status_code == 404
+
+    # empty GPX file:
+    auth.login()
+    rv = client.get("/map/webtracks/4/my_track.webtrack")
+    assert rv.status_code == 500
+    assert b"empty GPX file" in rv.data
+    auth.logout()
+
+    # all good:
+    webtrack_filename = "test_Gillespie_Circuit.webtrack"
+    rv = client.get("/map/webtracks/1/" + webtrack_filename)
+    assert rv.status_code == 200
+    with app.app_context():
+        webtrack_path = os.path.join(
+            app.config["SHELF_FOLDER"], "first_story", webtrack_filename
+        )
+        assert os.path.isfile(webtrack_path)
+        webtrack_header = b"webtrack-bin"
+        assert open(webtrack_path, "rb").read(len(webtrack_header)) == webtrack_header
+
+
+def test_static_map(files, client, auth):
+    """
+    Test the static map.
+    """
+    # unknown book:
+    rv = client.get("/map/static_map/42/test_Gillespie_Circuit.jpg")
+    assert rv.status_code == 404
+
+    # restricted book:
+    rv = client.get("/map/static_map/4/my_track.jpg")
+    assert rv.status_code == 404
+
+    # unknown track:
+    rv = client.get("/map/static_map/1/test_Unknown.jpg")
+    assert rv.status_code == 404
+
+    # empty GPX file:
+    auth.login()
+    rv = client.get("/map/static_map/4/my_track.jpg")
+    assert rv.status_code == 500
+    auth.logout()
+
+    # all good:
+    rv = client.get("/map/static_map/1/test_Gillespie_Circuit.jpg")
+    assert rv.status_code == 200
+
+
 def test_create_static_map(app):
     with app.app_context():
         static_image = "Gillespie_Circuit.jpeg"
@@ -53,17 +116,13 @@ def test_create_static_map(app):
     "path",
     (
         # LDS aerial:
-        ("/map/middleware/lds/set=2/a/0/0/0"),
+        "/map/middleware/lds/set=2/a/0/0/0",
         # LDS topo:
-        ("/map/middleware/lds/layer=767/a/0/0/0"),
+        "/map/middleware/lds/layer=767/a/0/0/0",
         # IGN aerial:
-        (
-            "/map/middleware/ign?layer=GEOGRAPHICALGRIDSYSTEMS.MAPS&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/jpeg&TileMatrix=11&TileCol=1023&TileRow=753"
-        ),
+        "/map/middleware/ign?layer=GEOGRAPHICALGRIDSYSTEMS.MAPS&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/jpeg&TileMatrix=11&TileCol=1023&TileRow=753",
         # IGN topo:
-        (
-            "/map/middleware/ign?layer=ORTHOIMAGERY.ORTHOPHOTOS&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fjpeg&TileMatrix=11&TileCol=1026&TileRow=753"
-        ),
+        "/map/middleware/ign?layer=ORTHOIMAGERY.ORTHOPHOTOS&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fjpeg&TileMatrix=11&TileCol=1026&TileRow=753",
     ),
 )
 def test_map_proxy_link_ok(client, path):

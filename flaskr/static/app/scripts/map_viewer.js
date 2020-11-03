@@ -548,7 +548,7 @@ function webtrack_to_source(data, source) {
  */
 function fetch_data() {
     var oReq = new XMLHttpRequest();
-    oReq.open("GET", get_webtrack_url(book_id, book_url, gpx_name), true);
+    oReq.open("GET", get_webtrack_url(book_id, gpx_name), true);
     // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data
     oReq.responseType = "arraybuffer";
 
