@@ -596,7 +596,7 @@ class StorytellingMap {
 
     /**
      * The external track path.
-     * Example: "/map/viewer/1/awesome_story/``track_name``/fr"
+     * Example: ``/map/viewer/1/awesome_story/track_name/fr``
      */
     track_path(track_name) {
         return `/map/viewer/${this.#book_id}/${

@@ -204,10 +204,13 @@ def create_static_map(
     gpx_path: str, static_map_path: str, static_image_settings: Dict
 ) -> None:
     """
-    Create a URL based on the ``gpx_path`` GPX file and the ``static_image_settings`` configuration.
+    Create a URL based on the `gpx_path` GPX file and the `static_image_settings` configuration.
     The URL is then fetched to the Mapbox server to retrieve a JPG image.
-    Mapbox pricing: https://www.mapbox.com/pricing/#glstatic (free up to 50,000 per month)
-    A Mapbox access token is required for the map generation.
+
+    .. note::
+        Mapbox pricing: https://www.mapbox.com/pricing/#glstatic (free up to 50,000 per month)
+
+        A Mapbox access token is required for the map generation.
 
     Args:
         gpx_path (str): Secured path to the input file.
@@ -360,15 +363,23 @@ def gpx_to_webtrack_with_elevation(
     Find out the elevation profile of ``gpx_path`` thanks to SRTM data
     version 3.0 with 1-arc-second for the whole world and save the result
     into ``webtrack_path`` which is overwritten if already existing.
-    Data source: https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/
-    Also: https://lpdaac.usgs.gov/products/srtmgl1v003/
-    Note: In case of USGS.gov server error, you should see a notification banner in:
-    https://lpdaac.usgs.gov/products/srtmgl1v003/
-    such as "LP DAAC websites and HTTP downloads will be unavailable..."
-    SRTMGL1.003 data requires user authentication through the NASA Earthdata Login.
-    Use gpxpy: https://github.com/tkrajina/gpxpy
-    Use SRTM.py: https://github.com/nawagers/srtm.py/tree/EarthDataLogin
+
     SRTM data are stored in the folder specified in CustomFileHandler().get_srtm_dir()
+
+    * Data source: https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/
+    * Also: https://lpdaac.usgs.gov/products/srtmgl1v003/
+
+    .. note::
+        In case of USGS.gov server error, you should see a notification banner in:
+        https://lpdaac.usgs.gov/products/srtmgl1v003/
+        such as `LP DAAC websites and HTTP downloads will be unavailable...`
+
+    .. note::
+        SRTMGL1.003 data requires user authentication through the NASA Earthdata Login.
+
+    How to use gpxpy: https://github.com/tkrajina/gpxpy
+
+    How to use SRTM.py: https://github.com/nawagers/srtm.py/tree/EarthDataLogin
 
     Args:
         gpx_path (str): Secured path to the input file.
@@ -475,9 +486,8 @@ def gpx_to_webtrack_with_elevation(
 @same_site
 def proxy_lds(layer: str, a_d: str, z: int, x: int, y: int) -> FlaskResponse:
     """
-    Tunneling map requests to the LDS servers in order to hide the API key.
-    Help using LDS with OpenLayers:
-    https://www.linz.govt.nz/data/linz-data-service/guides-and-documentation/using-lds-xyz-services-in-openlayers
+    Tunneling map requests to the LDS servers in order to hide the API key. `Help using LDS with OpenLayers
+    <https://www.linz.govt.nz/data/linz-data-service/guides-and-documentation/using-lds-xyz-services-in-openlayers>`_.
 
     Raises:
         404: in case of LDS error (such as ConnectionError).

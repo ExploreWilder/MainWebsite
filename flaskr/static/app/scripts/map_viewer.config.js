@@ -31,8 +31,10 @@
 /**
  * Default opacity of the Aerial Imagery basemap in percent.
  * Default value is 50.
- * 0 for total transparency (no aerial view, just the topo map).
- * 100 for full opacity (only the aerial view, the topo map is hidden).
+ *
+ * * 0 for total transparency (no aerial view, just the topo map).
+ * * 100 for full opacity (only the aerial view, the topo map is hidden).
+ *
  */
 const default_opacity = 50;
 
@@ -44,7 +46,7 @@ const duration_zoom_animation = 300;
 
 /**
  * URL to the map tiles proxy server. It can be an external link if a private key is not required.
- * Example: "/map/middleware/lds/" or "https://..."
+ * Example: ``/map/middleware/lds/`` or ``https://...``
  * Notice: Update the Content Security Policy in case of external requests
  */
 const middleware_url = {

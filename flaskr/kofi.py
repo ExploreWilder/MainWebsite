@@ -45,24 +45,31 @@ def kofi_webhook() -> FlaskResponse:  # pragma: no cover; tested online through 
     Webhook for Ko-fi.com, the idea is to receive data (f.i. on donation
     success) and save it to offer commissioned content in the website.
 
-    API according to https://ko-fi.com/manage/webhooks:
+    .. note::
+        `API Documentation <https://ko-fi.com/manage/webhooks>`_:
         Here's an example of the data that will be sent when a payment
         is fully completed. If you don't have a server set up to receive
         webhooks but want to test the example, we suggest using a service
         like RequestBin to inspect the requests we send.
 
-        data: {
-        "message_id":"3a1fac0c-f960-4506-a60e-824979a74e74",
-        "timestamp":"2017-08-21T13:04:30.7296166Z",
-        "type":"Donation","from_name":"Ko-fi Team",
-        "message":"Good luck with the integration!",
-        "amount":"3.00",
-        "url":"https://ko-fi.com"}
+        .. code-block:: JavaScript
 
-    Note:
+            data: {
+                "message_id":"3a1fac0c-f960-4506-a60e-824979a74e74",
+                "timestamp":"2017-08-21T13:04:30.7296166Z",
+                "type":"Donation","from_name":"Ko-fi Team",
+                "message":"Good luck with the integration!",
+                "amount":"3.00",
+                "url":"https://ko-fi.com"
+            }
+
+    .. note::
         Selling commissions on Ko-fi is possible, it cost 5% fee for Free
-        account, and 0% fee for Gold account. More information:
-        https://ko-fi.com/manage/commissionssettings
+        account, and 0% fee for Gold account.
+
+        More information: https://ko-fi.com/manage/commissionssettings
+
+        Also, a Ko-fi shop is now available.
     """
     try:
         data = json.loads(

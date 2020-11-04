@@ -30,10 +30,14 @@
 
 """
 Tilename utils.
-Based on: https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
-Author: Oliver White, 2007
-License: Public Domain
-Added static types, documentation and unit tests.
+
+.. note::
+    Based on: https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+
+    * Author: Oliver White, 2007
+    * License: Public Domain
+
+    I've added static types, documentation and unit tests.
 """
 
 # pylint: disable=invalid-name; allow one letter variables (f.i. x, y, z)

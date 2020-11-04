@@ -1,56 +1,21 @@
 Usage
 =====
 
-The script *utils.sh* activates the venv so you don't have to do anything before or after using it, except starting and stopping the MySQL deamon.
-
-Run the App Locally
--------------------
-
-As simple as ``./utils.sh run-app-localhost``. Log is in the standard output.
-
-The website should be available in this address: http://127.0.0.1:5000/
-
 Tools
 -----
 
-Compile the JavaScript and Less files
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Command Line Utility
+^^^^^^^^^^^^^^^^^^^^
 
-Locally run ``./utils.sh run-gulp``
+Locally run ``make`` to print out the available options.
 
-.. note::
-    That will run gulp in the background every time you change a JS or Less file in the static directory (but not in subdirectories). If you want to run all Gulp tasks, run ``./utils.sh run-gulp run-all``
+.. warning::
+    The generated documentation contains sensitive information like the application configuration with passwords.
 
 GPX to GeoJSON File Conversion
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Locally run ``togeojson myfile.gpx > myfile.geojson``
-
-Find Out The Number of Lines of Code
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Locally run ``./utils.sh cloc``
-
-Generate This Documentation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Locally run ``./utils.sh doc-localhost``
-
-.. warning::
-    The documentation contains sensitive constants and code fragments (f.i. passwords) so please remove the sensitive information before generating the documentation or keep the doc secret.
-
-.. note::
-    The command ``./utils.sh doc-localhost checklinks`` will `test <https://sublime-and-sphinx-guide.readthedocs.io/en/latest/references.html#test-external-links>`_ all external links in the documentation.
-
-Test The Application
-^^^^^^^^^^^^^^^^^^^^
-
-Run ``./utils.sh test-localhost``
-
-Test and Generate Test Report
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Run ``./utils.sh test-coverage-localhost``
 
 Import/Export The MySQL Database
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -75,11 +40,11 @@ JavaScript / CSS / Fonts
 
 Check version and download:
 
-* ``cd flaskr/static && npm update --dev``
+* Run ``make js-update``
 * `jQuery <https://jquery.com/download/>`_
 * `jQuery UI <https://jqueryui.com/download/>`_
 * `Bootstrap with Popper <https://getbootstrap.com/>`_
 * `OpenLayers <https://openlayers.org/>`_
 
-.. note::
+.. warning::
     Updates may break the application so you should test before deploying.

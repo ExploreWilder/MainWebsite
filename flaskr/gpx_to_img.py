@@ -102,8 +102,9 @@ def gpx_to_src(
 ) -> str:
     """
     Returns a url to a static JPG image that fit the track in the GPX file.
-    Static image overview: https://docs.mapbox.com/help/how-mapbox-works/static-maps/
-    Mapbox doc: https://docs.mapbox.com/api/maps/#static-images
+
+    * Static image overview: https://docs.mapbox.com/help/how-mapbox-works/static-maps/
+    * Mapbox doc: https://docs.mapbox.com/api/maps/#static-images
 
     Args:
         gpx: GPX data.

@@ -29,10 +29,6 @@
  */
 
 /**
- * Common functions used by map_viewer.js (2D) and map_player.js (3D).
- */
-
-/**
  * Current block in focus.
  */
 let current_menu_on_focus = "#gpxInfo";
@@ -48,7 +44,9 @@ function label_elevation(tooltip_item, data) {
 
 /**
  * Returns a string of the number x with commas on thousands.
- * NOTICE: identical to main.js
+ *
+ * .. note::
+ *     identical to main.js
  */
 function number_with_commas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -87,7 +85,9 @@ function track_info(source) {
 
 /**
  * Create the elevation chart based on the elevation profile of the track.
- * NOTE: update_hiker_pos() has to be defined on the specific map viewer.
+ *
+ * .. note::
+ *     `update_hiker_pos()` has to be defined on the specific map viewer.
  */
 function create_elevation_chart(profile) {
     var ctx = $("#elevation-chart");

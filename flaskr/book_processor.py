@@ -33,9 +33,11 @@ Process a Markdown story. The generated HTML and ToC are cached.
 
 The Markdown processors and extensions below are greatly inspired by the
 default Markdown processors:
+
 * Source: https://github.com/Python-Markdown/markdown
 * Version: 3.3.3
 * Licence: BSD-3-Clause
+
 """
 
 import xml.etree.ElementTree as eTree
@@ -350,9 +352,11 @@ class TweetableExtension(Extension):
     its headline.
 
     This extension is greatly inspired by the following one:
+
     * Source: https://github.com/max-arnold/markdown-tweetable
     * Copyright: © 2014 Max Arnold
     * Licence: MIT
+
     """
 
     def __init__(self, **kwargs):
@@ -454,7 +458,7 @@ class BookProcessor:
     def print_book(self) -> Dict[str, str]:
         """
         Returns:
-            A dictionary looking like { "html": ..., "toc": ... }
+            A dictionary ``{ "html": ..., "toc": ... }``
         """
         if self.is_outdated():
             with self.p_md_book.open("r", encoding="utf-8") as markdown_file:

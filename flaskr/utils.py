@@ -49,7 +49,7 @@ def get_static_package_config() -> Dict:
 
 def secure_decode_query_string(query_str: bytes) -> str:
     """
-    Convert to UTF string and remove the <>% characters that could make
+    Convert to UTF string and remove the ``<>%`` characters that could make
     a Cross Site Scripting attack.
 
     Args:
@@ -77,9 +77,9 @@ def current_year() -> str:
 
 def anonymize_ip(real_ip: str) -> str:
     """
-    Sets the last byte of the IP address ``real_ip``.
+    Sets the last byte of the IP address `real_ip`.
 
-    Notice:
+    .. note::
         It is a good step but it may be possible to find out the physical address
         with some efforts.
 
@@ -104,7 +104,7 @@ def anonymize_ip(real_ip: str) -> str:
 
 def absolute_path(secured_filename: str, curr_file: str = __file__) -> str:
     """
-    Prepend ``secured_filename`` with the current path.
+    Prepend `secured_filename` with the current path.
 
     Args:
         secured_filename (str): Safe file name. Can be a sub path without the first '/'.
@@ -144,7 +144,7 @@ def remove_whitespaces(text: str) -> str:
 
 def email_is_valid(email_addr: str) -> bool:
     """
-    Check if the email address is ___@___.___
+    Check if the email address is ``___@___.___``
 
     Args:
         email_addr (str): Email address to check.
@@ -161,7 +161,7 @@ def email_is_valid(email_addr: str) -> bool:
 
 def check_access_level_range(access_level: int) -> bool:
     """
-    Check if ``access_level`` is in the range [0, 255]. The actual level is not check.
+    Check if `access_level` is in the range [0, 255]. The actual level is not check.
 
     Args:
         access_level (int): Any access level, does not need to be the actual one.
@@ -206,13 +206,13 @@ def is_admin() -> bool:
 
 def file_is_pdf(filename: str) -> bool:
     """
-    Check if ``filename`` has the .pdf extension.
+    Check if `filename` has the .pdf extension.
 
     Args:
         filename (str): Any filename, including its path.
 
     Returns:
-        True if ``filename`` ends with .pdf, false otherwise.
+        True if `filename` ends with .pdf, false otherwise.
     """
     return filename.endswith(".pdf")
 
@@ -232,7 +232,7 @@ def book_title_to_url(title: str) -> str:
 
 def file_extension(filename: str, file_type: str = "photo") -> str:
     """
-    Get the file extension of ``filename``.
+    Get the file extension of `filename`.
 
     Args:
         filename (str): Any filename, including its path.
@@ -253,7 +253,7 @@ def file_extension(filename: str, file_type: str = "photo") -> str:
 
 
 def csp_dict_to_str(csp: Dict) -> str:
-    """ Convert the ``csp`` to string for the HTML meta tag. """
+    """ Convert the `csp` to string for the HTML meta tag. """
     return Markup(  # pragma: no cover; not used
         "; ".join(
             k + " " + (csp[k] if isinstance(csp[k], str) else " ".join(csp[k]))
@@ -302,7 +302,7 @@ def random_text(size: int) -> str:
 
 def random_filename(size: int, file_ext: str = "jpg") -> str:
     """
-    Generate a random file name with the extension ``file_extension``.
+    Generate a random file name with the extension `file_extension`.
 
     Args:
         size (int): The length of the filename, file extension excluded.
@@ -326,7 +326,7 @@ def actual_access_level() -> int:
 
 def escape(text: str) -> str:
     """
-    Escape '"<> from ``text`` so that SQL injection and similar attacks are avoided.
+    Escape ``'"<>`` from `text` so that SQL injection and similar attacks are avoided.
 
     Args:
         text (str): Unsafe text.
@@ -341,7 +341,7 @@ def basic_json(
     success: bool, info: str, args: Union[Dict, None] = None
 ) -> FlaskResponse:
     """
-    Simplify JSON format by returning a preformated JSON.
+    Simplify JSON format by returning a preformatted JSON.
 
     Args:
         success (bool): True for the Bootstrap alert-success or False for alert-danger.
@@ -371,8 +371,8 @@ def create_and_save(
     upload_path: str,
 ) -> str:
     """
-    Create a smaller picture of ``raw_path`` which fit in ``max_size``. The file
-    name is random with ``filename_size`` character, extension excluded.
+    Create a smaller picture of `raw_path` which fit in `max_size`. The file
+    name is random with `filename_size` character, extension excluded.
 
     Args:
         raw_path (str): Path to the RAW picture.
@@ -398,7 +398,7 @@ def create_and_save(
 
 def match_absolute_path(path: str) -> bool:
     """
-    Return true if the path starts with 'http(s)://', false otherwise.
+    Return true if the path starts with ``http(s)://``, false otherwise.
 
     Args:
         path (str): URL
@@ -410,13 +410,13 @@ def match_absolute_path(path: str) -> bool:
 
 
 def verbose_md_ext(extensions: List[str]) -> List[str]:
-    """ Prepend `markdown.extensions.` to each element of the list ``extensions``. """
+    """ Prepend `markdown.extensions.` to each element of the list `extensions`. """
     return ["markdown.extensions.{0}".format(ext) for ext in extensions]
 
 
 def get_access_level_from_id(member_id: int, cursor: MySQLCursor) -> int:
     """
-    Get the access level from the member ``id``.
+    Get the access level from the member `id`.
 
     Args:
         member_id (int): Member unique id.
@@ -502,13 +502,13 @@ def get_image_exif(path: str) -> Tuple:
 
 def friendly_datetime(ugly_datetime: str) -> str:
     """
-    Format ``ugly_datetime`` in a more logical way.
+    Format `ugly_datetime` in a more logical way.
 
     Args:
-        ugly_datetime (str): Formated to "%Y-%m-%d %H:%M:%S"
+        ugly_datetime (str): Formated to ``%Y-%m-%d %H:%M:%S``
 
     Returns:
-        str: For exemple: "early morning, May 2018"
+        str: For example: `early morning, May 2018`
     """
     formated_datetime = datetime.datetime.strptime(
         str(ugly_datetime), "%Y-%m-%d %H:%M:%S"
@@ -536,7 +536,7 @@ def friendly_datetime(ugly_datetime: str) -> str:
 
 def preview_image(image_path: str) -> bytes:
     """
-    Create a tiny data:image/jpeg;base64-type image of ``image_path``.
+    Create a tiny data:image/jpeg;base64-type image of `image_path`.
     The tiny image is 42px wide and keeps the ratio of the original image.
     The image is black & white even if the original image is RGB.
     Idea from https://css-tricks.com/the-blur-up-technique-for-loading-background-images/
@@ -567,17 +567,17 @@ def preview_image(image_path: str) -> bytes:
 
 
 def fracstr_to_numerator(text: str) -> int:
-    """ Returns the numerator of ``text``. """
+    """ Returns the numerator of `text`. """
     return Fraction(text).limit_denominator().numerator
 
 
 def fracstr_to_denominator(text: str) -> int:
-    """ Returns the denominator of ``text``. """
+    """ Returns the denominator of `text`. """
     return Fraction(text).limit_denominator().denominator
 
 
 def allowed_external_connections(csp_config: Dict) -> List[str]:
-    """ Returns a list of 'https://' sources from ``csp_config``. """
+    """ Returns a list of ``https://`` sources from `csp_config`. """
     connections = []
     for _, sources in csp_config.items():
         for source in sources:
@@ -612,7 +612,7 @@ def same_site(view: Any) -> Any:
 
 def replace_extension(filename_src: str, new_ext: str) -> str:
     """
-    Replace the extension of ``filename_src`` to ``new_ext``.
+    Replace the extension of `filename_src` to `new_ext`.
 
     Args:
         filename_src (str): The filename with the old extension.

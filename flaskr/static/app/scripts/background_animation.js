@@ -30,7 +30,7 @@
 
 /**
  * Show a big image in the background if the following tag exists in the page:
- * <div id="outer-bg-body" data-bgsrc="/static/images/....jpg"><div id="inner-bg-body"></div></div>
+ * ``<div id="outer-bg-body" data-bgsrc="/static/images/....jpg"><div id="inner-bg-body"></div></div>``
  * The background is CSS-filtered to render in black and white and events may add the missing colors.
  */
 class BackgroundAnimation {
@@ -113,7 +113,7 @@ class BackgroundAnimation {
             })
             .onStepEnter((response) => {
                 if ($(response.element).attr("data-step") == "contact") {
-                    this.change_colors(false); // huray! the user may contact, follow, or support me!
+                    this.change_colors(false); // hurray! the user may contact, follow, or support me!
                 }
             })
             .onStepExit((response) => {

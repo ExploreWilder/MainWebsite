@@ -33,16 +33,20 @@ Transform images into figures. The image size is saved into the img tag and its
 style is updated to force the figure to have the final height from the beginning.
 
 Examples:
-![Alt](image.jpg "Caption")
-![Alt](image.jpg "Caption" config="no-resize")
-![Alt](image.jpg "Caption" class="can-zoom-in")
-![Alt](image.jpg "Caption" class="can-zoom-in" config="no-resize")
 
-The existing figure processors are under the GPL version, incompatible with the BSD.
-Alternatives are:
-* https://github.com/flywire/caption (GPL 3.0)
-* https://github.com/Evidlo/markdown_captions (GPL 3)
-* https://github.com/jdittrich/figureAltCaption (GPL 2)
+* ``![Alt](image.jpg "Caption")``
+* ``![Alt](image.jpg "Caption" config="no-resize")``
+* ``![Alt](image.jpg "Caption" class="can-zoom-in")``
+* ``![Alt](image.jpg "Caption" class="can-zoom-in" config="no-resize")``
+
+.. note::
+    The existing figure processors are under the GPL version, incompatible with the BSD.
+
+    Alternatives are:
+
+    * https://github.com/flywire/caption (GPL 3.0)
+    * https://github.com/Evidlo/markdown_captions (GPL 3)
+    * https://github.com/jdittrich/figureAltCaption (GPL 2)
 
 Learn how to make a Python-Markdown extension:
     https://python-markdown.github.io/extensions/api/

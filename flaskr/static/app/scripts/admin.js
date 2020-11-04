@@ -75,10 +75,15 @@ var url_move_photo_to_wastebasket =
 var url_send_newsletter = url_prefix + "/members/send_newsletter";
 
 /**
- * Read the @p input file for the photo preview. Supported extensions are:
- * tiff, tif, jpg, peg, png
- * Inspired by: https://rfvallina.com/blog/2015/08/22/preview-tiff-and-pdf-files-using-html5-file-api.html
- * Dependencies: FileReader and https://github.com/seikichi/tiff.js/tree/master
+ * Read the `input` file for the photo preview.
+ *
+ * Supported extensions are: tiff, tif, jpg, jpeg, png
+ *
+ * Inspired by: `Preview TIFF and PDF files using HTML5 File API
+ * <https://rfvallina.com/blog/2015/08/22/preview-tiff-and-pdf-files-using-html5-file-api.html>`_
+ *
+ * Dependencies: FileReader and `tiff.js <https://github.com/seikichi/tiff.js/tree/master>`_
+ *
  * @param input {Object} - Input field of file type.
  */
 var read_upload_photo = function (input) {
@@ -263,7 +268,7 @@ var init_admin_members = function () {
 };
 
 /**
- * Update the progress bar @p el with the @p value in percent and the @p text.
+ * Update the progress bar `el` with the `value` in percent and the `text`.
  * @see init_admin_add_photo()
  * @param el {Object} - Bootstrap progress-bar.
  * @param value {Number} - Percent between 0 and 100.
@@ -725,7 +730,7 @@ var admin_edit_photo_metadata = function (a) {
 
 /**
  * Swap from read only to read/write mode so that the admin can edit the metadata
- * of a listed photo. There is a kind of asynchronous cross-recursivity with
+ * of a listed photo. There is a kind of asynchronous cross-recursion with
  * admin_save_book_metadata()
  * @see admin_save_book_metadata()
  * @param a {Object} - A link to the icon, which will be updated (icon & event).
@@ -744,7 +749,7 @@ var admin_edit_book_metadata = function (a) {
 
 /**
  * Swap from read/write mode to read only and save the changes. There is a kind
- * of asynchronous cross-recursivity with admin_edit_book_metadata()
+ * of asynchronous cross-recursion with admin_edit_book_metadata()
  * @see admin_edit_book_metadata()
  * @param a {Object} - A link to the icon, which will be updated (icon & event).
  */
@@ -778,8 +783,8 @@ var admin_save_book_metadata = function (a) {
 };
 
 /**
- * Move the photo identified ``dropped_id`` below ``id_above_drop`` and above
- * ``id_below_drop``.
+ * Move the photo identified `dropped_id` below `id_above_drop` and above
+ * `id_below_drop`.
  * @param dropped_id {Number} - ID of the dragged and dropped photo.
  * The ID refers to the database, not the DOM.
  * @param id_above_drop {Number} - ID of the photo located above, after the drop.
@@ -805,8 +810,8 @@ var admin_move_photo = function (dropped_id, id_above_drop, id_below_drop) {
 };
 
 /**
- * Move the book identified ``dropped_id`` below ``id_above_drop`` and above
- * ``id_below_drop``.
+ * Move the book identified `dropped_id` below `id_above_drop` and above
+ * `id_below_drop`.
  * @param dropped_id {Number} - ID of the dragged and dropped book.
  * The ID refers to the database, not the DOM.
  * @param id_above_drop {Number} - ID of the book located above, after the drop.
@@ -1025,7 +1030,7 @@ var init_admin_list_of_books = function () {
 };
 
 /**
- * Compute the number of months between ``d1`` and ``d2``.
+ * Compute the number of months between `d1` and `d2`.
  * @param d1 {Date} - The oldest of the two dates.
  * @param d2 {Date} - The most recent of the two dates.
  * @return {Number} The difference in months or 0.
@@ -1039,7 +1044,7 @@ var month_diff = function (d1, d2) {
 };
 
 /**
- * Format ``date`` to string, f.i. "February, 2020"
+ * Format `date` to string, f.i. "February, 2020"
  * @param date {Date} - The date to format.
  * @return {String} The formatted date.
  */
@@ -1225,7 +1230,7 @@ var init_admin_statistics = function () {
 };
 
 /**
- * Refresh the ``list`` of granted/denied sections of the website.
+ * Refresh the `list` of granted/denied sections of the website.
  * @param input {Object} - Input element (number).
  */
 var refresh_access = function () {

@@ -32,8 +32,10 @@
  * Register a handler to be called when Ajax requests complete with an error
  * or the Ajax requests prematurely stopped before completion (status code 0).
  * This is an Ajax Event. Actions are:
+ *
  * * Print a message in the console;
  * * Send a message to Sentry.
+ *
  * @param event {Event} - Event object.
  * @param jq_xhr {jqXHR} - The JQuery XHR object.
  * @param settings {PlainObject} - Settings object that was used in the creation of the request.

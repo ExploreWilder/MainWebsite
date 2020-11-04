@@ -285,8 +285,8 @@ var raster_topo50 = {
 };
 
 /**
- * OpenLayers control: Overview map.
- * https://openlayers.org/en/latest/examples/overviewmap.html
+ * OpenLayers control: `Overview map
+ * <https://openlayers.org/en/latest/examples/overviewmap.html>`_.
  */
 var overviewMapControl = new ol.control.OverviewMap({
     layers: [
@@ -497,7 +497,7 @@ function update_hiker_pos(tooltip_item, data) {
 }
 
 /**
- * Read the `webtrack` and save the features into `source`.
+ * Read the WebTrack and save the features into `source`.
  * @see label_elevation()
  * @param {Dict} data See map_viewer.fetch_data().
  * @param {SourceType} source The OpenLayers source.
@@ -544,7 +544,7 @@ function webtrack_to_source(data, source) {
 }
 
 /**
- * Download the data and update the interface.
+ * Download the binary data and update the interface.
  */
 function fetch_data() {
     var oReq = new XMLHttpRequest();

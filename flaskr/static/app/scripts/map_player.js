@@ -1,30 +1,4 @@
 /*!
- * Copyright (c) 2020 Melown Technologies SE
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * *  Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- *
- * *  Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*!
  * Copyright (c) 2020 Clement
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,40 +28,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * DETAILS ABOUT THE MAP CONFIG:
- *
- * Information about the mapConfig.json:
- * https://github.com/melowntech/vts-mapproxy/blob/master/docs/resources.md
- *
- * More in-depth mapConfig.json configuration by example:
- * https://rigel.mlwn.se/mountain-map/
- * https://github.com/ondra-prochazka/a-3d-mountain-map
- *
- * Use the style editor in the VTS Browser Inspector Mode to customize the *.style.json:
- * Ctrl+Shift+D then Shift+E
- * https://github.com/melowntech/vts-browser-js/wiki/VTS-Browser-Inspector-Mode
- *
- * More documentation about properties:
- * https://github.com/melowntech/vts-browser-js/wiki/VTS-Geodata-Format#layers-structure
- * https://vts-geospatial.org/tutorials/geojson.html
- */
-
-var browser, renderer, map;
-var geodata,
-    lineGeometry = null;
+var browser;
+var renderer;
+var map;
+var geodata;
+var lineGeometry = null;
 var demoTexture = null;
 var usedMouseCoords = [0, 0];
-var linePoint,
-    lineSegment = 0,
-    lastLineSegment = -1;
+var linePoint;
+var lineSegment = 0;
+var lastLineSegment = -1;
 var distancePointer;
 var pathDistance = 0;
 
 /**
  * Add extra height to be sure the track is above the terrain.
- * The Z-buffer in the map_player_config/webtrack.style.json is also tunned.
- * https://github.com/melowntech/vts-browser-js/issues/201
+ * The Z-buffer in the ``map_player_config/webtrack.style.json`` is also tuned.
+ * It's actually a hack raised in `GitHub <https://github.com/melowntech/vts-browser-js/issues/201>`_
  */
 var extra_height = 45;
 
@@ -121,9 +78,12 @@ function update_hiker_pos(tooltip_item, data) {
 }
 
 /**
- * Setup the entire interface.
+ * Setup the entire interface. A popup will appear if the browser doesn't support
+ * WebGL, otherwise the map is created in the HTML ``div`` tag identified
+ * as `map-player`. The map configuration is based on the JSON file.
+ * The `inspector <https://github.com/melowntech/vts-browser-js/wiki/VTS-Browser-Inspector-Mode>`_ is enabled.
  */
-(function startMapPlayerInterface() {
+function startMapPlayerInterface() {
     var url = new RegExp("/([^/]*)/([^/]*)/([^/]*)/([^/#]*)#*$", "g").exec(
         window.location.href
     );
@@ -136,21 +96,14 @@ function update_hiker_pos(tooltip_item, data) {
     book_url = url[2].toLowerCase();
     gpx_name = url[3];
 
-    // create map in the html div with id 'map-player'
-    // parameter 'map' sets path to the map which will be displayed
-    // you can create your own map on melown.com
-    // position parameter is described in documentation
-    // https://github.com/Melown/vts-browser-js/wiki/VTS-Browser-Map-API#position
-    // view parameter is described in documentation
-    // https://github.com/Melown/vts-browser-js/wiki/VTS-Browser-Map-API#definition-of-view
     browser = vts.browser("map-player", {
         map: VTS_BROWSER_CONFIG + "main_config.json",
-        inspector: true, // https://github.com/melowntech/vts-browser-js/wiki/VTS-Browser-Inspector-Mode
+        inspector: true,
     });
 
-    //check whether browser is supported
+    // check whether browser is supported
     if (!browser) {
-        console.log("Your web browser does not support WebGL");
+        window.alert("Your web browser does not support WebGL");
         return;
     }
 
@@ -166,15 +119,15 @@ function update_hiker_pos(tooltip_item, data) {
     distancePointer = infoPointers.getElement("distance-div");
     renderer = browser.renderer;
 
-    //add mouse events to map element
+    // add mouse events to map element
     var mapElement = browser.ui.getMapElement();
     mapElement.on("mousemove", onMouseMove);
     mapElement.on("mouseleave", onMouseLeave);
 
-    //callback once the map config is loaded
+    // callback once the map config is loaded
     browser.on("map-loaded", onMapLoaded);
 
-    //callback when path hovered
+    // callback when path hovered
     browser.on("geo-feature-hover", onFeatureHover);
 
     loadTexture();
@@ -201,7 +154,8 @@ function update_hiker_pos(tooltip_item, data) {
         container: "#subNavbarNav",
         trigger: "hover",
     });
-})();
+}
+startMapPlayerInterface();
 
 /**
  * Load icon used for displaying path point
@@ -226,7 +180,7 @@ function onMapLoaded() {
 }
 
 /**
- * Download the data and update the interface.
+ * Download the binary data and update the interface.
  */
 function loadTrack() {
     var oReq = new XMLHttpRequest();
@@ -259,7 +213,7 @@ function loadTrack() {
 }
 
 /**
- * Read the `webtrack` and save the features into `source`.
+ * Read the WebTrack and save the features into `source`.
  * @param {WebTrack} webtrack see map_player.loadTrack().
  */
 function webtrack_to_geodata(webtrack) {
@@ -563,10 +517,10 @@ function onCustomRender() {
  * Change the active bound layer on the surface.
  * It could be a composition of layers if separated by commas.
  *
- * Based on the 'VTS Browser API Examples'
- * https://github.com/melowntech/vts-browser-js/wiki/Examples
- * Switching bound layers:
- * https://jsfiddle.net/jdhakmnt/
+ * Based on the `VTS Browser API Examples
+ * <https://github.com/melowntech/vts-browser-js/wiki/Examples>`_:
+ * `Switching bound layers
+ * <https://jsfiddle.net/jdhakmnt/>`_.
  */
 function onSwitchView(newBoundLayer) {
     if (map) {

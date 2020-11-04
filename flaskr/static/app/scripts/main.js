@@ -30,7 +30,7 @@
 
 /**
  * Number of photos to fetch in a single asynchronous request. Must be > 1.
- * Default value is 9 and changed at default_total_new_photos() call.
+ * Default value is 9 and changed at `default_total_new_photos()` call.
  */
 var total_new_photos = default_total_new_photos;
 
@@ -73,7 +73,7 @@ if (typeof String.prototype.trim === "undefined") {
 }
 
 /**
- * Example of use: $.urlParam('param'); returns 'value' or null.
+ * Example of use: ``$.urlParam('param');`` returns 'value' or null.
  * @param name Parameter name.
  */
 $.urlParam = function (name) {
@@ -100,8 +100,8 @@ function adapt_amount_thumbnails_to_fetch() {
 }
 
 /**
- * Wrap the ``text`` with the HTML <p> tag and replace double new lines by a new
- * HTML paragraph and new lines by the <br /> tag.
+ * Wrap the `text` with the HTML ``<p>`` tag and replace double new lines by a new
+ * HTML paragraph and new lines by the ``<br />`` tag.
  * @param text {String} - Raw text.
  * @return {String} Text with <p>s, </p>s and <br />s.
  */
@@ -169,7 +169,9 @@ function close_photo() {
 
 /**
  * Returns a string of the number x with commas on thousands.
- * NOTICE: identical to map_viewer.js
+ *
+ * .. note::
+ *     identical to map_viewer.js
  */
 function number_with_commas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -265,13 +267,14 @@ function disable_autoplay() {
 /**
  * Called when a new photo is loaded in order to:
  *
- * * fetch new photos if ``index`` refers to one of the last 3 photos.
+ * * fetch new photos if `index` refers to one of the last 3 photos.
  * * hide the next/prev button if the next/prev photo is out of range.
  * * update the onclick events of the prev/next buttons.
  *
- * Notice: the auto play mode is disabled when the user loads the previous
- * picture and the timer is reset when the user loads the next one to avoid
- * fast jump.
+ * ..note::
+ *     The auto play mode is disabled when the user loads the previous
+ *     picture and the timer is reset when the user loads the next one to avoid
+ *     fast jump.
  *
  * @see fetch_thumbnails()
  * @param index {Number} - Id (from 0) of the new big photo.
@@ -321,7 +324,7 @@ function update_prev_next_buttons(index) {
 }
 
 /**
- * If ``is_bind`` is true, then the emoji buttons are visible and binded so that
+ * If `is_bind` is true, then the emoji buttons are visible and bound so that
  * the emotion is shared.
  * @param is_bind {Boolean} - True to show and bind, false to hide and unbind.
  */
@@ -417,7 +420,7 @@ function enable_header(enable) {
 
 /**
  * Display a big photo or update its size. Update the interface as well. If
- * ``photo`` is an image, it will replace the current one. Otherwise the current photo
+ * `photo` is an image, it will replace the current one. Otherwise the current photo
  * will stay active and would be resized. If there is no argument given and no
  * active photo either, then nothing is changed. Check the log in case of trouble.
  * @see update_prev_next_buttons()
@@ -674,8 +677,8 @@ function preload_photo(index) {
 }
 
 /**
- * Load gallery[``index``] in cache. Animate the thumbnail in download mode if visible.
- * Load the next/previous photo if an error occured and print out error on console.
+ * Load gallery[`index`] in cache. Animate the thumbnail in download mode if visible.
+ * Load the next/previous photo if an error occurred and print out error on console.
  * The next (or previous) photo is cached after the successful photo update.
  * @param index {Number} - Id (from 0) of the new big photo.
  */
@@ -712,8 +715,8 @@ function load_photo(index) {
 }
 
 /**
- * Create a JQuery image with the source ``src`` and the identifier ``id`` and
- * append to ``a`` if the image has successfully been loaded, i.e. asynchronously.
+ * Create a JQuery image with the source `src` and the identifier `id` and
+ * append to `a` if the image has successfully been loaded, i.e. asynchronously.
  * The message in the console is for example:
  *
  * * "Thumbnail [148] loaded." if the image has successfully been loaded.
@@ -738,7 +741,7 @@ function img_thumbnail(src, id, a) {
 }
 
 /**
- * Fetch ``total`` thumbnails. Only metadata are downloaded and thumbnails are
+ * Fetch `total` thumbnails. Only metadata are downloaded and thumbnails are
  * cached and displayed. Any call to this function before the successful process
  * of the last call is ignored. In other words, the function waits for the last
  * XHR to send back the information before to ask more. That is to avoid race
@@ -860,11 +863,11 @@ function disable_right_click() {
 
 /**
  * Change the submit button. From the clickable paper plane to the unclickable
- * animated spinner if ``clickable`` is false, otherwise the other way: from the
+ * animated spinner if `clickable` is false, otherwise the other way: from the
  * unclickable spinner to the plane. By setting ``clickable`` to true, the button
  * looks immediatly like a paper plane but a delay can be set to keep the button
- * unclickable for ``delay`` ms. That avoids duplicated requests or spams. If
- * ``ref`` is undefined, all submit button of the page will change.
+ * unclickable for `delay` ms. That avoids duplicated requests or spams. If
+ * `ref` is undefined, all submit button of the page will change.
  * @param clickable {Boolean} - False to explain to the user to wait a while.
  * @param delay {Number} - Duration in ms before reset. Default: 0.
  * @param ref {String} - Reference to the form. Default: all.
@@ -901,7 +904,7 @@ function refresh_submit_button(clickable, delay, ref) {
 
 /**
  * Add a temporary alert message at the end of the ``form``.
- * @param result {String} - JSON string: '{"success":true/false,"info":"Details"}'
+ * @param result {String} - JSON string: ``{"success":true/false,"info":"Details"}``
  * @param form {String} - Reference to the form, f.i. "#contact-form".
  * @param stay_on {Boolean} - True to keep the info visible, false to fadeout after a few seconds.
  */
@@ -1158,7 +1161,7 @@ function scroll_down() {
 }
 
 /**
- * Check if ``elem`` is visible on the screen. Check the position, not the style.
+ * Check if `elem` is visible on the screen. Check the position, not the style.
  * In other words, a hidden block in the middle of the screen is considered on
  * screen.
  * @param elem {Object} - Element.
@@ -1212,8 +1215,8 @@ function book_static_map_effects() {
 }
 
 /**
- * Zoom-in images in the book with the Jack Moore's MIT-licensed plugin.
- * https://github.com/jackmoore/zoom/
+ * Zoom-in images in the book with the `Jack Moore's MIT-licensed plugin
+ * <https://github.com/jackmoore/zoom/>`_.
  */
 function book_zoom_images() {
     $(".can-zoom-in")
@@ -1254,7 +1257,7 @@ function open_modal_privacy_policy() {
 }
 
 /**
- * Apply the visitor's decision. will be remembered for ``offset_months`` months.
+ * Apply the visitor's decision. will be remembered for `offset_months` months.
  */
 function cookie_policy_decision(decision) {
     var later_on = new Date();
@@ -1468,7 +1471,7 @@ function alert_insecure_website() {
 /** Management of the table of content. */
 class toc {
     /**
-     * Initialiser.
+     * Initializer.
      */
     constructor() {
         /** Current anchor on focus (section where the reader probably is). Unset after update. */
@@ -1516,9 +1519,9 @@ class toc {
     /**
      * Find the current anchor. The actual refresh is throttled with setTimeout()
      * in order to avoid a Safari security error which is:
-     * "SecurityError: Attempt to use history.replaceState() more than 100 times per 30 seconds"
-     * More info about the scroll event in the MDN doc:
-     * https://developer.mozilla.org/en-US/docs/Web/API/Element/scroll_event
+     * ``SecurityError: Attempt to use history.replaceState() more than 100 times per 30 seconds``
+     * More info about the scroll event in the `MDN doc
+     * <https://developer.mozilla.org/en-US/docs/Web/API/Element/scroll_event>`_
      */
     animate() {
         var my_toc = this;
@@ -1552,8 +1555,8 @@ $(window).resize(function () {
 
 /**
  * When the user scrolls the web page: fetch new thumbnails one row in advance.
- * But not too often as detailed in the MDN web doc:
- * https://developer.mozilla.org/en-US/docs/Web/API/Element/scroll_event
+ * But not too often as detailed in the `MDN web doc
+ * <https://developer.mozilla.org/en-US/docs/Web/API/Element/scroll_event>`_
  */
 $(window).scroll(function () {
     let last_known_scroll_position = $(window).scrollTop();
