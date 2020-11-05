@@ -325,8 +325,9 @@ def webtrack_file(book_id: int, gpx_name: str) -> FlaskResponse:
         not os.path.isfile(webtrack_path)
         or os.stat(webtrack_path).st_size == 0
         or os.stat(webtrack_path).st_mtime < os.stat(gpx_path).st_mtime
+        or not good_webtrack_version(webtrack_path)
     ):  # update webtrack
-        try:  # TODO: re-create the WebTrack file if bad header information
+        try:
             gpx_to_webtrack_with_elevation(
                 gpx_path, webtrack_path, current_app.config["NASA_EARTHDATA"]
             )
@@ -337,6 +338,13 @@ def webtrack_file(book_id: int, gpx_name: str) -> FlaskResponse:
         replace_extension(gpx_filename, "webtrack"),
         mimetype="application/prs.webtrack",
     )
+
+
+def good_webtrack_version(file_path: str) -> bool:
+    webtrack = WebTrack()
+    current_format = webtrack.get_format_information()
+    file_format = webtrack.get_format_information(file_path)
+    return current_format == file_format
 
 
 class CustomFileHandler(srtm.data.FileHandler):
@@ -474,9 +482,8 @@ def gpx_to_webtrack_with_elevation(
             },
         }
 
-        webTrack = WebTrack(  # pylint: disable=unused-variable; saved to disk
-            webtrack_path, full_profile
-        )
+        webtrack = WebTrack()
+        webtrack.to_file(webtrack_path, full_profile)
 
 
 @map_app.route(

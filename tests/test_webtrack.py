@@ -31,8 +31,7 @@
 import os
 from filecmp import cmp
 
-import pytest
-
+from flaskr.map import good_webtrack_version
 from flaskr.map import gpx_to_webtrack_with_elevation
 
 
@@ -48,7 +47,7 @@ def test_gpx_to_webtrack(app):
             )
         except Exception as err:
             raise Exception("Failed to create WebTrack") from err
-        assert cmp(generated_webtrack_file, expected_webtrack_file) == False
+        assert not cmp(generated_webtrack_file, expected_webtrack_file)
         gpx_file = "Gillespie_Circuit.gpx"
         try:
             gpx_to_webtrack_with_elevation(
@@ -56,5 +55,11 @@ def test_gpx_to_webtrack(app):
             )
         except Exception as err:
             raise Exception("Failed to create WebTrack") from err
-        assert cmp(generated_webtrack_file, expected_webtrack_file) == True
+        assert cmp(generated_webtrack_file, expected_webtrack_file)
         os.remove(generated_webtrack_file)
+
+
+def test_good_webtrack_version():
+    """ Check the read capability. """
+    expected_webtrack_file = "Gillespie_Circuit.webtrack"
+    assert good_webtrack_version(expected_webtrack_file)

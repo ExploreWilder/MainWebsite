@@ -296,7 +296,7 @@ function update_prev_next_buttons(index) {
         disable_autoplay();
     } else {
         $("#button-next").css("visibility", "visible");
-        $("#button-next").unbind("click");
+        $("#button-next").off("click");
         $("#button-next").click(function () {
             $("#button-next").blur();
             if (is_autoplay) {
@@ -306,7 +306,7 @@ function update_prev_next_buttons(index) {
         });
 
         $("#button-auto").css("visibility", "visible");
-        $("#button-auto").unbind("click");
+        $("#button-auto").off("click");
         $("#button-auto").click(autoplay_button);
     }
 
@@ -314,7 +314,7 @@ function update_prev_next_buttons(index) {
         $("#button-prev").css("visibility", "hidden");
     } else {
         $("#button-prev").css("visibility", "visible");
-        $("#button-prev").unbind("click");
+        $("#button-prev").off("click");
         $("#button-prev").click(function () {
             $("#button-prev").blur();
             disable_autoplay();
@@ -333,7 +333,7 @@ function bind_emotions(is_bind) {
         var emotion = emotions[i];
         var a = $("#button-" + emotion).parent("a");
         a.css("visibility", is_bind ? "visible" : "hidden");
-        a.unbind("click");
+        a.off("click");
         if (is_bind) {
             a.click(
                 (function () {
@@ -589,7 +589,7 @@ function display_photo(photo, index) {
         $("#button-" + button[i]).css("right", total_gap_photo);
         $("#button-" + button[i]).css(
             "top",
-            offset_y + i * (button_size + total_gap_photo)
+            offset_y + i * (button_size + vgap_icons_large_view)
         );
     }
     $("#full-screen").css("top", navbar_height + total_gap_photo);
@@ -1257,6 +1257,14 @@ function open_modal_privacy_policy() {
 }
 
 /**
+ * Open the "support me" modal.
+ */
+function open_modal_support_me() {
+    $("#modal-support-me").modal("show");
+    return false;
+}
+
+/**
  * Apply the visitor's decision. will be remembered for `offset_months` months.
  */
 function cookie_policy_decision(decision) {
@@ -1372,7 +1380,7 @@ function like_this_book() {
         $("#popup-like-book .toast").toast("dispose");
     }
     $(this).css("visibility", "hidden");
-    $(this).unbind("click");
+    $(this).off("click");
     var emotion = "like";
     $.ajax({
         url: url_share_emotion_book,
@@ -1406,16 +1414,24 @@ function url_anchor_to_this_id() {
  * Add a visit entry when the visitor clicks on the read/download button of the book.
  */
 function open_this_book() {
+    if ($(this).hasClass("disabled")) {
+        return false;
+    }
     $(this).addClass("disabled");
-    $(this).unbind("click");
+    $(this).attr("aria-disabled", "true");
+    $(this).attr("tabindex", "-1");
     var emotion = "neutral";
     $.ajax({
         url: url_share_emotion_book,
-        async: false,
+        async: false /* force to log before redirecting. */,
         method: "POST",
         data: { book_id: this.dataset.bookId, emotion: emotion },
         dataType: "json",
-        success: function (result) {},
+        success: (result) => {
+            $(this).removeClass("disabled");
+            $(this).removeAttr("aria-disabled");
+            $(this).removeAttr("tabindex");
+        },
     });
     return true;
 }
@@ -1456,6 +1472,35 @@ function login_to_password_reset_form() {
         .find("i")
         .removeClass("fa-unlock-alt")
         .addClass("fa-envelope-open-text");
+}
+
+/**
+ * Update the interface with a difference for small and large screen at 768 px.
+ */
+function non_linear_update() {
+    // xs screen is a smartphone with no useful onmouseover to display a tooltip
+    if (window.matchMedia("(min-width: 768px)").matches) {
+        $(
+            '#header [data-toggle="tooltip"], #subNavbarNav [data-toggle="tooltip"]'
+        ).tooltip({
+            animation: true,
+            placement: "bottom",
+            delay: { show: 100, hide: 0 },
+            container: "#header",
+            trigger: "hover",
+        });
+        $(
+            '#full-screen [data-toggle="tooltip"], #subNavbarNav [data-toggle="tooltip"]'
+        ).tooltip({
+            animation: true,
+            placement: "left",
+            delay: { show: 100, hide: 0 },
+            trigger: "hover",
+        });
+        total_gap_photo = total_gap_photo_lg;
+    } else {
+        total_gap_photo = total_gap_photo_sm;
+    }
 }
 
 /**
@@ -1536,6 +1581,7 @@ class toc {
  * height and resize the big photo if needed.
  */
 $(window).resize(function () {
+    non_linear_update();
     if ($("#main").length) {
         adapt_amount_thumbnails_to_fetch();
         move_body();
@@ -1627,6 +1673,8 @@ $(function () {
             }
         },
     });
+
+    non_linear_update();
 
     // https://stackoverflow.com/questions/36460538/scrolling-issues-with-multiple-bootstrap-modals
     $("body").on("hidden.bs.modal", function (e) {
@@ -1721,27 +1769,6 @@ $(function () {
         init_feedback_form();
     }
 
-    // xs screen is a smartphone with no useful onmouseover to display a tooltip
-    if (window.matchMedia("(min-width: 768px)").matches) {
-        $(
-            '#header [data-toggle="tooltip"], #subNavbarNav [data-toggle="tooltip"]'
-        ).tooltip({
-            animation: true,
-            placement: "bottom",
-            delay: { show: 100, hide: 0 },
-            container: "#header",
-            trigger: "hover",
-        });
-        $(
-            '#full-screen [data-toggle="tooltip"], #subNavbarNav [data-toggle="tooltip"]'
-        ).tooltip({
-            animation: true,
-            placement: "left",
-            delay: { show: 100, hide: 0 },
-            trigger: "hover",
-        });
-    }
-
     $('.tweetable a[data-toggle="tooltip"]').tooltip({
         animation: true,
         placement: "right",
@@ -1791,6 +1818,7 @@ $(function () {
     $("#onclick-close-photo").click(close_photo);
     $(".onclick-like-this-book").click(like_this_book);
     $(".onclick-open-this-book").click(open_this_book);
+    $(".icon-support-me").click(open_modal_support_me);
     $('#pills-tab li.nav-item a[data-toggle="pill"]').click(
         url_anchor_to_this_id
     );

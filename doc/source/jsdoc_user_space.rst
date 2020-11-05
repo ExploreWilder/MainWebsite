@@ -5,7 +5,9 @@ Configuration
 ^^^^^^^^^^^^^
 
 .. js:autoattribute:: small_devices_height
-.. js:autoattribute:: total_gap_photo
+.. js:autoattribute:: total_gap_photo_lg
+.. js:autoattribute:: total_gap_photo_sm
+.. js:autoattribute:: vgap_icons_large_view
 .. js:autoattribute:: offset_months
 .. js:autoattribute:: fade_out_thumbnail
 .. js:autoattribute:: opacity_thumbnail
@@ -99,6 +101,7 @@ Interface
 .. js:autofunction:: book_zoom_images
 .. js:autofunction:: open_modal_copyright
 .. js:autofunction:: open_modal_privacy_policy
+.. js:autofunction:: open_modal_support_me
 .. js:autofunction:: cookie_policy_decision
 .. js:autofunction:: cookie_policy_consent
 .. js:autofunction:: show_subscribe_newsletter_toast
@@ -108,6 +111,7 @@ Interface
 .. js:autofunction:: open_this_book
 .. js:autofunction:: init_dropdown_subject
 .. js:autofunction:: login_to_password_reset_form
+.. js:autofunction:: non_linear_update
 .. js:autofunction:: alert_insecure_website
 .. js:autoclass:: toc(constructor)
    :members:

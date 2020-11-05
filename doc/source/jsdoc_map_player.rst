@@ -27,16 +27,16 @@ Details About the Map Configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Information about the map configuration (``mapConfig.json`` in the VTS terms) are available
-`here <https://github.com/melowntech/vts-mapproxy/blob/master/docs/resources.md>`_.
+`here <https://github.com/melowntech/vts-mapproxy/blob/master/docs/resources.md>`__.
 For a more in-depth configuration, you can find an
 example `here <https://rigel.mlwn.se/mountain-map/>`_
-and `there <https://github.com/ondra-prochazka/a-3d-mountain-map>`_.
+and `there <https://github.com/ondra-prochazka/a-3d-mountain-map>`__.
 
 You can edit the style on the fly with the VTS Browser
 `Inspector Mode <https://github.com/melowntech/vts-browser-js/wiki/VTS-Browser-Inspector-Mode>`_
 (Ctrl+Shift+D then Shift+E). Refer to
-`here <https://github.com/melowntech/vts-browser-js/wiki/VTS-Geodata-Format#layers-structure>`_
-and `there <https://vts-geospatial.org/tutorials/geojson.html>`_
+`here <https://github.com/melowntech/vts-browser-js/wiki/VTS-Geodata-Format#layers-structure>`__
+and `there <https://vts-geospatial.org/tutorials/geojson.html>`__
 for more documentation about properties.
 
 Module

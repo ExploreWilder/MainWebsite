@@ -36,9 +36,21 @@ const small_devices_height = 350;
 
 /**
  * Gap in pixels around photos/thumbnails, twice the padding around a thumbnail.
- * Default value is 20 px.
+ * Default value is 32 px.
  */
-const total_gap_photo = 20;
+const total_gap_photo_lg = 32;
+
+/**
+ * Gap in pixels around photos/thumbnails for small screen.
+ * Default value is 16 px.
+ */
+const total_gap_photo_sm = 16;
+
+/**
+ * Vertical gap between icons in the large photo viewer.
+ * Default value is 10 px.
+ */
+const vgap_icons_large_view = 15;
 
 /**
  * Remember the visitor's decision to accept or deny long-term cookies for a few months.

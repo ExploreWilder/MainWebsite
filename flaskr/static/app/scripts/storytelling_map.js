@@ -33,12 +33,11 @@
  */
 
 /**
- * This app is based on the following mapbox example:
- * https://github.com/mapbox/storytelling
- * I used mapbox Studio-generated layers including hillshading
+ * This app is based on `this mapbox example <https://github.com/mapbox/storytelling>`_.
+ * I used Mapbox Studio-generated layers including hillshading
  * made available by the USGS 3D Elevation Program.
- * It is integrated in the website (core design and scripts required.)
- * The interface loads once the JSON-formated story has been successfully fetched.
+ * It is integrated in the website (core design and scripts required).
+ * The interface loads once the JSON-formatted story has been successfully fetched.
  */
 class StorytellingMap {
     /** The book ID found in the database. */
@@ -56,7 +55,7 @@ class StorytellingMap {
     /** True to make this.map interactive and display the location helper to create chapters. */
     #debug_mode;
 
-    /** Used to add style capabilites (opacity) to Mapbox elements. */
+    /** Used to add style capabilities (opacity) to Mapbox elements. */
     #layer_types = {
         fill: ["fill-opacity"],
         line: ["line-opacity"],
@@ -500,13 +499,33 @@ class StorytellingMap {
 
     /**
      * When the user enter a chapter.
+     *
+     * Example of story configuration:
+     *
+     * .. code-block:: JavaScript
+     *
+     *     "onChapterEnter": [
+     *         {
+     *             "layer": "ferry-aerialway-label",
+     *             "opacity": 0
+     *         },
+     *         {
+     *             "layer": "path-pedestrian-label",
+     *             "opacity": 0
+     *         },
+     *         {
+     *             "layer": "mapbox-satellite",
+     *             "opacity": 0.5
+     *         }
+     *     ]
+     *
      */
     on_step_enter(response) {
         var chapter = this.config.chapters.find(
             (chap) => chap.id === response.element.id
         );
         this.map.flyTo(this.computeZoom(chapter.location));
-        if (chapter.showContext) {
+        if (chapter.showContext && typeof this.contextual_map !== "undefined") {
             var was_visible =
                 $("#storytelling-map-context").css("display") != "none";
             $("#storytelling-map-context").show(0, () => {
@@ -541,6 +560,26 @@ class StorytellingMap {
 
     /**
      * When the user exit a chapter.
+     *
+     * Example of story configuration:
+     *
+     * .. code-block:: JavaScript
+     *
+     *     "onChapterExit": [
+     *         {
+     *             "layer": "mapbox-satellite",
+     *             "opacity": 0
+     *         },
+     *         {
+     *             "layer": "ferry-aerialway-label",
+     *             "opacity": 1
+     *         },
+     *         {
+     *             "layer": "path-pedestrian-label",
+     *             "opacity": 1
+     *         }
+     *     ]
+     *
      */
     on_step_exit(response) {
         var chapter = this.config.chapters.find(
@@ -617,11 +656,16 @@ class StorytellingMap {
     }
 
     /**
-     * Initialise the mini contextual map displayed on the top left corner.
+     * Initialise the mini contextual map displayed on the top left corner
+     * if the screen width is large enough (refer to @trigger-lg-sm-view in
+     * storytelling_map.less).
      * That map is movable/scrollable/zoomable. The + and - buttons are displayed
      * but not the compass since the map cannot rotate.
      */
     init_contextual_map() {
+        if (window.matchMedia("(max-width: 1100px)").matches) {
+            return;
+        }
         this.contextual_map = new mapboxgl.Map({
             container: "storytelling-map-context",
             style: "mapbox://styles/mapbox/streets-v11",

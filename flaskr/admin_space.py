@@ -800,7 +800,12 @@ def manage_books() -> Any:
     shelf_as_list = list(shelf)
 
     def get_files(pathname: str, ext: str) -> List:
-        return [path.split("/")[-1] for path in glob.glob(pathname + "/*." + ext)]
+        reduced_path = [
+            file
+            for file in glob.glob(pathname + "/*." + ext)
+            if ".gpx_static_map." not in file
+        ]
+        return [path.split("/")[-1] for path in reduced_path]
 
     for i, book in enumerate(shelf_as_list):
         pathname = os.path.join(current_app.config["SHELF_FOLDER"], book[1])

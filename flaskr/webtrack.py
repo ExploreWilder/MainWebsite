@@ -35,7 +35,6 @@ https://github.com/ExploreWilder/WebTrack.js/blob/main/SPEC.md
 """
 
 # pylint: disable=invalid-name; allow one letter variables (f.i. c for character, n for number)
-# pylint: disable=too-few-public-methods; simple design
 
 import pyproj
 
@@ -46,7 +45,7 @@ class WebTrack:
     """
     Implementation of the WebTrack format.
     Refer to map.py for an example of use.
-    TODO: read capability, or at least a format header check for map.webtrack_file()
+    TODO: full read capability
     """
 
     #: Big-endian order as specified.
@@ -55,21 +54,50 @@ class WebTrack:
     #: GPS to Web Mercator converter with coordinates in the GIS order: (lon, lat).
     proj = pyproj.Transformer.from_crs("epsg:4326", "epsg:3857", always_xy=True)
 
+    #: The WebTrack file data.
+    webtrack: Any = None
+
+    #: The data to write into the WebTrack.
+    data_src: Dict = {}
+
+    #: The total amount of segments in the current WebTrack.
+    total_segments: int = 0
+
+    #: The total amount of waypoints in the current WebTrack.
+    total_waypoints: int = 0
+
     def __init__(
         self,
-        file_path: str,
-        data: Dict,
         format_name: bytes = b"webtrack-bin",
         format_version: bytes = b"0.1.0",
     ):
+        self.format_name = format_name
+        self.format_version = format_version
+
+    def get_format_information(self, file_path: str = "") -> Dict[str, bytes]:
+        """
+        Returns the format name and version.
+
+        Returns:
+            The default values if `file_path` is not specified.
+            The information from the file `file_path` if specified.
+        """
+        if file_path:
+            with open(file_path, "rb") as stream:
+                self.webtrack = stream
+                self._read_format_information()
+        return {
+            "format_name": self.format_name,
+            "format_version": self.format_version,
+        }
+
+    def to_file(self, file_path: str, data: Dict) -> None:
         """ Open the binary file and write the WebTrack data. """
         with open(file_path, "wb") as stream:
             self.webtrack = stream
             self.data_src = data
             self.total_segments = len(data["segments"])
             self.total_waypoints = len(data["waypoints"])
-            self.format_name = format_name
-            self.format_version = format_version
 
             self._write_format_information()
             self._write_segment_headers()
@@ -125,6 +153,27 @@ class WebTrack:
         self._w_sep()
         self._w_uint8(self.total_segments)
         self._w_uint16(self.total_waypoints)
+
+    def _read_up_to_separator(self, separator: bytes = b":") -> bytes:
+        """
+        Read the WebTrack until the 1-byte `separator`.
+
+        Returns:
+            The block read excluding the separator.
+        """
+        c = self.webtrack.read(1)
+        arr_bytes = bytearray([c[0]])
+        while c != separator:
+            c = self.webtrack.read(1)
+            arr_bytes.append(c[0])
+        return bytes(arr_bytes[:-1])
+
+    def _read_format_information(self) -> None:
+        """ Read the "Format Information" section of the WebTrack file. """
+        if self.webtrack.tell() > 0:
+            self.webtrack.seek(0)
+        self.format_name = self._read_up_to_separator()
+        self.format_version = self._read_up_to_separator()
 
     def _write_segment_headers(self) -> None:
         """ Write the "Segment Headers" section of the WebTrack file. """

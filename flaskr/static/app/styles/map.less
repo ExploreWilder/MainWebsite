@@ -66,3 +66,13 @@
 #menuLayers {
     display: none;
 }
+
+#gpxInfo {
+    .card-body {
+        max-height: calc(100vh - (2 * @nav-bar-height + 1.5em + 6.5em));
+        overflow-y: auto;
+    }
+    #elevation-chart-container {
+        margin-bottom: 1rem;
+    }
+}

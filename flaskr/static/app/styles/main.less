@@ -92,6 +92,54 @@
     font-family: "TitleFont";
     font-size: 1.3em;
     font-variant: small-caps !important;
+    .icon-support-me {
+        & i {
+            color: pink !important;
+        }
+        &:hover i {
+            animation-name: animate-heart;
+            animation-duration: 2s;
+            animation-iteration-count: 1;
+            animation-timing-function: ease;
+        }
+    }
+}
+
+@-webkit-keyframes animate-heart {
+    0% {
+        font-size: 1em;
+        padding: 0;
+    }
+    10% {
+        font-size: 0.6em;
+        padding: 0 0.2em;
+    }
+    20% {
+        font-size: 1em;
+        padding: 0;
+    }
+    100% {
+        font-size: 1em;
+    }
+}
+
+/* do not merge with the similar block just above */
+@keyframes animate-heart {
+    0% {
+        font-size: 1em;
+        padding: 0;
+    }
+    10% {
+        font-size: 0.6em;
+        padding: 0 0.2em;
+    }
+    20% {
+        font-size: 1em;
+        padding: 0;
+    }
+    100% {
+        font-size: 1em;
+    }
 }
 
 .navbar-brand {
@@ -417,8 +465,8 @@ hr {
         }
     }
     &love {
-        animation-name: animate-heart;
-        animation-duration: 2s;
+        animation-name: animate-thumbs-up;
+        animation-duration: 5s;
         animation-iteration-count: infinite;
         animation-timing-function: ease;
     }
@@ -449,40 +497,34 @@ hr {
     }
 }
 
-@-webkit-keyframes animate-heart {
+@-webkit-keyframes animate-thumbs-up {
     0% {
-        font-size: 2rem;
-        padding: 0;
+        transform: rotate(0);
     }
-    10% {
-        font-size: 0.5rem;
-        padding: 0.75rem;
+    4% {
+        transform: rotate(-20deg);
     }
-    20% {
-        font-size: 2rem;
-        padding: 0;
+    8% {
+        transform: rotate(0);
     }
     100% {
-        font-size: 2rem;
+        transform: rotate(0);
     }
 }
 
 /* do not merge with the similar block just above */
-@keyframes animate-heart {
+@keyframes animate-thumbs-up {
     0% {
-        font-size: 2rem;
-        padding: 0;
+        transform: rotate(0);
     }
-    10% {
-        font-size: 0.5rem;
-        padding: 0.75rem;
+    4% {
+        transform: rotate(-20deg);
     }
-    20% {
-        font-size: 2rem;
-        padding: 0;
+    8% {
+        transform: rotate(0);
     }
     100% {
-        font-size: 2rem;
+        transform: rotate(0);
     }
 }
 
@@ -723,11 +765,11 @@ blockquote.tweetable {
         position: relative;
         img {
             width: 300px;
-            margin: 1rem;
+            margin: 16px; /* in pixels to ease the JavaScript computation */
             @media (max-width: 768px) {
                 /* smaller thumbnail to force the smartphone user to click (for accurate statistics) */
                 width: 150px;
-                margin: 0.5rem;
+                margin: 8px; /* in pixels to ease the JavaScript computation */
             }
             border-radius: 5px;
         }

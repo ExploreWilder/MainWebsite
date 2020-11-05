@@ -47,7 +47,7 @@ help:
 	@echo -e "$V make ssh -----------→ connect to the server with SSH.                                        $V"
 	@echo -e "$V make py-update -----→ update pip and all Python dependencies (dev+prod).                     $V"
 	@echo -e "$V make js-update -----→ update all JavaScript dependencies (dev+prod), and run 'make dist'.    $V"
-	@echo -e "$V make touch-books ---→ touch .md files in the books shelf to force the future update.         $V"
+	@echo -e "$V make touch-books ---→ force update the Markdown stories and static maps.                     $V"
 	@echo -e "\033[0;36m\`~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'$B"
 	@echo -e "\nAny trouble? 🤔 Please raise an issue on GitHub: ${GIT_REPO}\n"
 
@@ -159,3 +159,4 @@ js-update:
 
 touch-books:
 	@find books/ -type f -name "*.md" -exec touch {} +
+	@find books/ -type f -name "*.gpx_static_map.*" -exec rm {} +

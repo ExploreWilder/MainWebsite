@@ -1,5 +1,4 @@
 git+https://github.com/maxcountryman/flask-seasurf.git
-git+https://github.com/ExploreWilder/mdx_sections.git
 wheel
 Flask
 Pillow

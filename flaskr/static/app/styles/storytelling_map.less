@@ -34,6 +34,8 @@
 
 @import "defines";
 
+@trigger-lg-sm-view: 1100px;
+
 body.loading-storytelling-map {
     overflow-y: hidden !important;
     cursor: wait;
@@ -123,7 +125,7 @@ body.loading-storytelling-map {
             user-select: all;
         }
     }
-    @media (max-width: 1100px) {
+    @media (max-width: @trigger-lg-sm-view) {
         #storytelling-map-features {
             width: 70vw;
             margin: 0 auto;
@@ -186,6 +188,9 @@ body.loading-storytelling-map {
             .panorama {
                 width: 96vw;
                 margin-left: calc(-60vw + -50px);
+                @media (max-width: @trigger-lg-sm-view) {
+                    margin-left: calc(-13vw + -50px);
+                }
             }
             .group-info-track {
                 background-color: @body-background;
