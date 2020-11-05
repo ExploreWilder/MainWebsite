@@ -420,7 +420,7 @@ class BookProcessor:
         self.markdown = markdown.Markdown(
             extensions=app.config["MD_EXT"]
             + [
-                "mdx_sections",
+                OutlineExtension(),
                 ButtonMarkdownExtension(),
                 CustomFootnoteExtension(),
                 FigureExtension(src_path=self.path_to_book_dir),

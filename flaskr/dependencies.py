@@ -65,7 +65,6 @@ from urllib.parse import unquote_plus
 import click
 import exifread
 import markdown
-import mdx_sections
 import pymysql
 import requests
 import sentry_sdk
@@ -98,4 +97,5 @@ from werkzeug.local import LocalProxy
 from werkzeug.utils import secure_filename
 
 from .mdx_figure import FigureExtension
+from .mdx_sections import OutlineExtension
 from .typing import *

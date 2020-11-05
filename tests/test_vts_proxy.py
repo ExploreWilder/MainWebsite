@@ -31,6 +31,7 @@
 import os
 
 import pytest
+from flask import session
 
 from flaskr import utils
 from flaskr import vts_proxy
@@ -76,11 +77,10 @@ def test_otm(client):
         "/map/vts_proxy/world/gebco/flat/1/0/0.jpeg",
         "/map/vts_proxy/eumetsat/meteosat_iodc_mpe/1/0/0.png",
         "/map/vts_proxy/eumetsat/meteosat_0deg_h0b3/1/0/0.png",
-        "/map/vts_proxy/world/satellite/bing/3/3/5.jpeg",
     ),
 )
 def test_vts_proxy_link_ok(client, path):
-    """ Ckeck internal links availability. """
+    """ Check internal links availability. """
     rv = client.get(path)
     assert rv.status_code == 200
 
@@ -111,3 +111,15 @@ def test_vts_proxy_bad_link(client, path):
     """ Ckeck the links inavailability. """
     rv = client.get(path)
     assert rv.status_code == 404
+
+
+def test_vts_proxy_bing_session_ok(client):
+    """ Check the Bing map session. """
+    with client:
+        rv = client.get("/map/vts_proxy/world/satellite/bing/3/2/5.jpeg")
+        assert rv.status_code == 200
+        current_bing_session = session["BingImageryMetadata"]
+        assert current_bing_session[0].startswith("https://")
+        rv = client.get("/map/vts_proxy/world/satellite/bing/3/3/5.jpeg")
+        assert rv.status_code == 200
+        assert current_bing_session == session["BingImageryMetadata"]

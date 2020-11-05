@@ -1479,13 +1479,6 @@ class toc {
 
         /** Used for scroll event throttling. */
         this.scroll_timeout = undefined;
-
-        // move the section id into a created div that will become the anchor
-        $("#content-book .section").prepend(function () {
-            var id = $(this).attr("id");
-            $(this).removeAttr("id");
-            return $("<div></div>").attr("id", id).addClass("title-anchor");
-        });
     }
 
     /**
@@ -1525,7 +1518,7 @@ class toc {
      */
     animate() {
         var my_toc = this;
-        $("#content-book .title-anchor").each(function () {
+        $("#content-book section div.anchor").each(function () {
             return my_toc.get_elem($(this));
         });
         if (typeof this.scroll_timeout !== "number") {

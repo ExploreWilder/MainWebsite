@@ -138,13 +138,13 @@ def test_static_map_markdown_extension(app) -> None:
             / app.config["MAPBOX_STATIC_IMAGES"]["width"]
         )
         book_id = 42
+        book_url = "super_story"
         gpx = "Great Hike"
         country_code = "nz"
         md = markdown.Markdown(
             extensions=[
                 StaticMapMarkdownExtension(
-                    map_height=map_height,
-                    book_id=book_id,
+                    map_height=map_height, book_id=book_id, book_url=book_url
                 ),
             ]
         )
@@ -156,6 +156,7 @@ def test_static_map_markdown_extension(app) -> None:
                     "clickable_static_map.html",
                     image_height=map_height,
                     book_id=book_id,
+                    book_url=book_url,
                     gpx_file=gpx.replace(" ", "_"),
                     gpx_title=gpx,
                     country_code=country_code,

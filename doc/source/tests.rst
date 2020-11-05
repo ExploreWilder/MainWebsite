@@ -73,6 +73,14 @@ Figure Markdown Extension
     :undoc-members:
     :show-inheritance:
 
+Sections Markdown Extension
+---------------------------
+
+.. automodule:: tests.test_mdx_sections
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 Restricted Access
 -----------------
 
