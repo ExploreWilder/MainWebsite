@@ -435,7 +435,7 @@ def download_bing_metadata(
     except Exception as err:
         raise Exception("Missing resources from the metadata") from err
 
-    return (image_url.replace("http://", "https://"), subdomains)
+    return image_url.replace("http://", "https://"), subdomains
 
 
 @vts_proxy_app.route(

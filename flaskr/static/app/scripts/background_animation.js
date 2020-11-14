@@ -105,7 +105,7 @@ class BackgroundAnimation {
      * Configure the color change events in the about page.
      */
     scroll_config() {
-        var scroller_about = scrollama();
+        let scroller_about = scrollama();
         scroller_about
             .setup({
                 step: "#scroll-about-page .step",
@@ -175,8 +175,8 @@ class BackgroundAnimation {
      * Display the downloaded background with a background color transition (white to image).
      */
     display_background() {
-        var opacity = 1; // start with a white background
-        var opacity_interval = setInterval(() => {
+        let opacity = 1; // start with a white background
+        let opacity_interval = setInterval(() => {
             opacity -= this.#opacity_interval_inc;
             $("#inner-bg-body").css(
                 "background-color",

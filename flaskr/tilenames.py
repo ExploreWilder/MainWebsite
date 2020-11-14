@@ -81,13 +81,13 @@ def latlon2xy(lat: float, lon: float, z: int) -> Tuple[float, float]:
     """
     n = numTiles(z)
     x, y = latlon2relativeXY(lat, lon)
-    return (n * x, n * y)
+    return n * x, n * y
 
 
 def tileXY(lat: float, lon: float, z: int) -> Tuple[int, int]:
     """ Same as latlon2xy() with a cast to int. """
     x, y = latlon2xy(lat, lon, z)
-    return (int(x), int(y))
+    return int(x), int(y)
 
 
 def xy2latlon(x: int, y: int, z: int) -> Tuple[float, float]:
@@ -106,7 +106,7 @@ def xy2latlon(x: int, y: int, z: int) -> Tuple[float, float]:
     relY = y / n
     lat = mercatorToLat(mod_math.pi * (1 - 2 * relY))
     lon = -180.0 + 360.0 * x / n
-    return (lat, lon)
+    return lat, lon
 
 
 def latEdges(y: int, z: int) -> Tuple[float, float]:
@@ -116,7 +116,7 @@ def latEdges(y: int, z: int) -> Tuple[float, float]:
     relY2 = relY1 + unit
     lat1 = mercatorToLat(mod_math.pi * (1 - 2 * relY1))
     lat2 = mercatorToLat(mod_math.pi * (1 - 2 * relY2))
-    return (lat1, lat2)
+    return lat1, lat2
 
 
 def lonEdges(x: int, z: int) -> Tuple[float, float]:
@@ -124,7 +124,7 @@ def lonEdges(x: int, z: int) -> Tuple[float, float]:
     unit = 360 / n
     lon1 = -180 + x * unit
     lon2 = lon1 + unit
-    return (lon1, lon2)
+    return lon1, lon2
 
 
 def tileLatLonEdges(x: int, y: int, z: int) -> Tuple[float, float, float, float]:
@@ -145,7 +145,7 @@ def tileLatLonEdges(x: int, y: int, z: int) -> Tuple[float, float, float, float]
     """
     lat1, lat2 = latEdges(y, z)
     lon1, lon2 = lonEdges(x, z)
-    return (lat2, lon1, lat1, lon2)
+    return lat2, lon1, lat1, lon2
 
 
 def mercatorToLat(mercatorY: float) -> float:

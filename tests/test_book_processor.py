@@ -129,6 +129,25 @@ def test_button_markdown_extension(data) -> None:
     assert produced_html == expected_html
 
 
+def elements_equal(e1, e2):
+    """
+    Compare two XML trees.
+    Based on:
+    https://stackoverflow.com/questions/7905380/testing-equivalence-of-xml-etree-elementtree
+    """
+    if e1.tag != e2.tag:
+        return False
+    if e1.text != e2.text:
+        return False
+    if e1.tail != e2.tail:
+        return False
+    if e1.attrib != e2.attrib:
+        return False
+    if len(e1) != len(e2):
+        return False
+    return all(elements_equal(c1, c2) for c1, c2 in zip(e1, e2))
+
+
 def test_static_map_markdown_extension(app) -> None:
     """ Test the static map Markdown extension. """
     with app.app_context():
@@ -148,22 +167,24 @@ def test_static_map_markdown_extension(app) -> None:
                 ),
             ]
         )
-        produced_html = md.convert("[" + gpx + "](~track/" + country_code + "~)")
+        produced_html = eTree.fromstring(
+            md.convert("[" + gpx + "](~track/" + country_code + "~)")
+        )
         # process the template in the same way as the extension:
-        expected_html = eTree.tostring(
-            eTree.fromstring(
-                render_template(
-                    "clickable_static_map.html",
-                    image_height=map_height,
-                    book_id=book_id,
-                    book_url=book_url,
-                    gpx_file=gpx.replace(" ", "_"),
-                    gpx_title=gpx,
-                    country_code=country_code,
-                )
+        expected_html = eTree.fromstring(
+            "<p>\n"
+            + render_template(
+                "clickable_static_map.html",
+                image_height=map_height,
+                book_id=book_id,
+                book_url=book_url,
+                gpx_file=gpx.replace(" ", "_"),
+                gpx_title=gpx,
+                country_code=country_code,
             )
-        ).decode()
-        assert produced_html == "<p>\n" + expected_html + "\n</p>"
+            + "\n</p>"
+        )
+        assert elements_equal(produced_html, expected_html)
 
 
 def test_tweetable(app) -> None:

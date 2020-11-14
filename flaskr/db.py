@@ -62,6 +62,15 @@ def get_db():
                     )
                 )
                 g.db.commit()
+
+                # reconnect with the new database:
+                g.db.close()
+                g.db = pymysql.connect(
+                    current_app.config["MYSQL_DATABASE_HOST"],
+                    current_app.config["MYSQL_DATABASE_USER"],
+                    current_app.config["MYSQL_DATABASE_PASSWORD"],
+                    current_app.config["MYSQL_DATABASE_DB"],
+                )
             else:
                 print("MySQL error %d: %s" % (int(err.args[0]), err.args[1]))
 

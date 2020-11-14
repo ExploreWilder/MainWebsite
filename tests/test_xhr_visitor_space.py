@@ -397,7 +397,7 @@ def test_log_visit_photo(client, auth):
         emotion = "love"
         rv = client.post("/share_emotion_photo", data=dict(emotion=emotion))
         assert b"Thank you" in rv.data
-        assert not "last_visit_photo_id" in session
+        assert "last_visit_photo_id" not in session
         cursor = get_db().cursor()
         cursor.execute(
             """SELECT element_id
@@ -488,7 +488,7 @@ def test_subscribe_newsletter(client):
             WHERE member_id=1"""
         )
         data = cursor.fetchone()
-        assert data[0] != "" and data[0] != None
+        assert data[0] != "" and data[0] is not None
 
 
 def test_contact(client):

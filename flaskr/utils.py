@@ -53,7 +53,7 @@ def secure_decode_query_string(query_str: bytes) -> str:
     a Cross Site Scripting attack.
 
     Args:
-        s (ByteString): Basically request.query_string, which is the URL parameters as raw bytestring.
+        query_str (ByteString): Basically request.query_string, which is the URL parameters as raw bytestring.
 
     Returns:
         str: Should be the same string utf-8 decoded if there is no attack.
@@ -69,7 +69,7 @@ def current_year() -> str:
     """
     Returns the current year in a 2-digit format.
 
-    Exemple:
+    Example:
         "19" if the current year is 2019.
     """
     return str(datetime.datetime.now().year)[2:]
@@ -83,7 +83,7 @@ def anonymize_ip(real_ip: str) -> str:
         It is a good step but it may be possible to find out the physical address
         with some efforts.
 
-    Exemple:
+    Example:
         If the input is "595.42.122.983", the output is "595.42.122.0".
 
     Raises:
@@ -243,9 +243,9 @@ def file_extension(filename: str, file_type: str = "photo") -> str:
     """
     if "." in filename:
         ext = filename.rsplit(".", 1)[1].lower()
-        if file_type == "photo" and ext in set(["png", "jpg", "jpeg", "tiff", "tif"]):
+        if file_type == "photo" and ext in {"png", "jpg", "jpeg", "tiff", "tif"}:
             return ext
-        if file_type == "book" and ext in set(["md", "pdf", "json"]):
+        if file_type == "book" and ext in {"md", "pdf", "json"}:
             return ext
         if file_type == "any":
             return ext
@@ -497,7 +497,7 @@ def get_image_exif(path: str) -> Tuple:
             iso = int(str(tags["EXIF ISOSpeedRatings"]))
         else:
             iso = None
-        return (date_taken, focal_length_35mm, exposure_time_s, f_number, iso)
+        return date_taken, focal_length_35mm, exposure_time_s, f_number, iso
 
 
 def friendly_datetime(ugly_datetime: str) -> str:
@@ -505,15 +505,15 @@ def friendly_datetime(ugly_datetime: str) -> str:
     Format `ugly_datetime` in a more logical way.
 
     Args:
-        ugly_datetime (str): Formated to ``%Y-%m-%d %H:%M:%S``
+        ugly_datetime (str): Formatted to ``%Y-%m-%d %H:%M:%S``
 
     Returns:
         str: For example: `early morning, May 2018`
     """
-    formated_datetime = datetime.datetime.strptime(
+    formatted_datetime = datetime.datetime.strptime(
         str(ugly_datetime), "%Y-%m-%d %H:%M:%S"
     )
-    hour = int(datetime.datetime.strftime(formated_datetime, "%H"))
+    hour = int(datetime.datetime.strftime(formatted_datetime, "%H"))
     if hour < 5:
         h_time = "overnight"
     elif hour < 8:
@@ -530,7 +530,7 @@ def friendly_datetime(ugly_datetime: str) -> str:
         h_time = "the evening"
     else:
         h_time = "overnight"
-    month_year = datetime.datetime.strftime(formated_datetime, "%B %Y")
+    month_year = datetime.datetime.strftime(formatted_datetime, "%B %Y")
     return h_time + ", " + month_year
 
 

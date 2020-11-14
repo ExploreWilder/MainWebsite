@@ -101,7 +101,7 @@ def add_audit_log(
 
     Args:
         member_id (int): The member ID (refer to the `members` table).
-        ip (str): Full IP address.
+        ip_addr (str): Full IP address.
         event_description (str): The event type such as:
             * logged_in (default): The member successfully logged in,
             * password_changed: The member successfully changed his password,
@@ -125,6 +125,7 @@ def fetch_audit_log(member_id: int, event_description: str = "") -> Union[Tuple,
     Get the full list of (time, IP address) tuple from last to first.
 
     Args:
+        member_id (int): The member ID (refer to the `members` table).
         event_description (str): The event type or None to select types.
 
     Returns:
@@ -301,8 +302,8 @@ def shelf() -> Any:
         )
     )
     data_shelf = cursor.fetchall()
-    formated_shelf = []
-    for book in data_shelf:  # put the JPEG preview into a blured SVG
+    formatted_shelf = []
+    for book in data_shelf:  # put the JPEG preview into a blurred SVG
         book_list = list(book)
         try:
             card_size = get_image_size(
@@ -320,10 +321,10 @@ def shelf() -> Any:
                     data_jpeg=book[9],
                 )
             )
-        formated_shelf.append(tuple(book_list))
+        formatted_shelf.append(tuple(book_list))
     return render_template(
         "shelf.html",
-        shelf=formated_shelf,
+        shelf=formatted_shelf,
         default_name=session["username"] if "username" in session else "",
         default_email=session["email"] if "email" in session else "",
         is_logged="access_level" in session,
@@ -990,7 +991,7 @@ def subscribe_newsletter_form() -> FlaskResponse:
     Subscribe the visitor to the newsletter members list.
     The feedback is intentionally lacking to avoid data disclosure.
     """
-    if not "email" in request.form:
+    if "email" not in request.form:
         return basic_json(False, "Missing data!")
     email = remove_whitespaces(escape(request.form["email"]))
     if not email_is_valid(email):
@@ -1063,7 +1064,7 @@ def fetch_photos() -> FlaskResponse:
     """
     XHR procedure sending photos metadata according to the access level.
     Photo title and description are empty if the user is not allowed to read them.
-    Notice that the `time` field (`date_taken` in the database) is formated server side.
+    Notice that the `time` field (`date_taken` in the database) is formatted server side.
 
     Raises:
         404: if the request is not POST.
@@ -1091,7 +1092,7 @@ def fetch_photos() -> FlaskResponse:
         )
     )
     data = cursor.fetchall()
-    formated_data = []
+    formatted_data = []
     for row in data:
         photo = dict(
             zip(
@@ -1117,8 +1118,8 @@ def fetch_photos() -> FlaskResponse:
         )
         if photo["time"] is not None:
             photo["time"] = friendly_datetime(photo["time"])
-        formated_data.append(photo)
-    return jsonify(formated_data)
+        formatted_data.append(photo)
+    return jsonify(formatted_data)
 
 
 @visitor_app.route("/share_emotion_photo", methods=("POST",))
@@ -1166,15 +1167,15 @@ def share_emotion_book() -> FlaskResponse:
     Raises:
         404: if the request is not POST.
     """
-    if not "emotion" in request.form:
+    if "emotion" not in request.form:
         return basic_json(False, "Emotion required!")
     emotion = escape(request.form["emotion"])
-    if not emotion in current_app.config["EMOTIONS"]:
+    if emotion not in current_app.config["EMOTIONS"]:
         return basic_json(False, "Invalid emotion!")
 
     # check book id
     json_error = "Bad request, incorrect identifier!"
-    if not "book_id" in request.form:
+    if "book_id" not in request.form:
         return basic_json(False, json_error)
     book_id = int(request.form["book_id"])
     if book_id < 1:
@@ -1309,7 +1310,7 @@ def login(result: str = "", status: bool = True) -> Any:
                         result = "Wrong email address or password!"
                         status = False
                     else:  # success
-                        # allow consecutive successfull connections:
+                        # allow consecutive successful connections:
                         session.pop("last_attempt", None)
 
                         # log before to give access:
@@ -1466,14 +1467,14 @@ def log_visit_photo() -> Any:
     XHR procedure logging visits. The `visitor_id` cookie is used but not
     required by ``share_emotion_photo()`` which uses the `last_visit_photo_id`
     session. The `visitor_id` cookie is refreshed at every call and will be
-    persistant to the browser if the cookie `cookies_forever` exists and is set
+    persistent to the browser if the cookie `cookies_forever` exists and is set
     to "true".
 
     Raises:
         404: if the request is not POST.
     """
     # check photo id
-    if not "photo_id" in request.form:
+    if "photo_id" not in request.form:
         return "Bad request, missing identifier!"
     photo_id = int(request.form["photo_id"])
     json_error = "Bad request, incorrect identifier!"

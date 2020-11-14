@@ -5,8 +5,6 @@ PYLINT_FLAGS =--disable=unused-wildcard-import,wildcard-import,line-too-long,R08
 SPHINX_FLAGS =SPHINXBUILD="../${PYTHON} -m sphinx"
 SENTRY_CLI   =./flaskr/static/node_modules/.bin/sentry-cli
 GIT_VERSION  =`${SENTRY_CLI} releases propose-version`
-V            =\033[0;36m|\033[0m
-B            =\033[0m
 PY_REQ       =require_dev.txt requirements.txt
 CONFIG_FILE :=Makefile.config
 
@@ -21,35 +19,40 @@ include $(CONFIG_FILE)
 
 .DEFAULT: help
 help:
-	@echo -e "\n\033[1;32mWelcome to the ExploreWilder project!$B 🤠\n"
-	@echo -e "What would you like to do?\n"
-	@echo -e "\033[0;36m,~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.$B"
-	@echo -e "$V make mypy ----------→ check type annotations with mypy.                                      $V"
-	@echo -e "$V make pylint --------→ lint with pylint.                                                      $V"
-	@echo -e "$V make check ---------→ check type annotations with mypy and lint with pylint.                 $V"
-	@echo -e "$V make isort ---------→ sort Python imports.                                                   $V"
-	@echo -e "$V make black ---------→ format the Python project.                                             $V"
-	@echo -e "$V make prettier ------→ format the JavaScript project.                                         $V"
-	@echo -e "$V make format --------→ sort Python imports and format the Python & JavaScript projects.       $V"
-	@echo -e "$V make test ----------→ test the Python project with pytest.                                   $V"
-	@echo -e "$V make coverage ------→ test coverage of the Python project.                                   $V"
-	@echo -e "$V make run -----------→ run the app on http://127.0.0.1:5000/ (press CTRL+C to quit).          $V"
-	@echo -e "$V make doc -----------→ generate the documentation with Sphinx.                                $V"
-	@echo -e "$V make doc-checklinks → generate and check links of the documentation.                         $V"
-	@echo -e "$V make cloc ----------→ count the lines of code.                                               $V"
-	@echo -e "$V make gulp ----------→ run the Gulp daemon (press CTRL+C to quit).                            $V"
-	@echo -e "$V make dist ----------→ build all scripts with Gulp and run the daemon (press CTRL+C to quit). $V"
-	@echo -e "$V make git-hash ------→ print out the Git SHA1 of the last commit.                             $V"
-	@echo -e "$V make commit --------→ format, check, test, generate the documentation, and finally commit.   $V"
-	@echo -e "$V make push ----------→ push the local repo and release the commit to Sentry.                  $V"
-	@echo -e "$V make push-force ----→ force push the local repo and release the commit to Sentry.            $V"
-	@echo -e "$V make reset ---------→ initialise the database.                                               $V"
-	@echo -e "$V make ssh -----------→ connect to the server with SSH.                                        $V"
-	@echo -e "$V make py-update -----→ update pip and all Python dependencies (dev+prod).                     $V"
-	@echo -e "$V make js-update -----→ update all JavaScript dependencies (dev+prod), and run 'make dist'.    $V"
-	@echo -e "$V make touch-books ---→ force update the Markdown stories and static maps.                     $V"
-	@echo -e "\033[0;36m\`~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'$B"
-	@echo -e "\nAny trouble? 🤔 Please raise an issue on GitHub: ${GIT_REPO}\n"
+	@echo ""
+	@echo "Welcome to the ExploreWilder project!$B 🤠"
+	@echo ""
+	@echo "What would you like to do?"
+	@echo ""
+	@echo ",~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~."
+	@echo "| make mypy ----------→ check type annotations with mypy.                                      |"
+	@echo "| make pylint --------→ lint with pylint.                                                      |"
+	@echo "| make check ---------→ check type annotations with mypy and lint with pylint.                 |"
+	@echo "| make isort ---------→ sort Python imports.                                                   |"
+	@echo "| make black ---------→ format the Python project.                                             |"
+	@echo "| make prettier ------→ format the JavaScript project.                                         |"
+	@echo "| make format --------→ sort Python imports and format the Python & JavaScript projects.       |"
+	@echo "| make test ----------→ test the Python project with pytest.                                   |"
+	@echo "| make coverage ------→ test coverage of the Python project.                                   |"
+	@echo "| make run -----------→ run the app on http://127.0.0.1:5000/ (press CTRL+C to quit).          |"
+	@echo "| make doc -----------→ generate the documentation with Sphinx.                                |"
+	@echo "| make doc-checklinks → generate and check links of the documentation.                         |"
+	@echo "| make cloc ----------→ count the lines of code.                                               |"
+	@echo "| make gulp ----------→ run the Gulp daemon (press CTRL+C to quit).                            |"
+	@echo "| make dist ----------→ build all scripts with Gulp and run the daemon (press CTRL+C to quit). |"
+	@echo "| make git-hash ------→ print out the Git SHA1 of the last commit.                             |"
+	@echo "| make commit --------→ format, check, test, generate the documentation, and finally commit.   |"
+	@echo "| make push ----------→ push the local repo and release the commit to Sentry.                  |"
+	@echo "| make push-force ----→ force push the local repo and release the commit to Sentry.            |"
+	@echo "| make reset ---------→ initialise the database.                                               |"
+	@echo "| make ssh -----------→ connect to the server with SSH.                                        |"
+	@echo "| make py-update -----→ update pip and all Python dependencies (dev+prod).                     |"
+	@echo "| make js-update -----→ update all JavaScript dependencies (dev+prod), and run 'make dist'.    |"
+	@echo "| make touch-books ---→ force update the Markdown stories and static maps.                     |"
+	@echo "'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'"
+	@echo ""
+	@echo "Any trouble? 🤔 Please raise an issue on GitHub: ${GIT_REPO}"
+	@echo ""
 
 venv: ${VENV_NAME}/bin/activate
 
@@ -123,7 +126,7 @@ dist:
 	gulp build --no-color
 
 git-hash:
-	@echo -e "\033[1;32mRelease version: ${GIT_VERSION}$B 🚀"
+	@echo "Release version: ${GIT_VERSION} 🚀"
 
 # signed commit
 commit: format check coverage doc

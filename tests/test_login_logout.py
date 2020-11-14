@@ -92,7 +92,7 @@ def test_successful_login_logout(client, auth, app):
             "SELECT member_id FROM members_audit_log WHERE event_description='logged_in'"
         )
         entry = cursor.fetchone()
-        assert entry[0] == 2  # successfull connection logged
+        assert entry[0] == 2  # successful connection logged
 
     # test logout:
     rv = auth.logout()

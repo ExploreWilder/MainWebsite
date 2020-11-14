@@ -1,3 +1,7 @@
+git+https://github.com/pallets/secure-cookie.git
+git+https://github.com/mattupstate/flask-mail.git
+git+https://github.com/tkrajina/gpxpy.git
+git+https://github.com/ExploreWilder/srtm.py@EarthDataLogin
 git+https://github.com/maxcountryman/flask-seasurf.git
 wheel
 Flask

@@ -108,7 +108,7 @@ def test_vts_proxy_bad_requests(client, path):
 
 @pytest.mark.parametrize("path", ("/map/vts_proxy/fr/underground/1/0/0",))
 def test_vts_proxy_bad_link(client, path):
-    """ Ckeck the links inavailability. """
+    """ Check the links unavailability. """
     rv = client.get(path)
     assert rv.status_code == 404
 

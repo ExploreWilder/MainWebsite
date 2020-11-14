@@ -229,7 +229,7 @@ class WebTrack:
                 self._w_int16(waypoint[3])
             else:  # without elevation
                 self.webtrack.write(b"F")
-            if waypoint[4]:  # symbole
+            if waypoint[4]:  # symbol
                 self._w_str(waypoint[4])
             self._w_sep_wpt()
             if waypoint[5]:  # name

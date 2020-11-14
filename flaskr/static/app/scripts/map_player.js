@@ -68,9 +68,10 @@ var partialRedraw = false;
 
 /**
  * Add or move the position pointed by the user on the map along the track.
+ * @param tooltip_item - The tooltip item.
+ * @param data - Not used but required by the function call. Could be used in the future.
  */
 function update_hiker_pos(tooltip_item, data) {
-    var el = data.datasets[tooltip_item.datasetIndex].data[tooltip_item.index];
     pathDistance = tooltip_item.xLabel * 1000;
     linePoint = lineGeometry.getPathPoint(pathDistance);
     partialRedraw = false;

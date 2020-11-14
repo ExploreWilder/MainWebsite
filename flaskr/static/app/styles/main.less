@@ -95,50 +95,11 @@
     .icon-support-me {
         & i {
             color: pink !important;
+            transition: color 0.3s;
         }
         &:hover i {
-            animation-name: animate-heart;
-            animation-duration: 2s;
-            animation-iteration-count: 1;
-            animation-timing-function: ease;
+            color: #d01111 !important;
         }
-    }
-}
-
-@-webkit-keyframes animate-heart {
-    0% {
-        font-size: 1em;
-        padding: 0;
-    }
-    10% {
-        font-size: 0.6em;
-        padding: 0 0.2em;
-    }
-    20% {
-        font-size: 1em;
-        padding: 0;
-    }
-    100% {
-        font-size: 1em;
-    }
-}
-
-/* do not merge with the similar block just above */
-@keyframes animate-heart {
-    0% {
-        font-size: 1em;
-        padding: 0;
-    }
-    10% {
-        font-size: 0.6em;
-        padding: 0 0.2em;
-    }
-    20% {
-        font-size: 1em;
-        padding: 0;
-    }
-    100% {
-        font-size: 1em;
     }
 }
 
@@ -175,7 +136,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        padding: 0rem 1rem !important;
+        padding: 0 1rem !important;
         .breadcrumb-item {
             line-height: 2;
             display: inline;
@@ -535,7 +496,7 @@ hr {
 
 #captcha-passcode {
     margin: 5px;
-    margin-top: 0px;
+    margin-top: 0;
 }
 
 #onclick-reload-captcha i:hover {
@@ -599,7 +560,7 @@ hr {
             }
         }
         input {
-            margin: 0px 5px;
+            margin: 0 5px;
             top: 2px;
             position: relative;
         }
@@ -642,7 +603,7 @@ hr {
 
 blockquote.tweetable {
     border-left: 6px solid #ccc;
-    padding: 0.5em 0em 0.5em 0.5em;
+    padding: 0.5em 0 0.5em 0.5em;
     quotes: "\201C";
     text-justify: none;
     &::before {

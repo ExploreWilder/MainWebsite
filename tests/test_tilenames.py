@@ -29,7 +29,7 @@
 #
 
 """
-Test conversions with an independant/3rd-party library:
+Test conversions with an independent/3rd-party library:
 mercantile by Mapbox: https://github.com/mapbox/mercantile
 """
 
@@ -50,9 +50,9 @@ def test_xy2latlon():
     """ Test conversion with up to 100 random positions for each zoom level (only one tile (0,0) at z=0). """
     for z in range(0, 15):
         num_tiles = 2 ** z
-        create_samples = lambda n_tiles: random.sample(
-            range(n_tiles), k=min(10, n_tiles)
-        )
+
+        def create_samples(n_tiles):
+            return random.sample(range(n_tiles), k=min(10, n_tiles))
         samples_x = create_samples(num_tiles)
         samples_y = create_samples(num_tiles)
         for x in samples_x:

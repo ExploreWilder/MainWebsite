@@ -34,14 +34,14 @@ import pytest
 @pytest.mark.parametrize(
     "path",
     (
-        ("/stories"),
-        ("/about"),
-        ("/captcha.png"),
-        ("/stories/locked.jpg"),
-        ("/sitemap.xml"),
+        "/stories",
+        "/about",
+        "/captcha.png",
+        "/stories/locked.jpg",
+        "/sitemap.xml",
     ),
 )
-def test_visitor_links_get(client, path):
+def test_visitor_links_get(files, client, path):
     """ Test pages not fetched otherwise. """
     rv = client.get(path)
     assert rv.status_code == 200

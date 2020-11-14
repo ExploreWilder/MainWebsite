@@ -21,25 +21,27 @@ Run as root:
 
 **Install Node.js & npm Packages**
 
-Run as root:
+The `latest LTS version <https://nodejs.org/en/download/>`_ is recommended. Therefore, update the version and execute the following commands as root:
 
 .. code-block:: none
 
-    VERSION=v12.16.1
-    DISTRO=linux-x64
+    echo 'VERSION=v14.15.0 && DISTRO=linux-x64 && export PATH=/usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin:$PATH' >> ~/.profile
+    . ~/.profile
     mkdir -p /usr/local/lib/nodejs
     wget https://nodejs.org/dist/$VERSION/node-$VERSION-$DISTRO.tar.xz
     tar -xJvf node-$VERSION-$DISTRO.tar.xz -C /usr/local/lib/nodejs
-    export PATH=/usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin:$PATH
-    . ~/.profile
     rm -f node-$VERSION-$DISTRO.tar.xz
     npm -g config set ignore-scripts true # don't run scripts as sudo
     npm install -g jsdoc gulp-cli @mapbox/togeojson
+
+In the step above, the *PATH* is exported for root, whereas the step below exports the *PATH* for the user.
 
 Run as user:
 
 .. code-block:: none
 
+    echo 'VERSION=v14.15.0 && DISTRO=linux-x64 && export PATH=/usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin:$PATH' >> ~/.profile
+    . ~/.profile
     git clone https://github.com/ExploreWilder/MainWebsite
     cd MainWebsite/flaskr/static/
     npm config set ignore-scripts false
@@ -53,7 +55,8 @@ Run as user:
 
     cd ../.. # go to MainWebsite
     pip3 install --user virtualenv
-    virtualenv -p /usr/bin/python3.7 venv
+    export PATH=~/.local/bin:$PATH
+    virtualenv -p /usr/bin/python3.8 venv
 
 More information about venv: `virtual environment <https://docs.python-guide.org/dev/virtualenvs/>`_.
 
@@ -65,28 +68,8 @@ Run as user:
 
     cd MainWebsite
     source venv/bin/activate
-    `pwd`/venv/python/python3 -m pip3 install --upgrade pip
+    `pwd`/venv/bin/python3 -m pip install --upgrade pip
     pip3 install -U setuptools
-    
-    git clone https://github.com/pallets/secure-cookie.git
-    cd secure-cookie
-    python3 setup.py install
-    cd -
-    
-    git clone https://github.com/mattupstate/flask-mail.git
-    cd flask-mail
-    python3 setup.py install
-    cd -
-    
-    git clone https://github.com/tkrajina/gpxpy.git
-    cd gpxpy
-    python3 setup.py install
-    cd -
-    
-    git clone -b EarthDataLogin --single-branch https://github.com/ExploreWilder/srtm.py
-    cd srtm.py
-    python3 setup.py install
-    cd -
     
     mkdir dkimpy
     cd dkimpy
@@ -98,6 +81,7 @@ Run as user:
     cd dkimpy-${dkim_version}
     python3 setup.py install --single-version-externally-managed --record=/dev/null
     cd ../..
+    rm -rf dkimpy
     
     pip3 install -r requirements.txt
     pip3 install -r require_dev.txt # for development only
@@ -108,7 +92,7 @@ Run as root:
 
 .. code-block:: none
 
-    mysql -u root -p
+    mysql -u root -p # then press Enter (empty password)
     mysql> USE mysql;
     mysql> UPDATE user SET plugin='mysql_native_password' WHERE User='root';
     mysql> FLUSH PRIVILEGES;
@@ -125,13 +109,13 @@ Run as user:
 .. code-block:: none
 
     cd MainWebsite
-    ./utils.sh init-db
-    # create directories required for tests:
-    cd flaskr
-    mkdir captchas
-    cd ..
-    mkdir books
-    mkdir photos
+    source venv/bin/activate
+    export FLASK_APP=flaskr
+    export FLASK_ENV=development
+    flask init-db # you should read "Success: Database initialized."
+    deactivate # quit venv (optional)
+    mkdir -v flaskr/captchas books photos otm_cache twitter_cache mastodon_cache # create directories required for tests
+    make dist # generate the static files
 
 On Fedora
 ^^^^^^^^^
@@ -172,7 +156,7 @@ Then create a new app:
 
 .. image:: _images/cpanel_create_python_app.png
 
-Then choose the latest Python version (I'm using 3.7.8) and the application root directory. Finally, enter the created venv, install the Python dependencies as detailed above, copy the app and data, setup your MySQL database.
+Then choose the latest Python version and the application root directory. Finally, enter into the created venv, install the Python dependencies as detailed above, copy the app and data, setup your MySQL database.
 
 Apache mod_deflate
 ^^^^^^^^^^^^^^^^^^

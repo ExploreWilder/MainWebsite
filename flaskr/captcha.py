@@ -114,8 +114,8 @@ class Captcha:  # pragma: no cover; the tester cannot see the CAPTCHA
         Generate the passcode and save into the session. Data in session are signed
         but just base64 encoded, i.e. clear text. Therefore, the captcha is hashed
         with a secret salt (simple encryption). Uses the 9 most significant bytes
-        of the SHA-256, which make a colision resistance of 36 bits.
-        The captcha works like a candom anyway, single use/try.
+        of the SHA-256, which make a collision resistance of 36 bits.
+        The captcha works like a condom anyway, single use/try.
         Do NOT call that function outside the class.
         """
         self.passcode = "".join(
@@ -144,7 +144,7 @@ class Captcha:  # pragma: no cover; the tester cannot see the CAPTCHA
         red = random_element()
         green = random_element()
         blue = min(max(3 * average - red - green, 0), 255)  # force to [0, 255]
-        return (int(red), int(green), int(blue))
+        return int(red), int(green), int(blue)
 
     def to_file(self) -> FlaskResponse:
         """

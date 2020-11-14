@@ -80,7 +80,7 @@ class Config:
     CAPTCHA_FOLDER: str = absolute_path("captchas")
     #: Salt used to hash some user exposed data.
     RANDOM_SALT: bytes = rb"UNDISCLOSED"
-    #: Path where all the photographies are located.
+    #: Path where all the photos are located.
     GALLERY_FOLDER: str = absolute_path("UNDISCLOSED")
     #: Path where all the books are located.
     SHELF_FOLDER: str = absolute_path("UNDISCLOSED")

@@ -1,5 +1,5 @@
 """
-Cache instanciation.
+Cache instantiation.
 Documentation:
 https://pythonhosted.org/Flask-Caching/
 """

@@ -126,6 +126,6 @@ def test_create_static_map(app):
     ),
 )
 def test_map_proxy_link_ok(client, path):
-    """ Ckeck the links availability. """
+    """ Check the links availability. """
     rv = client.get(path)
     assert rv.status_code == 200

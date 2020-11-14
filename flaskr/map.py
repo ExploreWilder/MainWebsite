@@ -341,6 +341,19 @@ def webtrack_file(book_id: int, gpx_name: str) -> FlaskResponse:
 
 
 def good_webtrack_version(file_path: str) -> bool:
+    """
+    Check that the WebTrack format version of `file_path` can
+    be handled by the WebTrack module. Only the file header is
+    checked in order to speed up the verification process.
+    A partially corrupted file may pass the test.
+
+    Args:
+        file_path (str): Path the the WebTrack file.
+
+    Returns:
+        False if the WebTrack module cannot handle the file.
+        True otherwise.
+    """
     webtrack = WebTrack()
     current_format = webtrack.get_format_information()
     file_format = webtrack.get_format_information(file_path)
@@ -433,10 +446,12 @@ def gpx_to_webtrack_with_elevation(
                     )
 
                     # statistics:
-                    if elevation_min > gps_curr_point.elevation:
-                        elevation_min = gps_curr_point.elevation
-                    if elevation_max < gps_curr_point.elevation:
-                        elevation_max = gps_curr_point.elevation
+                    if gps_curr_point.elevation is None:
+                        raise ValueError("Expected elevation to be known.")
+                    if elevation_min > gps_curr_point.elevation:  # type: ignore[operator]
+                        elevation_min = gps_curr_point.elevation  # type: ignore[assignment]
+                    if elevation_max < gps_curr_point.elevation:  # type: ignore[operator]
+                        elevation_max = gps_curr_point.elevation  # type: ignore[assignment]
                     if delta_h is None:
                         delta_h = gps_curr_point.elevation
                     else:

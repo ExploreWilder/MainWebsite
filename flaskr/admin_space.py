@@ -44,7 +44,7 @@ mysql = LocalProxy(get_db)
 def restricted_admin(view: Any) -> Any:
     """
     View decorator that redirects anonymous users to the 404-error page.
-    This must be before any precodure in this file even if ``is_admin()`` is used.
+    This must be before any procedure in this file even if ``is_admin()`` is used.
     That is to be sure that no one function has been missed.
     Also, do not forget to update the unit tests.
     """
@@ -69,7 +69,7 @@ def revoke_member() -> FlaskResponse:
     """
     if not is_admin():
         abort(404)  # pragma: no cover
-    if not "member_id" in request.form:
+    if "member_id" not in request.form:
         return basic_json(False, "Member identifier required!")
     cursor = mysql.cursor()
     member_id = int(request.form["member_id"])
@@ -100,7 +100,7 @@ def delete_member() -> FlaskResponse:
     """
     if not is_admin():
         abort(404)  # pragma: no cover
-    if not "member_id" in request.form:
+    if "member_id" not in request.form:
         return basic_json(False, "Member identifier required!")
     cursor = mysql.cursor()
     member_id = int(request.form["member_id"])
@@ -165,7 +165,7 @@ def change_access_level() -> FlaskResponse:
 @restricted_admin
 def members() -> Any:
     """
-    List all members with information about the last successfull connection.
+    List all members with information about the last successful connection.
 
     Raises:
         404: if the user is not admin.
@@ -209,7 +209,7 @@ def send_password_creation() -> FlaskResponse:
     """
     if not is_admin():
         abort(404)  # pragma: no cover
-    if not "member_id" in request.form:
+    if "member_id" not in request.form:
         return basic_json(False, "Missing data!")
     member_id = int(request.form["member_id"])
     cursor = mysql.cursor()
@@ -385,7 +385,7 @@ def xhr_add_photo() -> FlaskResponse:
     access_level = int(request.form["add-photo-access-level"])
     if not check_access_level_range(access_level):
         return basic_json(False, "Invalid access level!")
-    if not "add-photo-file" in request.files:
+    if "add-photo-file" not in request.files:
         return basic_json(False, "No file part!")
     file = request.files["add-photo-file"]
     if file.filename == "":
@@ -799,10 +799,10 @@ def manage_books() -> Any:
     # add the directory listing to each book
     shelf_as_list = list(shelf)
 
-    def get_files(pathname: str, ext: str) -> List:
+    def get_files(path_name: str, ext: str) -> List:
         reduced_path = [
             file
-            for file in glob.glob(pathname + "/*." + ext)
+            for file in glob.glob(path_name + "/*." + ext)
             if ".gpx_static_map." not in file
         ]
         return [path.split("/")[-1] for path in reduced_path]
@@ -1248,7 +1248,7 @@ def delete_photo() -> FlaskResponse:
     """
     if not is_admin():
         abort(404)  # pragma: no cover
-    if not "photo_id" in request.form:
+    if "photo_id" not in request.form:
         return basic_json(False, "Bad request, missing identifier!")
     photo_id = int(request.form["photo_id"])
     cursor = mysql.cursor()
@@ -1291,7 +1291,7 @@ def move_into_wastebasket() -> FlaskResponse:
     """
     if not is_admin():
         abort(404)  # pragma: no cover
-    if not "photo_filename" in request.form:
+    if "photo_filename" not in request.form:
         return basic_json(False, "Bad request, missing file name!")
     photo_filename = secure_filename(escape(request.form["photo_filename"]))
     photo_src = os.path.join(current_app.config["GALLERY_FOLDER"], photo_filename)

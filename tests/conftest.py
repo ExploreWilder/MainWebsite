@@ -50,7 +50,7 @@ def files():
         )
         directories = []
 
-        # Create the files refered by the database
+        # Create the files referred by the database
         cursor = db.get_db().cursor()
         cursor.execute(
             """SELECT thumbnail_src, photo_m_src, photo_l_src, raw_src
@@ -63,6 +63,14 @@ def files():
                     os.mknod(os.path.join("../photos", src))
                 except:
                     pass
+
+        # Create files in books - see test_links.py
+        try:
+            os.mknod(os.path.join("../books", "locked.jpg"))
+        except:
+            pass
+
+        # Create stories based on the testing database
         cursor.execute(
             """SELECT url, file_name
             FROM shelf"""
@@ -76,6 +84,7 @@ def files():
                 os.mknod(os.path.join("../books", book[0], book[1]))
             except:
                 pass
+
         # Create files in books - see test_restricted_access.py
         try:
             os.mknod(os.path.join("../books", "fifth_story", "test_image.jpg"))

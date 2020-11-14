@@ -1,0 +1,31 @@
+# npm stuff
+node_modules/
+package-lock.json
+
+# Python stuff
+__pycache__/
+venv/
+*.pyc
+
+# Generated stuff
+doc/build/
+doc/htmlcov/
+flaskr/static/dist*
+flaskr/captchas/
+flaskr/flask_cache/
+*_cache/
+
+# Private stuff
+flaskr/static/web_fonts/
+flaskr/secret_config.py
+books/
+photos/
+public_html/
+secret_content/
+wastebasket/
+Makefile.config
+utils.sh
+
+# All hidden stuff
+.*
+*~
