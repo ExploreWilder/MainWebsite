@@ -1157,6 +1157,79 @@ def share_emotion_photo() -> FlaskResponse:
     return basic_json(True, info)
 
 
+def generic_log(
+    element_type: str, element_id: int, emotion: str = "neutral"
+) -> FlaskResponse:
+    """
+    Handle the visitor ID, and update the database and the cookies
+    which are returned with an empty response.
+
+    Args:
+        element_type (str): 'gallery' or 'shelf'.
+        element_id (int): The book or photo ID.
+        emotion (str): The user emotion (default is 'neutral').
+
+    Returns:
+        FlaskResponse: An empty response with the updated cookies.
+    """
+    # manage visitor identifier
+    raw_cookie = request.cookies.get("visitor_data")
+
+    def bake():
+        # MySQL INT is 32-bit signed. Keep positive, so the 32nd bit is 0
+        return JSONSecureCookie(
+            {"id": secrets.randbits(31)}, current_app.config["COOKIE_SECRET_KEY"]
+        )
+
+    if not raw_cookie:  # create a new visitor identifier
+        visitor_data = bake()
+    else:
+        visitor_data = JSONSecureCookie.unserialize(
+            raw_cookie, current_app.config["COOKIE_SECRET_KEY"]
+        )
+        if "id" not in visitor_data:  # cookie compromised, bake a new one
+            visitor_data = bake()
+    visitor_id = int(visitor_data["id"])
+
+    # visitor's decision to accept or deny long-term cookies
+    cookies_forever = escape(request.cookies.get("cookies_forever", "false")) == "true"
+
+    # add a new entry into the database and update cookies
+    cursor = mysql.cursor()
+    cursor.execute(
+        """INSERT INTO visits(element_id, element_type, ip,
+        visitor_id, member_id, emotion)
+        VALUES ({element_id}, '{element_type}', INET6_ATON('{ip}'),
+        {visitor_id}, {member_id}, '{emotion}')""".format(
+            element_id=element_id,
+            element_type=element_type,
+            ip=anonymize_ip(request.remote_addr),
+            visitor_id=visitor_id,
+            member_id=int(session["member_id"]) if "member_id" in session else "NULL",
+            emotion=emotion,
+        )
+    )
+    mysql.commit()
+    if element_type == "shelf":
+        session["old_visit_id"] = cursor.lastrowid
+        session["last_visited_book_id"] = element_id
+    elif element_type == "gallery":
+        session["last_visit_photo_id"] = cursor.lastrowid
+    resp = make_response("")
+    resp.set_cookie(
+        "visitor_data",
+        visitor_data.serialize(),
+        httponly=True,
+        samesite="Strict",
+        secure=not current_app.config["DEBUG"],
+        max_age=(60 * 60 * 24 * 365) if cookies_forever else None,
+        expires=datetime.datetime.fromtimestamp(2 ** 31 - 1)
+        if cookies_forever
+        else None,
+    )
+    return resp
+
+
 @visitor_app.route("/share_emotion_book", methods=("POST",))
 def share_emotion_book() -> FlaskResponse:
     """
@@ -1192,62 +1265,7 @@ def share_emotion_book() -> FlaskResponse:
     cursor.fetchone()
     if cursor.rowcount == 0:
         return basic_json(False, json_error)
-
-    # manage visitor identifier
-    raw_cookie = request.cookies.get("visitor_data")
-
-    def bake() -> JSONSecureCookie:
-        # MySQL INT is 32-bit signed. Keep positive, so the 32nd bit is 0
-        return JSONSecureCookie(
-            {"id": secrets.randbits(31)}, current_app.config["COOKIE_SECRET_KEY"]
-        )
-
-    if not raw_cookie:  # create a new visitor identifier
-        visitor_data = bake()
-    else:
-        visitor_data = JSONSecureCookie.unserialize(
-            raw_cookie, current_app.config["COOKIE_SECRET_KEY"]
-        )
-        if "id" not in visitor_data:  # cookie compromised, bake a new one
-            visitor_data = bake()
-    visitor_id = int(visitor_data["id"])
-
-    # visitor's decision to accept or deny long-term cookies
-    cookies_forever = escape(request.cookies.get("cookies_forever", "false")) == "true"
-
-    # add a new entry into the database and update cookies
-    cursor.execute(
-        """INSERT INTO visits(element_id, element_type, ip,
-        visitor_id, member_id, emotion)
-        VALUES ({book_id}, 'shelf', INET6_ATON('{ip}'),
-        {visitor_id}, {member_id}, '{emotion}')""".format(
-            book_id=book_id,
-            ip=anonymize_ip(request.remote_addr),
-            visitor_id=visitor_id,
-            member_id=int(session["member_id"]) if "member_id" in session else "NULL",
-            emotion=emotion,
-        )
-    )
-    mysql.commit()
-    session["old_visit_id"] = cursor.lastrowid
-    session["last_visited_book_id"] = book_id
-    info = "Thank you"
-    if "username" in session:
-        info += " " + session["username"] + ", you're awesome"
-    info += "!"
-    resp = make_response(basic_json(True, info))
-    resp.set_cookie(
-        "visitor_data",
-        visitor_data.serialize(),
-        httponly=True,
-        samesite="Strict",
-        secure=not current_app.config["DEBUG"],
-        max_age=(60 * 60 * 24 * 365) if cookies_forever else None,
-        expires=datetime.datetime.fromtimestamp(2 ** 31 - 1)
-        if cookies_forever
-        else None,
-    )
-    return resp
+    return generic_log("shelf", book_id, emotion)
 
 
 @visitor_app.route("/login", methods=("POST", "GET"))
@@ -1492,54 +1510,7 @@ def log_visit_photo() -> Any:
     cursor.fetchone()
     if cursor.rowcount == 0:
         return json_error
-
-    # manage visitor identifier
-    raw_cookie = request.cookies.get("visitor_data")
-
-    def bake():
-        # MySQL INT is 32-bit signed. Keep positive, so the 32nd bit is 0
-        return JSONSecureCookie(
-            {"id": secrets.randbits(31)}, current_app.config["COOKIE_SECRET_KEY"]
-        )
-
-    if not raw_cookie:  # create a new visitor identifier
-        visitor_data = bake()
-    else:
-        visitor_data = JSONSecureCookie.unserialize(
-            raw_cookie, current_app.config["COOKIE_SECRET_KEY"]
-        )
-        if "id" not in visitor_data:  # cookie compromised, bake a new one
-            visitor_data = bake()
-    visitor_id = int(visitor_data["id"])
-
-    # visitor's decision to accept or deny long-term cookies
-    cookies_forever = escape(request.cookies.get("cookies_forever", "false")) == "true"
-
-    # add a new entry into the database and update cookies
-    cursor.execute(
-        """INSERT INTO visits(element_id, element_type, ip, visitor_id, member_id)
-        VALUES ({photo_id}, 'gallery', INET6_ATON('{ip}'), {visitor_id}, {member_id})""".format(
-            photo_id=photo_id,
-            ip=anonymize_ip(request.remote_addr),
-            visitor_id=visitor_id,
-            member_id=int(session["member_id"]) if "member_id" in session else "NULL",
-        )
-    )
-    mysql.commit()
-    session["last_visit_photo_id"] = cursor.lastrowid
-    resp = make_response("")
-    resp.set_cookie(
-        "visitor_data",
-        visitor_data.serialize(),
-        httponly=True,
-        samesite="Strict",
-        secure=not current_app.config["DEBUG"],
-        max_age=(60 * 60 * 24 * 365) if cookies_forever else None,
-        expires=datetime.datetime.fromtimestamp(2 ** 31 - 1)
-        if cookies_forever
-        else None,
-    )
-    return resp
+    return generic_log("gallery", photo_id)
 
 
 @visitor_app.route("/captcha.png")

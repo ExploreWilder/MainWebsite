@@ -1387,13 +1387,11 @@ function like_this_book() {
         async: true,
         method: "POST",
         data: { book_id: this.dataset.bookId, emotion: emotion },
-        dataType: "json",
-        success: function (result) {
-            if (result.success) {
-                reset_feedback_form();
-                $("#modal-feedback").modal();
-                console.log("Emotion shared: " + emotion);
-            }
+        dataType: "text",
+        success: function () {
+            reset_feedback_form();
+            $("#modal-feedback").modal();
+            console.log("Emotion shared: " + emotion);
         },
     });
     return false;
@@ -1426,8 +1424,8 @@ function open_this_book() {
         async: false /* force to log before redirecting. */,
         method: "POST",
         data: { book_id: this.dataset.bookId, emotion: emotion },
-        dataType: "json",
-        success: (result) => {
+        dataType: "text",
+        success: () => {
             $(this).removeClass("disabled");
             $(this).removeAttr("aria-disabled");
             $(this).removeAttr("tabindex");
@@ -1734,8 +1732,7 @@ $(function () {
                     book_id: $("#visible-when-loaded").attr("data-book-id"),
                     emotion: "neutral",
                 },
-                dataType: "json",
-                success: function (result) {},
+                dataType: "text",
             });
         }
         $("#wait-before-visible").hide();

@@ -146,7 +146,7 @@ def test_story_and_share_emotion_book(client):
             "/share_emotion_book",
             data=dict(emotion="neutral", book_id=1),  # add entry to an other book
         )
-        assert b"Thank you" in rv.data
+        assert b"" == rv.data
 
         rv = client.get("/stories/2/second_story")
         assert b'data-add-visit="True"' in rv.data
@@ -155,7 +155,7 @@ def test_story_and_share_emotion_book(client):
             "/share_emotion_book",
             data=dict(emotion="neutral", book_id=2),  # add entry to `second_story`
         )
-        assert b"Thank you" in rv.data
+        assert b"" == rv.data
 
         rv = client.get("/stories/2/second_story")
         assert b'data-add-visit="False"' in rv.data  # check the effect now
