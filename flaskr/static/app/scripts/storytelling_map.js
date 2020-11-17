@@ -445,26 +445,31 @@ class StorytellingMap {
     }
 
     /**
+     * Add a GeoJSON property to the map.
+     */
+    add_track_from_config(record, data) {
+        this.map.addSource(record.layer.source, {
+            type: "geojson",
+            data: data ?? this.#book_path + record.data,
+        });
+        this.map.addLayer(record.layer);
+        var paintProps = this.#layer_types[record.layer.type];
+        paintProps.forEach((prop) => {
+            this.map.setPaintProperty(record.layer.id, prop, record.opacity);
+        });
+    }
+
+    /**
      * Setup Scrollama and update the window style, load all images contained in the story.
      */
     on_map_load() {
         var scroller = scrollama();
 
-        this.config.geojsons.forEach((record) => {
-            this.map.addSource(record.layer.source, {
-                type: "geojson",
-                data: this.#book_path + record.data,
+        if (this.config.geojsons) {
+            this.config.geojsons.forEach((record) => {
+                this.add_track_from_config(record);
             });
-            this.map.addLayer(record.layer);
-            var paintProps = this.#layer_types[record.layer.type];
-            paintProps.forEach((prop) => {
-                this.map.setPaintProperty(
-                    record.layer.id,
-                    prop,
-                    record.opacity
-                );
-            });
-        });
+        }
 
         // setup the instance, pass callback functions
         scroller

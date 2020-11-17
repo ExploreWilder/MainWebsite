@@ -66,6 +66,9 @@ class WebTrack:
     #: The total amount of waypoints in the current WebTrack.
     total_waypoints: int = 0
 
+    #: True if there is at least one segment with elevation.
+    has_some_ele: bool = False
+
     def __init__(
         self,
         format_name: bytes = b"webtrack-bin",
@@ -96,8 +99,8 @@ class WebTrack:
         with open(file_path, "wb") as stream:
             self.webtrack = stream
             self.data_src = data
-            self.total_segments = len(data["segments"])
-            self.total_waypoints = len(data["waypoints"])
+            self.total_segments = len(data["segments"]) if "segments" in data else 0
+            self.total_waypoints = len(data["waypoints"]) if "waypoints" in data else 0
 
             self._write_format_information()
             self._write_segment_headers()
@@ -114,29 +117,54 @@ class WebTrack:
         self.webtrack.write(b"\n")
 
     def _w_uint8(self, c: int) -> None:
-        """ Append an unsigned byte (character) to the stream. """
+        """
+        Append an unsigned byte (character) to the stream.
+
+        Raises:
+            OverflowError: int too big to convert
+        """
         self.webtrack.write(bytes([c]))
 
     def _w_uint16(self, n: int) -> None:
-        """ Append an unsigned 2-byte integer to the stream. """
+        """
+        Append an unsigned 2-byte integer to the stream.
+
+        Raises:
+            OverflowError: int too big to convert
+        """
         self.webtrack.write(
             (int(round(n))).to_bytes(2, byteorder=self.byteorder, signed=False)
         )
 
     def _w_int16(self, n: int) -> None:
-        """ Append a signed 2-byte integer to the stream. """
+        """
+        Append a signed 2-byte integer to the stream.
+
+        Raises:
+            OverflowError: int too big to convert
+        """
         self.webtrack.write(
             (int(round(n))).to_bytes(2, byteorder=self.byteorder, signed=True)
         )
 
     def _w_uint32(self, n: int) -> None:
-        """ Append an unsigned 4-byte integer to the stream. """
+        """
+        Append an unsigned 4-byte integer to the stream.
+
+        Raises:
+            OverflowError: int too big to convert
+        """
         self.webtrack.write(
             (int(round(n))).to_bytes(4, byteorder=self.byteorder, signed=False)
         )
 
     def _w_int32(self, n: int) -> None:
-        """ Append a signed 4-byte integer to the stream. """
+        """
+        Append a signed 4-byte integer to the stream.
+
+        Raises:
+            OverflowError: int too big to convert
+        """
         self.webtrack.write(
             (int(round(n))).to_bytes(4, byteorder=self.byteorder, signed=True)
         )
@@ -177,22 +205,53 @@ class WebTrack:
 
     def _write_segment_headers(self) -> None:
         """ Write the "Segment Headers" section of the WebTrack file. """
+        if "segments" not in self.data_src:
+            return
         segments = self.data_src["segments"]
         for segment in segments:
-            self.webtrack.write(b"E" if segment["withEle"] else b"F")
+            if segment["withEle"]:
+                self.webtrack.write(b"E")
+                self.has_some_ele = True
+            else:
+                self.webtrack.write(b"F")
             self._w_uint32(len(segment["points"]))
 
     def _write_track_information(self) -> None:
-        """ Write the "Track Information" section of the WebTrack file. """
+        """
+        Write the "Track Information" section of the WebTrack file.
+
+        Raises:
+            KeyError: when expected fields are missing in the "Track Information".
+        """
+        if "trackInformation" not in self.data_src:
+            raise KeyError("Missing track information")
         track_info = self.data_src["trackInformation"]
-        self._w_uint32(track_info["length"])
-        self._w_int16(track_info["minimumAltitude"])
-        self._w_int16(track_info["maximumAltitude"])
-        self._w_uint32(track_info["elevationGain"])
-        self._w_uint32(track_info["elevationLoss"])
+        if "length" in track_info:
+            self._w_uint32(track_info["length"])
+        else:
+            raise KeyError("Missing track length")
+        if self.has_some_ele:
+            if "minimumAltitude" in track_info:
+                self._w_int16(track_info["minimumAltitude"])
+            else:
+                raise KeyError("Missing minimum altitude")
+            if "maximumAltitude" in track_info:
+                self._w_int16(track_info["maximumAltitude"])
+            else:
+                raise KeyError("Missing maximum altitude")
+            if "elevationGain" in track_info:
+                self._w_uint32(track_info["elevationGain"])
+            else:
+                raise KeyError("Missing elevation gain")
+            if "elevationLoss" in track_info:
+                self._w_uint32(track_info["elevationLoss"])
+            else:
+                raise KeyError("Missing elevation loss")
 
     def _write_segments(self) -> None:
         """ Write all segments in the stream. """
+        if "segments" not in self.data_src:
+            return
         segments = self.data_src["segments"]
         for segment in segments:
             points = segment["points"]
@@ -219,6 +278,8 @@ class WebTrack:
 
     def _write_waypoints(self) -> None:
         """ Write all waypoints in the stream. """
+        if "waypoints" not in self.data_src:
+            return
         waypoints = self.data_src["waypoints"]
         for waypoint in waypoints:
             web_point = self.proj.transform(waypoint[0], waypoint[1])

@@ -398,6 +398,10 @@ def gpx_to_webtrack_with_elevation(
     .. note::
         SRTMGL1.003 data requires user authentication through the NASA Earthdata Login.
 
+    .. note::
+        GPX tracks and segments are merged and only one WebTrack segment is created
+        because the GPX track is a *one go* tramping trip.
+
     How to use gpxpy: https://github.com/tkrajina/gpxpy
 
     How to use SRTM.py: https://github.com/nawagers/srtm.py/tree/EarthDataLogin
@@ -405,6 +409,7 @@ def gpx_to_webtrack_with_elevation(
     Args:
         gpx_path (str): Secured path to the input file.
         webtrack_path (str): Secured path to the overwritten output file.
+        credentials (Dict[str, str]): NASA credentials.
 
     Returns:
         The result is saved into a file, nothing is returned.

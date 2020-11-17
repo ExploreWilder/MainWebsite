@@ -57,6 +57,10 @@ var vendor_scripts = [
         ],
     },
     {
+        name: "storytelling_map",
+        scripts: ["./node_modules/mapbox-gl/dist/mapbox-gl.js"],
+    },
+    {
         name: "map_viewer",
         scripts: [
             "./vendor/ol-6.4.3.js",
@@ -67,7 +71,6 @@ var vendor_scripts = [
     {
         name: "map_player",
         scripts: [
-            // use a custom vts-browser.min.js: '//cdn.melown.com' changed to 'https://cdn.melown.com' to enforce a secure connection
             "./vendor/vts-browser.min.js",
             "./node_modules/chart.js/dist/Chart.bundle.min.js",
             "./vendor/webtrack.min.js",
@@ -186,13 +189,6 @@ gulp.task("mapbox_style", function () {
         .pipe(gulp.dest(css_dest));
 });
 
-gulp.task("mapbox_script", function () {
-    return gulp
-        .src("./node_modules/mapbox-gl/dist/mapbox-gl.js")
-        .pipe(changed(js_dest))
-        .pipe(gulp.dest(js_dest));
-});
-
 vendor_scripts.forEach(function (element) {
     const task_name = element.name + "_vendor_scripts";
     gulp.task(task_name, function () {
@@ -255,8 +251,7 @@ gulp.task(
         "sentry",
         "vts_config",
         "mapbox_style",
-        "vts_style",
-        "mapbox_script"
+        "vts_style"
     )
 );
 
