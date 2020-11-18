@@ -226,7 +226,6 @@ def book_dir(book_id: int, filename: str, ext: str) -> FlaskResponse:
         os.path.join(current_app.config["SHELF_FOLDER"], data[1]),
         filename,
         as_attachment=ext in ("gpx", "pdf"),
-        mimetype="application/geo+json" if ext == "geojson" else None,
     )
 
 

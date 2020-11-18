@@ -102,7 +102,10 @@ var app_scripts = [
     },
     {
         name: "storytelling_map",
-        scripts: ["./app/scripts/storytelling_map.js"],
+        scripts: [
+            "./app/scripts/map_utils.js",
+            "./app/scripts/storytelling_map.js",
+        ],
     },
     {
         name: "map_viewer",

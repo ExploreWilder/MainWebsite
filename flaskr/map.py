@@ -282,6 +282,64 @@ def static_map(book_id: int, gpx_name: str) -> FlaskResponse:
     return send_from_directory(gpx_dir, gpx_filename + append_ext)
 
 
+@map_app.route("/geojsons/<int:book_id>/<string:gpx_name>.geojson")
+@same_site
+def simplified_geojson(book_id: int, gpx_name: str) -> FlaskResponse:
+    """
+    Simplify a GPX file, convert to GeoJSON and send it.
+    The generated GeoJSON is cached.
+
+    Args:
+        book_id (int): Book ID based on the 'shelf' database table.
+        gpx_name (str): Name of the GPX file in the /tracks directory WITHOUT file extension.
+
+    Returns:
+        JSON file containing the profile and statistics.
+
+    Raises:
+        404: if the request comes from another website and not in testing mode.
+        500: failed to create the GeoJSON file.
+    """
+    cursor = mysql.cursor()
+    cursor.execute(
+        """SELECT access_level, url
+        FROM shelf
+        WHERE book_id={book_id}""".format(
+            book_id=book_id
+        )
+    )
+    data = cursor.fetchone()
+    if cursor.rowcount == 0 or actual_access_level() < data[0]:
+        abort(404)
+    book_url = data[1]
+    gpx_filename = secure_filename(escape(gpx_name) + ".gpx")
+    gpx_dir = os.path.join(
+        current_app.config["SHELF_FOLDER"], secure_filename(book_url)
+    )
+    gpx_path = os.path.join(gpx_dir, gpx_filename)
+    if not os.path.isfile(gpx_path):
+        abort(404)
+    if os.stat(gpx_path).st_size == 0:
+        return "empty GPX file", 500
+    geojson_path = replace_extension(gpx_path, "geojson")
+    if (
+        not os.path.isfile(geojson_path)
+        or os.stat(geojson_path).st_size == 0
+        or os.stat(geojson_path).st_mtime < os.stat(gpx_path).st_mtime
+        or not good_webtrack_version(geojson_path)
+    ):  # update GeoJSON
+        try:
+            with open(geojson_path, "w") as geojson_file:
+                geojson_file.write(gpx_to_simplified_geojson(gpx_path))
+        except Exception as err:  # pragma: no cover
+            return "{}".format(type(err).__name__), 500
+    return send_from_directory(
+        gpx_dir,
+        replace_extension(gpx_filename, "geojson"),
+        mimetype="application/geo+json",
+    )
+
+
 @map_app.route("/webtracks/<int:book_id>/<string:gpx_name>.webtrack")
 @same_site
 def webtrack_file(book_id: int, gpx_name: str) -> FlaskResponse:
@@ -504,6 +562,57 @@ def gpx_to_webtrack_with_elevation(
 
         webtrack = WebTrack()
         webtrack.to_file(webtrack_path, full_profile)
+
+
+def gpx_to_simplified_geojson(gpx_path: str) -> str:
+    """
+    Create a GeoJSON string based on the GPX file ``gpx_path``.
+    A GPX trk with multiple trkseg is converted into a GeoJSON
+    MultiLineString, otherwise the trk is a GeoJSON LineString.
+    The GeoJSON is a FeatureCollection combining MultiLineStrings
+    and LineStrings.
+
+    .. note::
+        Tracks are gathered in a GeoJSON FeatureCollection instead of a
+        GeometryCollection for a safer future (a probably richer
+        GeoJSON string without changing the container type).
+
+    .. note::
+        * Waypoints are excluded.
+        * Elevation data are excluded.
+        * Track names and and similar meta-data are excluded.
+        * Timestamps are excluded.
+        * Floating points are reduced to 4 digits (handheld GPS accuracy, 11m at equator).
+        * Tracks are simplified with the Ramer-Douglas-Peucker algorithm.
+
+    Args:
+        gpx_path (str): Secured path to the input file.
+
+    Returns:
+        str: A GeoJSON string ready to be saved into a file and/or sent.
+    """
+    with open(gpx_path, "r") as input_gpx_file:
+        gpx = gpxpy.parse(input_gpx_file)
+    gpx.simplify()
+    str_geo = '{"type":"FeatureCollection","features":['
+    for track in gpx.tracks:
+        is_multiline = len(track.segments) > 1
+        str_geo += '{"type":"Feature","properties":{},"geometry":{"type":'
+        str_geo += '"MultiLineString"' if is_multiline else '"LineString"'
+        str_geo += ',"coordinates":'
+        if is_multiline:
+            str_geo += "["
+        for segment in track.segments:
+            str_geo += "["
+            for gps_point in segment.points:
+                lon = str(round(gps_point.longitude, 4))
+                lat = str(round(gps_point.latitude, 4))
+                str_geo += "[" + lon + "," + lat + "],"
+            str_geo = str_geo[:-1] + "],"  # remove the last ,
+        if is_multiline:
+            str_geo = str_geo[:-1] + "],"
+        str_geo = str_geo[:-1] + "}},"
+    return str_geo[:-1] + "]}"
 
 
 @map_app.route(

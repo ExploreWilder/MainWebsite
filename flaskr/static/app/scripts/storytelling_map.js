@@ -446,11 +446,15 @@ class StorytellingMap {
 
     /**
      * Add a GeoJSON property to the map.
+     * The WebTrack format is not the best because Mapbox GL JS
+     * can only handle WGS84 coordinates, therefore, GeoJSON is
+     * more suitable. The GeoJSON file is simplified and compressed
+     * beforehand.
      */
     add_track_from_config(record, data) {
         this.map.addSource(record.layer.source, {
             type: "geojson",
-            data: data ?? this.#book_path + record.data,
+            data: data ?? get_geojson_url(this.#book_id, record.data),
         });
         this.map.addLayer(record.layer);
         var paintProps = this.#layer_types[record.layer.type];

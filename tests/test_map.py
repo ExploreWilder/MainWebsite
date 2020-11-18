@@ -34,42 +34,64 @@ import pytest
 from PIL import Image
 
 from flaskr.map import create_static_map
+from flaskr.map import gpx_to_simplified_geojson
 
 
-def test_webtrack_failed(files, client, app, auth):
+def test_gpx_to_simplified_geojson(files):
+    """
+    Test the GPX to GeoJSON conversion.
+    """
+    with open("test_gpx_to_geojson.expected_output.geojson") as expected_output:
+        assert expected_output.read() == gpx_to_simplified_geojson(
+            "test_gpx_to_geojson.gpx"
+        )
+
+
+@pytest.mark.parametrize(
+    "track_type",
+    (
+        "geojson",
+        "webtrack",
+    ),
+)
+def test_track_failed(files, client, app, auth, track_type):
     """
     Test the WebTrack access.
     """
     # unknown book:
-    rv = client.get("/map/webtracks/42/test_Gillespie_Circuit.webtrack")
+    rv = client.get("/map/" + track_type + "s/42/test_Gillespie_Circuit." + track_type)
     assert rv.status_code == 404
 
     # restricted book:
-    rv = client.get("/map/webtracks/4/my_track.webtrack")
+    rv = client.get("/map/" + track_type + "s/4/my_track." + track_type)
     assert rv.status_code == 404
 
     # unknown track:
-    rv = client.get("/map/webtracks/1/test_Unknown.webtrack")
+    rv = client.get("/map/" + track_type + "s/1/test_Unknown." + track_type)
     assert rv.status_code == 404
 
     # empty GPX file:
     auth.login()
-    rv = client.get("/map/webtracks/4/my_track.webtrack")
+    rv = client.get("/map/" + track_type + "s/4/my_track." + track_type)
     assert rv.status_code == 500
     assert b"empty GPX file" in rv.data
     auth.logout()
 
     # all good:
-    webtrack_filename = "test_Gillespie_Circuit.webtrack"
-    rv = client.get("/map/webtracks/1/" + webtrack_filename)
+    track_filename = "test_Gillespie_Circuit." + track_type
+    rv = client.get("/map/" + track_type + "s/1/" + track_filename)
     assert rv.status_code == 200
     with app.app_context():
-        webtrack_path = os.path.join(
-            app.config["SHELF_FOLDER"], "first_story", webtrack_filename
+        track_path = os.path.join(
+            app.config["SHELF_FOLDER"], "first_story", track_filename
         )
-        assert os.path.isfile(webtrack_path)
-        webtrack_header = b"webtrack-bin"
-        assert open(webtrack_path, "rb").read(len(webtrack_header)) == webtrack_header
+        assert os.path.isfile(track_path)
+        if track_type == "webtrack":
+            webtrack_header = b"webtrack-bin"
+            assert open(track_path, "rb").read(len(webtrack_header)) == webtrack_header
+        elif track_type == "geojson":
+            geojson_header = '{"type":"FeatureCollection","features":['
+            assert open(track_path, "r").read(len(geojson_header)) == geojson_header
 
 
 def test_static_map(files, client, auth):

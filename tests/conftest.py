@@ -104,6 +104,15 @@ def files():
         except:
             pass
 
+        # Create an other GPX file in an open book - see test_map.py
+        try:
+            copyfile(
+                "test_gpx_to_geojson.gpx",
+                os.path.join("../books", "first_story", "test_gpx_to_geojson.gpx"),
+            )
+        except:
+            pass
+
         # Create a book folder not in the database - see test_xhr_admin_space.py
         try:
             new_dir = os.path.join("../books", "lovely_poem")

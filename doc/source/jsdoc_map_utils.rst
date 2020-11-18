@@ -15,5 +15,6 @@ Module
 .. js:autofunction:: track_info
 .. js:autofunction:: create_elevation_chart
 .. js:autofunction:: get_webtrack_url
+.. js:autofunction:: get_geojson_url
 .. js:autofunction:: display_gpx_buttons
 .. js:autofunction:: manage_subnav_click

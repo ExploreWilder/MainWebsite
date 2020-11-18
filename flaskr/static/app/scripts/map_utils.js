@@ -176,6 +176,17 @@ function get_webtrack_url(book_id, track_name) {
 }
 
 /**
+ * Returns the path of the GeoJSON file.
+ * @param book_id {Number} - The book ID.
+ * @param track_name {String} - The track name (extension removed if existing).
+ * @return {String} Local path.
+ */
+function get_geojson_url(book_id, track_name) {
+    track_name = track_name.replace(/\.[^/.]+$/, "");
+    return `/map/geojsons/${book_id}/${track_name}.geojson`;
+}
+
+/**
  * Display the buttons only when the track information are available.
  */
 function display_gpx_buttons() {
