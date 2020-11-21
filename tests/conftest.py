@@ -94,6 +94,13 @@ def files():
             os.mknod(os.path.join("../books", "fourth_story", "my_track.gpx"))
         except:
             pass
+        try:
+            copyfile(
+                "Gillespie_Circuit.gpx",
+                os.path.join("../books", "fourth_story", "test_Gillespie_Circuit.gpx"),
+            )
+        except:
+            pass
 
         # Create a GPX file in an open book - see test_map.py
         try:

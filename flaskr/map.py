@@ -76,83 +76,33 @@ def track_path_to_header(
     ]
 
 
-def get_gpx_download_path(book_id: int, book_url: str, gpx_name: str) -> str:
-    """
-    Returns the path to the GPX file.
-
-    Returns:
-        str: For example '/books/42/my_story/super_track.gpx'
-    """
-    return "/".join(["/books", str(book_id), book_url, gpx_name]) + ".gpx"
-
-
-def get_thumbnail_path(book_id: int, book_url: str, gpx_name: str) -> str:
+def get_thumbnail_path(book_id: int, gpx_name: str) -> str:
     """
     Returns the path to the thumbnail file.
 
-    Returns:
-        str: For example: 'map/static_map/42/my_story/super_track.gpx.jpg'
+    Example:
+        'map/static_map/42/super_track.jpg'
     """
-    return "map/static_map/" + "/".join([str(book_id), book_url, gpx_name]) + ".jpg"
-
-
-@map_app.route(
-    "/player/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>"
-)
-def map_player(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
-    """
-    Map viewer with a real 3D map more focused on a fun user experience than a hiker-centric track viewer.
-    A track is always linked to a story and the navbar would display breadcrumbs and a link to the 2D version.
-    The path to the map configuration is in the Jinja template.
-
-    Args:
-        book_id (int): Book ID based on the 'shelf' database table.
-        book_url (str): Book URL based on the 'shelf' database table.
-        gpx_name (str): Name of the GPX file in the /tracks directory WITHOUT file extension. NOT USED.
-
-    Raises:
-        404: in case of denied access.
-    """
-    cursor = mysql.cursor()
-    book_url = escape(book_url)
-    gpx_name = escape(gpx_name)
-    country_code = escape(country)
-    country_code_up = country_code.upper()
-    cursor.execute(
-        """SELECT access_level, title
-        FROM shelf
-        WHERE book_id={book_id} AND url='{book_url}'""".format(
-            book_id=book_id, book_url=book_url
-        )
-    )
-    data = cursor.fetchone()
-    if cursor.rowcount == 0 or actual_access_level() < data[0]:
-        abort(404)
-    if actual_access_level() >= current_app.config["ACCESS_LEVEL_DOWNLOAD_GPX"]:
-        gpx_download_path = get_gpx_download_path(book_id, book_url, gpx_name)
-    else:
-        gpx_download_path = ""
-    return render_template(
-        "map_player.html",
-        header_breadcrumbs=track_path_to_header(book_id, book_url, data[1], gpx_name),
-        url_topo_map="/map/viewer/"
-        + "/".join([str(book_id), book_url, gpx_name, country_code]),
-        country=country_code_up,
-        gpx_download_path=gpx_download_path,
-        thumbnail_networks=request.url_root
-        + get_thumbnail_path(book_id, book_url, gpx_name),
-        total_subscribers=total_subscribers(cursor),
-        is_prod=not current_app.config["DEBUG"],
-    )
+    return "map/static_map/" + "/".join([str(book_id), gpx_name]) + ".jpg"
 
 
 @map_app.route(
     "/viewer/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>"
 )
+@map_app.route(
+    "/player/<int:book_id>/<string:book_url>/<string:gpx_name>/<string:country>"
+)
 def map_viewer(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
     """
-    2D map viewer with some basic tools, track and topo information.
-    A track is always linked to a story and the navbar would display breadcrumbs and a link to the 3D version.
+    - *viewer:* 2D map viewer.
+                With some basic tools, track and topo information.
+    - *player:* 3D map viewer.
+                With a real 3D map more focused on a fun user experience
+                than a hiker-centric track viewer.
+
+    A track is always linked to a story and the navbar would display breadcrumbs
+    and a link to the alternative version (2D/3D). The path to the map configuration
+    is in the Jinja template.
 
     Args:
         book_id (int): Book ID based on the 'shelf' database table.
@@ -163,39 +113,36 @@ def map_viewer(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
     Raises:
         404: in case of denied access.
     """
-    cursor = mysql.cursor()
+    if "/player/" in request.path:
+        map_type, alt_map_type = "player", "viewer"
+    else:
+        map_type, alt_map_type = "viewer", "player"
+    try:
+        gpx_exporter = GpxExporter(book_id, gpx_name, book_name=book_url)
+    except (LookupError, PermissionError, FileNotFoundError):
+        abort(404)
     book_url = escape(book_url)
     gpx_name = escape(gpx_name)
-    cursor.execute(
-        """SELECT access_level, title
-        FROM shelf
-        WHERE book_id={book_id} AND url='{book_url}'""".format(
-            book_id=book_id, book_url=book_url
-        )
-    )
-    data = cursor.fetchone()
     country_code = escape(country)
     country_code_up = country_code.upper()
-    if (
-        cursor.rowcount == 0
-        or actual_access_level() < data[0]
-        or not country_code_up in current_app.config["MAP_LAYERS"]
-    ):
+    if country_code_up not in current_app.config["MAP_LAYERS"]:
         abort(404)
     if actual_access_level() >= current_app.config["ACCESS_LEVEL_DOWNLOAD_GPX"]:
-        gpx_download_path = get_gpx_download_path(book_id, book_url, gpx_name)
+        gpx_download_path = gpx_exporter.get_gpx_download_path()
     else:
         gpx_download_path = ""
     return render_template(
-        "map_viewer.html",
+        "map_" + map_type + ".html",
         country=country_code_up,
-        header_breadcrumbs=track_path_to_header(book_id, book_url, data[1], gpx_name),
-        url_player_map="/map/player/"
-        + "/".join([str(book_id), book_url, gpx_name, country_code]),
+        header_breadcrumbs=track_path_to_header(
+            book_id, book_url, gpx_exporter.get_book_title(), gpx_name
+        ),
+        url_alt_map="/".join(
+            ["/map", alt_map_type, str(book_id), book_url, gpx_name, country_code]
+        ),
         gpx_download_path=gpx_download_path,
-        thumbnail_networks=request.url_root
-        + get_thumbnail_path(book_id, book_url, gpx_name),
-        total_subscribers=total_subscribers(cursor),
+        thumbnail_networks=request.url_root + get_thumbnail_path(book_id, gpx_name),
+        total_subscribers=total_subscribers(mysql.cursor()),
         is_prod=not current_app.config["DEBUG"],
     )
 
@@ -229,6 +176,132 @@ def create_static_map(
         static_image.write(r.content)
 
 
+class GpxExporter:
+    """ Handle a GPX file and the export. """
+
+    def __init__(self, book_id: int, gpx_name: str, **kwargs: str):
+        """
+        Check if the `book_id` and the `gpx_name` exist and accessible based on
+        the user access level.
+
+        .. note::
+            Some raised exceptions might be intentionally unhandled in order
+            to alert the unexpected error (with Sentry).
+
+        Args:
+            book_id (int): Book ID based on the 'shelf' database table.
+            gpx_name (str): Name of the GPX file WITHOUT file extension.
+
+        Keyword Args:
+            export_ext (str): Replace the gpx extension to this extension WITHOUT ``.``.
+            book_name (str): Book name based on the 'shelf' database table.
+
+        Raises:
+            LookupError: `book_id` not in the database
+            PermissionError: Access denied
+            FileNotFoundError: GPX file not in the shelf
+            EOFError: GPX file is empty
+        """
+        self.gpx_filename: str = secure_filename(escape(gpx_name) + ".gpx")
+        self.export_file: Optional[str] = (
+            replace_extension(self.gpx_filename, kwargs["export_ext"])
+            if "export_ext" in kwargs
+            else None
+        )
+
+        cursor = mysql.cursor()
+        query = f"""SELECT access_level, url, title
+                FROM shelf
+                WHERE book_id={book_id}"""
+        if "book_name" in kwargs:
+            query += f""" AND url='{kwargs["book_name"]}'"""
+        cursor.execute(query)
+        data = cursor.fetchone()
+        if cursor.rowcount == 0:
+            raise LookupError("Book not found in the database")
+        if actual_access_level() < data[0]:
+            raise PermissionError("Access denied")
+
+        self.gpx_dir = os.path.join(
+            current_app.config["SHELF_FOLDER"], secure_filename(data[1])
+        )
+        self.gpx_path = os.path.join(self.gpx_dir, self.gpx_filename)
+
+        if not os.path.isfile(self.gpx_path):
+            raise FileNotFoundError("GPX file not in the shelf")
+        if os.stat(self.gpx_path).st_size == 0:
+            raise EOFError("GPX file is empty")
+
+        self.export_path = (
+            os.path.join(self.gpx_dir, self.export_file)
+            if self.export_file is not None
+            else None
+        )
+        self.book_id = book_id
+        self.book_title = data[2]
+
+    def get_book_title(self) -> str:
+        """ Returns the book title. """
+        return self.book_title
+
+    def get_gpx_path(self) -> str:
+        """ Returns the GPX path and filename. """
+        return self.gpx_path
+
+    def get_export_path(self) -> str:
+        """
+        Returns the export path and filename or none if not set.
+
+        Raises:
+            ValueError: if the export path is not set.
+        """
+        if self.export_path is None:
+            raise ValueError("Undefined export path")  # pragma: no cover; misuse
+        return self.export_path
+
+    def should_update_export(self) -> bool:
+        """
+        Returns true if the export file should be (re-)generated.
+
+        Raises:
+            ValueError: if the export path is not set.
+        """
+        if self.export_path is None:
+            raise ValueError("Undefined export path")  # pragma: no cover; misuse
+        return (
+            not os.path.isfile(self.export_path)
+            or os.stat(self.export_path).st_size == 0
+            or os.stat(self.export_path).st_mtime < os.stat(self.gpx_path).st_mtime
+        )
+
+    def get_gpx_download_path(self) -> str:
+        """
+        Returns the real path to the GPX file.
+
+        Returns:
+            str: For example '/stories/42/super_track.gpx'
+        """
+        return "/".join(["/stories", str(self.book_id), self.gpx_filename])
+
+    def export(self, export_mimetype: str) -> FlaskResponse:
+        """
+        Returns the export file with the right MIME type.
+
+        Args:
+            export_mimetype (str): MIME type of the export file.
+
+        Raises:
+            ValueError: if the export file is not set.
+        """
+        if self.export_file is None:
+            raise ValueError("Undefined export file")  # pragma: no cover; misuse
+        return send_from_directory(
+            self.gpx_dir,
+            self.export_file,
+            mimetype=export_mimetype,
+        )
+
+
 @map_app.route("/static_map/<int:book_id>/<string:gpx_name>.jpg")
 def static_map(book_id: int, gpx_name: str) -> FlaskResponse:
     """
@@ -237,49 +310,25 @@ def static_map(book_id: int, gpx_name: str) -> FlaskResponse:
 
     Args:
         book_id (int): Book ID based on the 'shelf' database table.
-        gpx_name (str): Name of the GPX file in the /tracks directory WITHOUT file extension.
+        gpx_name (str): Name of the GPX file WITHOUT file extension.
 
     Returns:
-        JPG image.
+        JPG image or a 404/500 HTTP error.
 
     Raises:
-        500: failed to create the image.
+        404: Permission error or GPX file not found.
     """
-    cursor = mysql.cursor()
-    cursor.execute(
-        """SELECT access_level, url
-        FROM shelf
-        WHERE book_id={book_id}""".format(
-            book_id=book_id
+    try:
+        gpx_exporter = GpxExporter(book_id, gpx_name, export_ext="gpx_static_map.jpg")
+    except (LookupError, PermissionError, FileNotFoundError):
+        abort(404)
+    if gpx_exporter.should_update_export():
+        create_static_map(
+            gpx_exporter.get_gpx_path(),
+            gpx_exporter.get_export_path(),
+            current_app.config["MAPBOX_STATIC_IMAGES"],
         )
-    )
-    data = cursor.fetchone()
-    if cursor.rowcount == 0 or actual_access_level() < data[0]:
-        abort(404)
-    book_url = data[1]
-    gpx_filename = secure_filename(escape(gpx_name) + ".gpx")
-    gpx_dir = os.path.join(
-        current_app.config["SHELF_FOLDER"], secure_filename(book_url)
-    )
-    gpx_path = os.path.join(gpx_dir, gpx_filename)
-    if not os.path.isfile(gpx_path):
-        abort(404)
-    if os.stat(gpx_path).st_size == 0:
-        return "empty GPX file", 500
-    append_ext = "_static_map.jpg"
-    static_map_path = gpx_path + append_ext
-    if (
-        not os.path.isfile(static_map_path)
-        or os.stat(static_map_path).st_size == 0
-        or os.stat(static_map_path).st_mtime < os.stat(gpx_path).st_mtime
-    ):  # update profile
-        try:
-            create_static_map(
-                gpx_path, static_map_path, current_app.config["MAPBOX_STATIC_IMAGES"]
-            )
-        except Exception as err:  # pragma: no cover
-            return "{}".format(type(err).__name__), 500
-    return send_from_directory(gpx_dir, gpx_filename + append_ext)
+    return gpx_exporter.export("image/jpeg")
 
 
 @map_app.route("/geojsons/<int:book_id>/<string:gpx_name>.geojson")
@@ -291,111 +340,53 @@ def simplified_geojson(book_id: int, gpx_name: str) -> FlaskResponse:
 
     Args:
         book_id (int): Book ID based on the 'shelf' database table.
-        gpx_name (str): Name of the GPX file in the /tracks directory WITHOUT file extension.
+        gpx_name (str): Name of the GPX file WITHOUT file extension.
 
     Returns:
-        JSON file containing the profile and statistics.
+        JSON file containing the profile and statistics or a 404/500 HTTP error.
 
     Raises:
-        404: if the request comes from another website and not in testing mode.
-        500: failed to create the GeoJSON file.
+        404: Permission error or GPX file not found.
     """
-    cursor = mysql.cursor()
-    cursor.execute(
-        """SELECT access_level, url
-        FROM shelf
-        WHERE book_id={book_id}""".format(
-            book_id=book_id
-        )
-    )
-    data = cursor.fetchone()
-    if cursor.rowcount == 0 or actual_access_level() < data[0]:
+    try:
+        gpx_exporter = GpxExporter(book_id, gpx_name, export_ext="geojson")
+    except (LookupError, PermissionError, FileNotFoundError):
         abort(404)
-    book_url = data[1]
-    gpx_filename = secure_filename(escape(gpx_name) + ".gpx")
-    gpx_dir = os.path.join(
-        current_app.config["SHELF_FOLDER"], secure_filename(book_url)
-    )
-    gpx_path = os.path.join(gpx_dir, gpx_filename)
-    if not os.path.isfile(gpx_path):
-        abort(404)
-    if os.stat(gpx_path).st_size == 0:
-        return "empty GPX file", 500
-    geojson_path = replace_extension(gpx_path, "geojson")
-    if (
-        not os.path.isfile(geojson_path)
-        or os.stat(geojson_path).st_size == 0
-        or os.stat(geojson_path).st_mtime < os.stat(gpx_path).st_mtime
-        or not good_webtrack_version(geojson_path)
-    ):  # update GeoJSON
-        try:
-            with open(geojson_path, "w") as geojson_file:
-                geojson_file.write(gpx_to_simplified_geojson(gpx_path))
-        except Exception as err:  # pragma: no cover
-            return "{}".format(type(err).__name__), 500
-    return send_from_directory(
-        gpx_dir,
-        replace_extension(gpx_filename, "geojson"),
-        mimetype="application/geo+json",
-    )
+    if gpx_exporter.should_update_export():
+        with open(gpx_exporter.get_export_path(), "w") as geojson_file:
+            geojson_file.write(gpx_to_simplified_geojson(gpx_exporter.get_gpx_path()))
+    return gpx_exporter.export("application/geo+json")
 
 
 @map_app.route("/webtracks/<int:book_id>/<string:gpx_name>.webtrack")
 @same_site
 def webtrack_file(book_id: int, gpx_name: str) -> FlaskResponse:
     """
-    Print a profile file and create it if not already existing or not up to date.
+    Send a WebTrack file and create it if not already existing or not up to date.
 
     Args:
         book_id (int): Book ID based on the 'shelf' database table.
         gpx_name (str): Name of the GPX file in the /tracks directory WITHOUT file extension.
 
     Returns:
-        JSON file containing the profile and statistics.
+        The WebTrack file or a 404/500 HTTP error.
 
     Raises:
-        404: if the request comes from another website and not in testing mode.
-        500: failed to create the elevation profile.
+        404: Permission error or GPX file not found.
     """
-    cursor = mysql.cursor()
-    cursor.execute(
-        """SELECT access_level, url
-        FROM shelf
-        WHERE book_id={book_id}""".format(
-            book_id=book_id
+    try:
+        gpx_exporter = GpxExporter(book_id, gpx_name, export_ext="webtrack")
+    except (LookupError, PermissionError, FileNotFoundError):
+        abort(404)
+    if gpx_exporter.should_update_export() or not good_webtrack_version(
+        gpx_exporter.get_export_path()
+    ):
+        gpx_to_webtrack_with_elevation(
+            gpx_exporter.get_gpx_path(),
+            gpx_exporter.get_export_path(),
+            current_app.config["NASA_EARTHDATA"],
         )
-    )
-    data = cursor.fetchone()
-    if cursor.rowcount == 0 or actual_access_level() < data[0]:
-        abort(404)
-    book_url = data[1]
-    gpx_filename = secure_filename(escape(gpx_name) + ".gpx")
-    gpx_dir = os.path.join(
-        current_app.config["SHELF_FOLDER"], secure_filename(book_url)
-    )
-    gpx_path = os.path.join(gpx_dir, gpx_filename)
-    if not os.path.isfile(gpx_path):
-        abort(404)
-    if os.stat(gpx_path).st_size == 0:
-        return "empty GPX file", 500
-    webtrack_path = replace_extension(gpx_path, "webtrack")
-    if (
-        not os.path.isfile(webtrack_path)
-        or os.stat(webtrack_path).st_size == 0
-        or os.stat(webtrack_path).st_mtime < os.stat(gpx_path).st_mtime
-        or not good_webtrack_version(webtrack_path)
-    ):  # update webtrack
-        try:
-            gpx_to_webtrack_with_elevation(
-                gpx_path, webtrack_path, current_app.config["NASA_EARTHDATA"]
-            )
-        except Exception as err:  # pragma: no cover
-            return "{}".format(type(err).__name__), 500
-    return send_from_directory(
-        gpx_dir,
-        replace_extension(gpx_filename, "webtrack"),
-        mimetype="application/prs.webtrack",
-    )
+    return gpx_exporter.export("application/prs.webtrack")
 
 
 def good_webtrack_version(file_path: str) -> bool:

@@ -31,10 +31,72 @@
 import os
 
 import pytest
+from flask import request
 from PIL import Image
 
 from flaskr.map import create_static_map
 from flaskr.map import gpx_to_simplified_geojson
+
+
+@pytest.mark.parametrize(
+    "map_type",
+    (
+        "viewer",
+        "player",
+    ),
+)
+def test_viewers(files, client, app, auth, map_type):
+    """
+    Test the map viewer (2D) and map player (3D).
+    """
+    # unknown book ID:
+    rv = client.get("/map/" + map_type + "/42/first_story/test_Gillespie_Circuit/nz")
+    assert rv.status_code == 404
+
+    # unknown book name:
+    rv = client.get("/map/" + map_type + "/1/bad_story/test_Gillespie_Circuit/nz")
+    assert rv.status_code == 404
+
+    # restricted book (access level = 1):
+    rv = client.get("/map/" + map_type + "/4/fourth_story/test_Gillespie_Circuit/fr")
+    assert rv.status_code == 404
+
+    # bad country code:
+    rv = client.get("/map/" + map_type + "/1/first_story/test_Unknown/hell")
+    assert rv.status_code == 404
+
+    with client:
+        # check granted access and raw GPX download link access:
+        auth.login()
+        rv = client.get(
+            "/map/" + map_type + "/4/fourth_story/test_Gillespie_Circuit/fr"
+        )
+        assert rv.status_code == 200
+        assert b'href="/stories/4/test_Gillespie_Circuit.gpx"' not in rv.data
+        # actual GPX download tested in test_restricted_access.py
+        auth.logout()
+        auth.login("root@test.com", "admin")
+        rv = client.get(
+            "/map/" + map_type + "/4/fourth_story/test_Gillespie_Circuit/fr"
+        )
+        assert rv.status_code == 200
+        assert b'href="/stories/4/test_Gillespie_Circuit.gpx"' in rv.data
+        auth.logout()
+
+        # check unrestricted track:
+        rv = client.get("/map/" + map_type + "/1/first_story/test_Gillespie_Circuit/nz")
+        assert rv.status_code == 200
+
+        # test map.get_thumbnail_path():
+        static_map_url = (
+            request.url_root.encode() + b"map/static_map/1/test_Gillespie_Circuit.jpg"
+        )
+        assert (
+            b'meta name="twitter:image" property="og:image" content="'
+            + static_map_url
+            + b'"'
+            in rv.data
+        )
 
 
 def test_gpx_to_simplified_geojson(files):
@@ -54,7 +116,7 @@ def test_gpx_to_simplified_geojson(files):
         "webtrack",
     ),
 )
-def test_track_failed(files, client, app, auth, track_type):
+def test_export(files, client, app, auth, track_type):
     """
     Test the WebTrack access.
     """
@@ -72,9 +134,8 @@ def test_track_failed(files, client, app, auth, track_type):
 
     # empty GPX file:
     auth.login()
-    rv = client.get("/map/" + track_type + "s/4/my_track." + track_type)
-    assert rv.status_code == 500
-    assert b"empty GPX file" in rv.data
+    with pytest.raises(EOFError, match="GPX file is empty"):
+        rv = client.get("/map/" + track_type + "s/4/my_track." + track_type)
     auth.logout()
 
     # all good:
@@ -112,8 +173,8 @@ def test_static_map(files, client, auth):
 
     # empty GPX file:
     auth.login()
-    rv = client.get("/map/static_map/4/my_track.jpg")
-    assert rv.status_code == 500
+    with pytest.raises(EOFError, match="GPX file is empty"):
+        rv = client.get("/map/static_map/4/my_track.jpg")
     auth.logout()
 
     # all good:
@@ -142,9 +203,11 @@ def test_create_static_map(app):
         # LDS topo:
         "/map/middleware/lds/layer=767/a/0/0/0",
         # IGN aerial:
-        "/map/middleware/ign?layer=GEOGRAPHICALGRIDSYSTEMS.MAPS&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/jpeg&TileMatrix=11&TileCol=1023&TileRow=753",
+        "/map/middleware/ign?layer=GEOGRAPHICALGRIDSYSTEMS.MAPS&style=normal&tilematrixset=PM&Service=WMTS&Request"
+        "=GetTile&Version=1.0.0&Format=image/jpeg&TileMatrix=11&TileCol=1023&TileRow=753",
         # IGN topo:
-        "/map/middleware/ign?layer=ORTHOIMAGERY.ORTHOPHOTOS&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fjpeg&TileMatrix=11&TileCol=1026&TileRow=753",
+        "/map/middleware/ign?layer=ORTHOIMAGERY.ORTHOPHOTOS&style=normal&tilematrixset=PM&Service=WMTS&Request"
+        "=GetTile&Version=1.0.0&Format=image%2Fjpeg&TileMatrix=11&TileCol=1026&TileRow=753",
     ),
 )
 def test_map_proxy_link_ok(client, path):

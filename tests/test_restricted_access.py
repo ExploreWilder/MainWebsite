@@ -62,8 +62,6 @@ import pytest
         "/photos/4/test_b4f6add9a5657725d156a94cde808ce8a5d4cf38.tif",  # access level = 240
         "/stories/5/test_image.jpg",  # access level = 1
         "/stories/5/fifth_story",  # access level = 1
-        "/map/viewer/4/fourth_story/my_track/fr",  # access level = 1
-        "/map/player/4/fourth_story/my_track/fr",  # access level = 1
         "/stories/4/my_track.gpx",  # access level = ACCESS_LEVEL_DOWNLOAD_GPX=200
         "/stories/42/my_track.gpx",  # bad book ID
         "/map/webtracks/4/fourth_story/my_track.webtrack",  # access level = 1
@@ -91,8 +89,8 @@ def test_restricted_access_denied(files, client, path):
         "/photos/3/test_wkd6xdrmbt9io96zcygpg12gt.jpg",  # access level = 1
         "/stories/5/test_image.jpg",  # access level = 1
         "/stories/5/fifth_story",  # access level = 1
-        "/map/viewer/4/fourth_story/my_track/fr",  # access level = 1
-        "/map/player/4/fourth_story/my_track/fr",  # access level = 1
+        "/map/viewer/4/fourth_story/test_Gillespie_Circuit/fr",  # access level = 1
+        "/map/player/4/fourth_story/test_Gillespie_Circuit/fr",  # access level = 1
         "/change_password",
         "/change_email",
         "/audit_log",
@@ -135,7 +133,7 @@ def test_member_access_granted(files, client, auth, path):
         "/admin/statistics",
         "/photos/4/test_1zy071k164o6rjjjynvms47kr16a9h.jpg",  # access level = 240
         "/photos/4/test_b4f6add9a5657725d156a94cde808ce8a5d4cf38.tif",  # access level = 240
-        "/stories/4/my_track.gpx",  # access level = ACCESS_LEVEL_DOWNLOAD_GPX=200
+        "/stories/4/test_Gillespie_Circuit.gpx",  # access level = ACCESS_LEVEL_DOWNLOAD_GPX=200
         "/create_password",
     ),
 )
@@ -160,8 +158,8 @@ def test_member_access_denied(files, client, auth, path):
         "/admin/photos/lost",
         "/admin/photos/open/test_74gdf8hpw41i4qbpnl7b.jpg",
         "/admin/statistics",
-        "/map/player/4/fourth_story/my_track/fr",  # pass with gpx_download_path
-        "/map/viewer/4/fourth_story/my_track/fr",  # pass with gpx_download_path
+        "/map/player/4/fourth_story/test_Gillespie_Circuit/fr",  # pass with gpx_download_path
+        "/map/viewer/4/fourth_story/test_Gillespie_Circuit/fr",  # pass with gpx_download_path
     ),
 )
 def test_admin_access_granted(files, client, auth, path):
