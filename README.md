@@ -57,6 +57,7 @@ I used the following frameworks and tools:
 * [Sphinx](http://www.sphinx-doc.org/en/master/)
 * [Sentry](https://sentry.io/)
 * [Gulp](https://gulpjs.com/)
+* [PyCharm Professional Edition](https://www.jetbrains.com/pycharm/) (thanks to the [JetBrains](https://www.jetbrains.com/) support)
 
 ## Documentation
 
