@@ -32,7 +32,7 @@ The `latest LTS version <https://nodejs.org/en/download/>`_ is recommended. Ther
     tar -xJvf node-$VERSION-$DISTRO.tar.xz -C /usr/local/lib/nodejs
     rm -f node-$VERSION-$DISTRO.tar.xz
     npm -g config set ignore-scripts true # don't run scripts as sudo
-    npm install -g jsdoc gulp-cli @mapbox/togeojson
+    npm install -g jsdoc gulp-cli
 
 In the step above, the *PATH* is exported for root, whereas the step below exports the *PATH* for the user.
 

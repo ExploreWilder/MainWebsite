@@ -12,11 +12,6 @@ Locally run ``make`` to print out the available options.
 .. warning::
     The generated documentation contains sensitive information like the application configuration with passwords.
 
-GPX to GeoJSON File Conversion
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Locally run ``togeojson myfile.gpx > myfile.geojson``
-
 Import/Export The MySQL Database
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
