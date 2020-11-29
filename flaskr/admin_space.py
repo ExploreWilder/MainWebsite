@@ -194,7 +194,6 @@ def members() -> Any:
         members=data_members,
         access_level_read_info=current_app.config["ACCESS_LEVEL_READ_INFO"],
         total_newsletter=total_newsletter,
-        is_prod=not current_app.config["DEBUG"],
     )
 
 
@@ -348,7 +347,7 @@ def add_photo() -> Any:
     """
     if not is_admin():
         abort(404)  # pragma: no cover
-    return render_template("add_photo.html", is_prod=not current_app.config["DEBUG"])
+    return render_template("add_photo.html")
 
 
 @admin_app.route("/books/add/form")
@@ -362,7 +361,7 @@ def add_book() -> Any:
     """
     if not is_admin():
         abort(404)  # pragma: no cover
-    return render_template("add_book.html", is_prod=not current_app.config["DEBUG"])
+    return render_template("add_book.html")
 
 
 @admin_app.route("/photos/add/request", methods=("POST",))
@@ -719,7 +718,6 @@ def manage_photos() -> Any:
         options_photos_per_page=current_app.config["OPTIONS_PHOTOS_PER_PAGE"],
         ordering_options=ordering_options,
         selected_ordering_type=order_by,
-        is_prod=not current_app.config["DEBUG"],
     )
 
 
@@ -849,7 +847,6 @@ def manage_books() -> Any:
         pagination=pagination,
         books_per_page=books_per_page,
         options_books_per_page=current_app.config["OPTIONS_BOOKS_PER_PAGE"],
-        is_prod=not current_app.config["DEBUG"],
     )
 
 
@@ -1394,7 +1391,6 @@ def lost_photos() -> Any:
         total_photos_lost_in_server=len(photos_lost_in_server),
         photos_lost_in_database=photos_lost_in_database,
         total_photos_lost_in_database=len(photos_lost_in_database),
-        is_prod=not current_app.config["DEBUG"],
     )
 
 
@@ -1449,5 +1445,4 @@ def statistics() -> Any:
         "statistics.html",
         gallery_monthly_visits=json.dumps(monthly_visits["gallery"]),
         shelf_monthly_visits=json.dumps(monthly_visits["shelf"]),
-        is_prod=not current_app.config["DEBUG"],
     )

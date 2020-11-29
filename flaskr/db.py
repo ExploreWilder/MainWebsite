@@ -72,7 +72,7 @@ def get_db():
                     current_app.config["MYSQL_DATABASE_DB"],
                 )
             else:
-                print("MySQL error %d: %s" % (int(err.args[0]), err.args[1]))
+                print("Got error {!r}, errno is {}".format(err, err.args[0]))
 
     return g.db if "db" in g else None
 

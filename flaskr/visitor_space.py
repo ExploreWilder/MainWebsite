@@ -270,7 +270,6 @@ def audit_log() -> Any:
     return render_template(
         "audit_log.html",
         full_audit_log=fetch_audit_log(session["member_id"]),
-        is_prod=not current_app.config["DEBUG"],
     )
 
 
@@ -329,7 +328,6 @@ def shelf() -> Any:
         is_logged="access_level" in session,
         total_subscribers=total_subscribers(cursor),
         current_year=current_year(),
-        is_prod=not current_app.config["DEBUG"],
     )
 
 
@@ -404,7 +402,6 @@ def story(book_id: int, story_url: str) -> Any:
         default_email=session["email"] if "email" in session else "",
         total_subscribers=total_subscribers(cursor),
         thumbnail_networks=thumbnail_networks,
-        is_prod=not current_app.config["DEBUG"],
     )
 
 
@@ -416,7 +413,6 @@ def about() -> Any:
         default_name=session["username"] if "username" in session else "",
         default_email=session["email"] if "email" in session else "",
         total_subscribers=total_subscribers(mysql.cursor()),
-        is_prod=not current_app.config["DEBUG"],
         current_year=current_year(),
     )
 
@@ -657,7 +653,6 @@ def create_password(
                 member_id=member_id,
                 newsletter_id=newsletter_id,
                 one_time_password=one_time_password,
-                is_prod=not current_app.config["DEBUG"],
             )
         new_password = escape(request.form["newPassword"])
         password_check = escape(request.form["passwordCheck"])
@@ -669,7 +664,6 @@ def create_password(
                 member_id=member_id,
                 newsletter_id=newsletter_id,
                 one_time_password=one_time_password,
-                is_prod=not current_app.config["DEBUG"],
             )
         if new_password != password_check:
             flash("Passwords different!", "danger")
@@ -679,7 +673,6 @@ def create_password(
                 member_id=member_id,
                 newsletter_id=newsletter_id,
                 one_time_password=one_time_password,
-                is_prod=not current_app.config["DEBUG"],
             )
         add_audit_log(member_id, request.remote_addr, "password_reset")
         password = werkzeug.security.generate_password_hash(
@@ -697,7 +690,6 @@ def create_password(
         return render_template(
             "create_password.html",
             show_form=False,
-            is_prod=not current_app.config["DEBUG"],
         )
     return render_template(
         "create_password.html",
@@ -705,7 +697,6 @@ def create_password(
         member_id=member_id,
         newsletter_id=newsletter_id,
         one_time_password=one_time_password,
-        is_prod=not current_app.config["DEBUG"],
     )
 
 
@@ -747,7 +738,6 @@ def change_email(member_id: int = 0, hashed_url_email: str = "") -> Any:
             return render_template(
                 "change_email_address.html",
                 show_form=True,
-                is_prod=not current_app.config["DEBUG"],
             )
         current_password = escape(request.form["currentPassword"])
         new_email_address = remove_whitespaces(escape(request.form["newEmailAddress"]))
@@ -768,21 +758,18 @@ def change_email(member_id: int = 0, hashed_url_email: str = "") -> Any:
             return render_template(
                 "change_email_address.html",
                 show_form=True,
-                is_prod=not current_app.config["DEBUG"],
             )
         if data[3] == new_email_address:
             flash("Email already sent to the new email address!", "danger")
             return render_template(
                 "change_email_address.html",
                 show_form=True,
-                is_prod=not current_app.config["DEBUG"],
             )
         if not werkzeug.security.check_password_hash(data[0], current_password):
             flash("Wrong password!", "danger")
             return render_template(
                 "change_email_address.html",
                 show_form=True,
-                is_prod=not current_app.config["DEBUG"],
             )
 
         # check if the new email address is valid and not already in the database:
@@ -793,7 +780,6 @@ def change_email(member_id: int = 0, hashed_url_email: str = "") -> Any:
             return render_template(
                 "change_email_address.html",
                 show_form=True,
-                is_prod=not current_app.config["DEBUG"],
             )
         cursor.execute(
             """SELECT email
@@ -808,7 +794,6 @@ def change_email(member_id: int = 0, hashed_url_email: str = "") -> Any:
             return render_template(
                 "change_email_address.html",
                 show_form=True,
-                is_prod=not current_app.config["DEBUG"],
             )
 
         # send the special link to the new email address:
@@ -851,7 +836,6 @@ def change_email(member_id: int = 0, hashed_url_email: str = "") -> Any:
         return render_template(
             "change_email_address.html",
             show_form=False,
-            is_prod=not current_app.config["DEBUG"],
         )
     if hashed_url_email:  # try changing the email address:
         if session["member_id"] != member_id:  # bad member connected or bad link
@@ -892,12 +876,10 @@ def change_email(member_id: int = 0, hashed_url_email: str = "") -> Any:
         return render_template(
             "change_email_address.html",
             show_form=False,
-            is_prod=not current_app.config["DEBUG"],
         )
     return render_template(
         "change_email_address.html",
         show_form=True,
-        is_prod=not current_app.config["DEBUG"],
     )
 
 
@@ -920,7 +902,6 @@ def change_password() -> Any:
             return render_template(
                 "change_password.html",
                 show_form=True,
-                is_prod=not current_app.config["DEBUG"],
             )
         current_password = escape(request.form["currentPassword"])
         new_password = escape(request.form["newPassword"])
@@ -930,14 +911,12 @@ def change_password() -> Any:
             return render_template(
                 "change_password.html",
                 show_form=True,
-                is_prod=not current_app.config["DEBUG"],
             )
         if new_password != password_check:
             flash("Passwords different!", "danger")
             return render_template(
                 "change_password.html",
                 show_form=True,
-                is_prod=not current_app.config["DEBUG"],
             )
         member_id = int(session["member_id"])
 
@@ -958,7 +937,6 @@ def change_password() -> Any:
             return render_template(
                 "change_password.html",
                 show_form=True,
-                is_prod=not current_app.config["DEBUG"],
             )
 
         # update password:
@@ -977,10 +955,10 @@ def change_password() -> Any:
         return render_template(
             "change_password.html",
             show_form=False,
-            is_prod=not current_app.config["DEBUG"],
         )
     return render_template(
-        "change_password.html", show_form=True, is_prod=not current_app.config["DEBUG"]
+        "change_password.html",
+        show_form=True,
     )
 
 
@@ -1054,7 +1032,7 @@ def unsubscribe_from_newsletter(member_id: int, newsletter_id: str) -> Any:
     )
     # render instead of redirect:
     # https://github.com/pallets/flask/issues/1168#issuecomment-314146774
-    return render_template("gallery.html", is_prod=not current_app.config["DEBUG"])
+    return render_template("gallery.html")
 
 
 @visitor_app.route("/photos", methods=("POST",))
@@ -1368,7 +1346,6 @@ def login(result: str = "", status: bool = True) -> Any:
         result=result,
         status=status,
         current_year=current_year(),
-        is_prod=not current_app.config["DEBUG"],
     )
 
 
@@ -1474,7 +1451,6 @@ def reset_password(result: str = "", status: bool = True) -> Any:
         result=result,
         status=status,
         current_year=current_year(),
-        is_prod=not current_app.config["DEBUG"],
     )
 
 
@@ -1540,7 +1516,6 @@ def index() -> Any:
         thumbnail_networks = None
     return render_template(
         "gallery.html",
-        is_prod=not current_app.config["DEBUG"],
         is_logged="access_level" in session,
         total_subscribers=total_subscribers(cursor),
         thumbnail_networks=thumbnail_networks,

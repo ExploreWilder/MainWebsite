@@ -143,7 +143,6 @@ def map_viewer(book_id: int, book_url: str, gpx_name: str, country: str) -> Any:
         gpx_download_path=gpx_download_path,
         thumbnail_networks=request.url_root + get_thumbnail_path(book_id, gpx_name),
         total_subscribers=total_subscribers(mysql.cursor()),
-        is_prod=not current_app.config["DEBUG"],
     )
 
 

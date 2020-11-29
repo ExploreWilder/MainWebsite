@@ -115,7 +115,7 @@ def create_app(is_testing: bool = False) -> Flask:
         Any caught error are considered 404 to make guesses harder.
         The HTML page is intentionally lightweight to reduce load.
         """
-        return render_template("error.html", is_prod=not app.config["DEBUG"]), 404
+        return render_template("error.html"), 404
 
     @app.errorhandler(500)
     def handle_500(  # pylint: disable=unused-argument,unused-variable; handled by Sentry
@@ -130,7 +130,6 @@ def create_app(is_testing: bool = False) -> Flask:
             render_template(
                 "internal_server_error.html",
                 sentry_event_id=sentry_sdk.last_event_id(),
-                is_prod=not app.config["DEBUG"],
             ),
             500,
         )

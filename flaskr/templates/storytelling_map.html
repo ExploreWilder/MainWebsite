@@ -11,7 +11,7 @@
     <div id="storytelling-map">
         <div id="storytelling-map-map"></div>
         <div id="storytelling-map-context"></div>
-        {% if not is_prod %}
+        {% if config.DEBUG %}
             <div id="storytelling-location-helper" class="bg-white p-2">
                 <div id="storytelling-location-helper-info">
                     "center": [?, ?],<br>
@@ -61,7 +61,7 @@
         BOOK_ID={{ book.id }};
         BOOK_DIR="{{ book.url }}";
         BOOK_FILENAME="{{ book.filename }}";
-        DEBUG_MODE={% if is_prod %}false{% else %}true{% endif %};
+        DEBUG_MODE={% if config.DEBUG %}true{% else %}false{% endif %};
     </script>
     <script nonce="{{ csp_nonce() }}" src="/static/dist-{{ config.STATIC_PACKAGE.version }}/js/storytelling_map.app.bundle.js"></script>
 {% endblock %}

@@ -29,13 +29,16 @@ const vts_config = "./app/scripts/map_player_config/*";
 /** Location of the VTS Browser JS stylesheet. */
 const vts_style = "./vendor/vts-browser.min.css";
 
+/** Bootstrap version to deploy. */
+const bootstrap_version = "4.5.3";
+
 var vendor_scripts = [
     {
         name: "visitor_space",
         scripts: [
             "./vendor/jquery-3.5.1.min.js",
             "./vendor/popper.min.js",
-            "./vendor/bootstrap-4.5.2/js/bootstrap.min.js",
+            `./vendor/bootstrap-${bootstrap_version}/js/bootstrap.min.js`,
             "./node_modules/jquery-zoom/jquery.zoom.min.js",
             "./node_modules/intersection-observer/intersection-observer.js",
             "./node_modules/scrollama/build/scrollama.min.js",
@@ -47,7 +50,7 @@ var vendor_scripts = [
             "./vendor/jquery-3.5.1.min.js",
             "./vendor/jquery-ui-1.12.1/jquery-ui.min.js",
             "./vendor/popper.min.js",
-            "./vendor/bootstrap-4.5.2/js/bootstrap.min.js",
+            `./vendor/bootstrap-${bootstrap_version}/js/bootstrap.min.js`,
             "./node_modules/jquery-zoom/jquery.zoom.min.js",
             "./node_modules/intersection-observer/intersection-observer.js",
             "./node_modules/scrollama/build/scrollama.min.js",

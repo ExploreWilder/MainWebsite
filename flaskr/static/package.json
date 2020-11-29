@@ -1,7 +1,7 @@
 {
     "name": "ExploreWilder.com",
     "private": true,
-    "version": "0.1.8",
+    "version": "0.1.9",
     "description": "The website for my photos and stories. Focus on simplicity, security, privacy, and a nice user experience!",
     "main": "main.js",
     "scripts": {
@@ -11,9 +11,9 @@
     "author": "Clement",
     "license": "BSD-3-Clause",
     "devDependencies": {
-        "@babel/core": "^7.12.3",
+        "@babel/core": "^7.12.9",
         "@babel/plugin-proposal-class-properties": "^7.12.1",
-        "@babel/preset-env": "^7.12.1",
+        "@babel/preset-env": "^7.12.7",
         "@sentry/cli": "^1.58.0",
         "gulp": "^4.0.2",
         "gulp-babel": "^8.0.0",
@@ -28,19 +28,19 @@
         "jquery": "^3.5.1",
         "less-plugin-autoprefix": "^2.0.0",
         "popper.js": "^1.16.1",
-        "prettier": "^2.1.2"
+        "prettier": "^2.2.1"
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.15.1",
-        "@sentry/browser": "^5.27.2",
-        "@sentry/tracing": "^5.27.2",
+        "@sentry/browser": "^5.27.6",
+        "@sentry/tracing": "^5.27.6",
         "bootstrap": "^4.5.3",
         "chart.js": "^2.9.4",
         "intersection-observer": "^0.11.0",
         "jquery-zoom": "^1.7.21",
         "lz-string": "^1.4.4",
-        "mapbox-gl": "^1.12.0",
-        "marked": "^1.2.2",
+        "mapbox-gl": "^1.13.0",
+        "marked": "^1.2.5",
         "scrollama": "^2.2.1",
         "tiff.js": "^1.0.0"
     }

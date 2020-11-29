@@ -285,14 +285,14 @@
             {% include "support_me.html" %}
             {% include "non_https_warning.html" %}
         {% endcache %}
-        {% if is_prod %}
+        {% if not config.DEBUG %}
             <script nonce="{{ csp_nonce() }}" src="/static/dist-{{ config.STATIC_PACKAGE.version }}/js/sentry.js"></script>
             <script nonce="{{ csp_nonce() }}" type="text/javascript">
                 Sentry.init({
                     dsn: "{{ config.SENTRY_DSN }}",
                     release: "{{ config.GIT_COMMIT }}",
                     integrations: [new Sentry.Integrations.BrowserTracing()],
-                    tracesSampleRate: 0.6
+                    tracesSampleRate: 0.8
                 });
                 {% if sentry_event_id %}
                     setTimeout(function() {
