@@ -262,6 +262,14 @@ class Config:
     }
     #: A list of CSP sections to include a per-request nonce value in.
     CSP_NONCE_IN: List[str] = ["script-src"]
+    #: List of separated/independent apps
+    APPS: List[Tuple[str, str, str]] = [
+        (
+            "Trip Intentions",
+            "Plan your trip & tell someone, it could save your life!",
+            "https://intentions.explorewilder.com/",
+        ),
+    ]
 
 
 class TestingConfig:

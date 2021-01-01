@@ -122,6 +122,29 @@
                             </a>
                         </li>
                     {% endif %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle"
+                           href="#"
+                           id="navbarAppsDropdown"
+                           role="button"
+                           data-toggle="dropdown"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                           <i class="fas fa-toolbox"></i>
+                           Apps
+                       </a>
+                       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarAppsDropdown">
+                           {% for app in config.APPS %}
+                               <a class="dropdown-item"
+                                  href="{{ app[2] }}"
+                                  title="{{ app[1] }}"
+                                  rel="noopener noreferrer"
+                                  target="_blank">
+                                   {{ app[0] }}
+                               </a>
+                           {% endfor %}
+                       </div>
+                    </li>
                     {% if request.path == "/about" %}
                         <li class="nav-item active">
                             <a class="nav-link"
