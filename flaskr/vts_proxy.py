@@ -235,12 +235,16 @@ def get_subdomain(
     return subdomains[abs(x + y) % len(subdomains)]
 
 
-@vts_proxy_app.route("/nz/<string:layer>/<int:z>/<int:x>/<int:y>.png", methods=("GET",))
+@vts_proxy_app.route(
+    "/nz/<string:layer>/<int:z>/<int:x>/<int:y>.<string:file_format>", methods=("GET",)
+)
 @same_site
-def vts_proxy_lds(layer: str, z: int, x: int, y: int) -> FlaskResponse:
+def vts_proxy_lds(
+    layer: str, z: int, x: int, y: int, file_format: str
+) -> FlaskResponse:
     """
-    Tunneling map requests to the LDS servers in order to hide the API key.
-    Help using LDS with OpenLayers:
+    Tunneling map requests to the LINZ servers in order to hide the API key.
+    Help using LINZ with OpenLayers:
     https://www.linz.govt.nz/data/linz-data-service/guides-and-documentation/using-lds-xyz-services-in-openlayers
 
     Args:
@@ -248,27 +252,28 @@ def vts_proxy_lds(layer: str, z: int, x: int, y: int) -> FlaskResponse:
         z (int): Z parameter of the XYZ request.
         x (int): X parameter of the XYZ request.
         y (int): Y parameter of the XYZ request.
+        file_format (str): The file format to receive (supported: WebP and PNG).
     """
-    mimetype = "image/png"
-    layer = escape(layer)
-    if layer == "satellite":
-        layer = "set=2"
-    elif layer == "topo":
-        layer = "layer=767"
+    mimetype = "image/" + escape(file_format)
+    if layer == "satellite" and file_format == "webp":
+        url = "https://basemaps.linz.govt.nz/v1/tiles/aerial/EPSG:3857/{}/{}/{}.webp?api={}".format(
+            z, x, y, current_app.config["LINZ_API_KEYS"]["basemaps"]
+        )
+    elif layer == "topo" and file_format == "png":
+        # https://www.linz.govt.nz/data/linz-data-service/guides-and-documentation/using-lds-xyz-services-in-leaflet
+        subdomains = "abcd"
+
+        url = "https://tiles-{}.data-cdn.linz.govt.nz/services;key={}/tiles/v4/{}/EPSG:3857/{}/{}/{}.png".format(
+            get_subdomain(x, y, subdomains),
+            current_app.config["LINZ_API_KEYS"]["lds"],
+            "layer=767",
+            z,
+            x,
+            y,
+        )
     else:
         return tile_not_found(mimetype)
 
-    # https://www.linz.govt.nz/data/linz-data-service/guides-and-documentation/using-lds-xyz-services-in-leaflet
-    subdomains = "abcd"
-
-    url = "https://tiles-{}.data-cdn.linz.govt.nz/services;key={}/tiles/v4/{}/EPSG:3857/{}/{}/{}.png".format(
-        get_subdomain(x, y, subdomains),
-        current_app.config["LDS_API_KEY"],
-        layer,
-        z,
-        x,
-        y,
-    )
     try:
         r = requests.get(url)
         r.raise_for_status()  # raise for not found tiles

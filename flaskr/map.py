@@ -625,10 +625,22 @@ def proxy_lds(layer: str, a_d: str, z: int, x: int, y: int) -> FlaskResponse:
         x (int): X parameter of the XYZ request.
         y (int): Y parameter of the XYZ request.
     """
-    mimetype = "image/png"
-    url = "https://tiles-{}.data-cdn.linz.govt.nz/services;key={}/tiles/v4/{}/EPSG:3857/{}/{}/{}.png".format(
-        escape(a_d), current_app.config["LDS_API_KEY"], escape(layer), z, x, y
-    )
+    layer = escape(layer)
+    if layer == "set=2":  # aerial
+        mimetype = "image/webp"
+        url = "https://basemaps.linz.govt.nz/v1/tiles/aerial/EPSG:3857/{}/{}/{}.webp?api={}".format(
+            z, x, y, current_app.config["LINZ_API_KEYS"]["basemaps"]
+        )
+    else:
+        mimetype = "image/png"
+        url = "https://tiles-{}.data-cdn.linz.govt.nz/services;key={}/tiles/v4/{}/EPSG:3857/{}/{}/{}.png".format(
+            escape(a_d),
+            current_app.config["LINZ_API_KEYS"]["lds"],
+            escape(layer),
+            z,
+            x,
+            y,
+        )
     try:
         r = requests.get(url)
         r.raise_for_status()  # raise for not found tiles

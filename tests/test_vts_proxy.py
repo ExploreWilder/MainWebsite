@@ -68,7 +68,7 @@ def test_otm(client):
         "/map/vts_proxy/world/topo/thunderforest/pioneer/1/0/0.png",
         "/map/vts_proxy/world/topo/thunderforest/mobile-atlas/1/0/0.png",
         "/map/vts_proxy/world/topo/thunderforest/neighbourhood/1/0/0.png",
-        "/map/vts_proxy/nz/satellite/1/0/0.png",
+        "/map/vts_proxy/nz/satellite/1/0/0.webp",
         "/map/vts_proxy/nz/topo/1/0/0.png",
         "/map/vts_proxy/ca/topo/1/0/0.png",
         "/map/vts_proxy/fr/satellite/1/0/0.jpg",

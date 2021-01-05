@@ -161,7 +161,7 @@
                 [1, 1]
             ],
             "type": "raster",
-            "url": "/map/vts_proxy/nz/satellite/{loclod}/{locx}/{locy}.png"
+            "url": "/map/vts_proxy/nz/satellite/{loclod}/{locx}/{locy}.webp"
         },
         "nz-topo": {
             "credits": ["linz"],

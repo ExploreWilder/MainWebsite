@@ -162,8 +162,11 @@ class Config:
     )
     #: Publicly available country-specific layers accessible by the map viewer app.
     MAP_LAYERS: List[str] = ["NZ", "FR", "CA", "NO", "CH"]
-    #: LDS API key.
-    LDS_API_KEY: str = "UNDISCLOSED"
+    #: LINZ API keys.
+    LINZ_API_KEYS: Dict[str, str] = {
+        "lds": "UNDISCLOSED",
+        "basemaps": "UNDISCLOSED",
+    }
     #: Thunderforest API key.
     THUNDERFOREST_API_KEY: str = "UNDISCLOSED"
     #: Microsoft Bing key.
