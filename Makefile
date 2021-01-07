@@ -153,7 +153,7 @@ ssh:
 
 py-update: venv
 	@pip install --upgrade pip && \
-	${foreach file, ${PY_REQ}, pip install --use-feature=2020-resolver -r ${file} -U}
+	${foreach file, ${PY_REQ}, pip install -r ${file} -U}
 
 js-update:
 	@cd flaskr/static && \

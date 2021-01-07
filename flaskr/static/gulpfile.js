@@ -32,6 +32,11 @@ const vts_style = "./vendor/vts-browser.min.css";
 /** Bootstrap version to deploy. */
 const bootstrap_version = "4.5.3";
 
+/** OpenLayers version to deploy.
+ * NOTE: If changed, update ``app/styles/map_viewer.less`` consequently.
+ */
+const openlayers_version = "6.5.0";
+
 var vendor_scripts = [
     {
         name: "visitor_space",
@@ -66,7 +71,7 @@ var vendor_scripts = [
     {
         name: "map_viewer",
         scripts: [
-            "./vendor/ol-6.4.3.js",
+            `./vendor/ol-${openlayers_version}.js`,
             "./node_modules/chart.js/dist/Chart.bundle.min.js",
             "./vendor/webtrack.min.js",
         ],
@@ -131,6 +136,7 @@ var sourcemaps = require("gulp-sourcemaps");
 var LessAutoprefix = require("less-plugin-autoprefix");
 var autoprefix = new LessAutoprefix({ browsers: ["last 2 versions"] });
 var uglify = require("gulp-uglify");
+var terser = require("gulp-terser"); // uglify for JS files that might be ES6+
 var concat = require("gulp-concat");
 var babel = require("gulp-babel");
 var changed = require("gulp-changed");
@@ -202,7 +208,7 @@ vendor_scripts.forEach(function (element) {
             .src(element.scripts)
             .pipe(sourcemaps.init())
             .pipe(concat(element.name + ".vendor.bundle.js"))
-            .pipe(uglify())
+            .pipe(terser())
             .pipe(sourcemaps.write("."))
             .pipe(gulp.dest(js_dest));
     });

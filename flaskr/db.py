@@ -43,17 +43,17 @@ def get_db():
     if "db" not in g:
         try:
             g.db = pymysql.connect(
-                current_app.config["MYSQL_DATABASE_HOST"],
-                current_app.config["MYSQL_DATABASE_USER"],
-                current_app.config["MYSQL_DATABASE_PASSWORD"],
-                current_app.config["MYSQL_DATABASE_DB"],
+                host=current_app.config["MYSQL_DATABASE_HOST"],
+                user=current_app.config["MYSQL_DATABASE_USER"],
+                password=current_app.config["MYSQL_DATABASE_PASSWORD"],
+                db=current_app.config["MYSQL_DATABASE_DB"],
             )
         except pymysql.Error as err:  # pragma: no cover
             if err.args[0] == 1049:  # unknown database, create it
                 g.db = pymysql.connect(
-                    current_app.config["MYSQL_DATABASE_HOST"],
-                    current_app.config["MYSQL_DATABASE_USER"],
-                    current_app.config["MYSQL_DATABASE_PASSWORD"],
+                    host=current_app.config["MYSQL_DATABASE_HOST"],
+                    user=current_app.config["MYSQL_DATABASE_USER"],
+                    password=current_app.config["MYSQL_DATABASE_PASSWORD"],
                 )
                 cursor = g.db.cursor()
                 cursor.execute(
@@ -66,10 +66,10 @@ def get_db():
                 # reconnect with the new database:
                 g.db.close()
                 g.db = pymysql.connect(
-                    current_app.config["MYSQL_DATABASE_HOST"],
-                    current_app.config["MYSQL_DATABASE_USER"],
-                    current_app.config["MYSQL_DATABASE_PASSWORD"],
-                    current_app.config["MYSQL_DATABASE_DB"],
+                    host=current_app.config["MYSQL_DATABASE_HOST"],
+                    user=current_app.config["MYSQL_DATABASE_USER"],
+                    password=current_app.config["MYSQL_DATABASE_PASSWORD"],
+                    db=current_app.config["MYSQL_DATABASE_DB"],
                 )
             else:
                 print("Got error {!r}, errno is {}".format(err, err.args[0]))
