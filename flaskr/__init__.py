@@ -48,6 +48,7 @@ from .admin_space import admin_app
 from .cache import cache
 from .kofi import kofi_app
 from .map import map_app
+from .qmapshack import qmapshack_app
 from .social_networks import share_link
 from .social_networks import social_networks_app
 from .visitor_space import visitor_app
@@ -142,6 +143,8 @@ def create_app(is_testing: bool = False) -> Flask:
     app.register_blueprint(map_app, url_prefix="/map")
     app.register_blueprint(vts_proxy_app, url_prefix="/map/vts_proxy")
     app.register_blueprint(kofi_app, url_prefix="/kofi")
+    app.register_blueprint(qmapshack_app, url_prefix="/qmapshack")
     csrf.exempt_urls("/kofi/webhook")
+    csrf.exempt_urls("/qmapshack/token/check")
 
     return app

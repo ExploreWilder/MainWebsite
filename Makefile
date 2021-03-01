@@ -39,7 +39,7 @@ help:
 	@echo "| make doc-checklinks → generate and check links of the documentation.                         |"
 	@echo "| make cloc ----------→ count the lines of code.                                               |"
 	@echo "| make gulp ----------→ run the Gulp daemon (press CTRL+C to quit).                            |"
-	@echo "| make dist ----------→ build all scripts with Gulp and run the daemon (press CTRL+C to quit). |"
+	@echo "| make dist ----------→ build all scripts with Gulp.                                           |"
 	@echo "| make git-hash ------→ print out the Git SHA1 of the last commit.                             |"
 	@echo "| make commit --------→ format, check, test, generate the documentation, and finally commit.   |"
 	@echo "| make push ----------→ push the local repo and release the commit to Sentry.                  |"

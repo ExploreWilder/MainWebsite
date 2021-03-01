@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+{% block title %}QMapShack{% endblock %}
+{% block body %}
+    <div id="outer-bg-body" data-bgsrc="/static/images/backgrounds/login.jpg"><div id="inner-bg-body"></div></div>
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-lg-8 offset-xl-2">
+                <div class="my-4 shadow p-3 bg-light rounded">
+                    <h1 class="text-center">QMapShack</h1>
+                    <h5 class="text-center my-3">
+                        Plan, edit, and share tracks on interactive and immersive maps.
+                    </h5>
+                    <p class="text-justify">
+                        If you like the <a href="https://github.com/Maproom/qmapshack/wiki" rel="noopener noreferrer" target="_blank">QMapShack</a> desktop application, and the 3D map player available in my stories, then you would also like <a href="https://github.com/ExploreWilder/qmapshack/tree/3D" rel="noopener noreferrer" target="_blank"><em>QMapShack by ExploreWilder</em></a> combining both! Notice that my implementation of QMapShack is only available on a GNU/Linux-based operating system such as Ubuntu. Only the source code of the application is currently available, so you will have to compile the project by yourself. Good luck and have a great experience!
+                    </p>
+                    <hr class="my-4">
+                    <h1 class="text-center">Token</h1>
+                    <h5 class="text-center my-3">
+                        Access to commercial-grade and government maps and data.
+                    </h5>
+                    {% if is_logged %}
+                        <form class="mx-auto form-token" style="max-width: 450px;">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="token">
+                                        Your Token:
+                                    </span>
+                                </div>
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="none"
+                                       aria-label="token"
+                                       aria-describedby="token"
+                                       id="token-output"
+                                       value="{{ token }}"
+                                       readonly
+                                />
+                                <div class="input-group-append">
+                                    <span class="input-group-text" style="display: {% if token %}inline{% else %}none{% endif %};">
+                                        <a href="#"
+                                           id="onclick-copy-token"
+                                           title="Copy to clipboard"
+                                           data-toggle="tooltip"
+                                        >
+                                            <i class="fas fa-copy text-success"></i>
+                                        </a>
+                                    </span>
+                                    <span class="input-group-text {% if not token %}rounded-right{% endif %}">
+                                        <a href="#"
+                                           id="onclick-generate-token"
+                                           title="Generate"
+                                           data-toggle="tooltip"
+                                        >
+                                            <i class="fas fa-sync text-warning"></i>
+                                        </a>
+                                    </span>
+                                    <span class="input-group-text" style="display: {% if token %}inline{% else %}none{% endif %};">
+                                        <a href="#"
+                                           id="onclick-delete-token"
+                                           title="Delete"
+                                           data-toggle="tooltip"
+                                        >
+                                            <i class="fas fa-trash-alt text-danger"></i>
+                                        </a>
+                                    </span>
+                                </div>
+                            </div>
+                        </form>
+                    {% else %}
+                        <p class="text-justify">
+                            If you want access to commercial-grade and government maps and data, please sign in. You can either spend time looking for good maps and digital elevation models, and register to data suppliers one by one, and connect them to the software, or simply use an ExploreWilder account to have one token to bring them all and in the application bind them. With this account, the application is ready to use. Configuration will be required otherwise. Don't get too excited just yet since this software version might be unstable with great but incomplete datasets depending on your country.
+                        </p>
+                        <div class="text-center mb-3">
+                            <a href="/login"
+                               class="btn btn-success mt-1"
+                               role="button">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Login
+                            </a>
+                            <a href="/about"
+                               class="btn btn-success mt-1"
+                               role="button">
+                                <i class="far fa-envelope"></i>
+                                Contact me
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="position-fixed bottom-0 right-0 p-3" style="z-index: 5; right: 0; bottom: 0;">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+            <div class="toast-header">
+                <strong class="mr-auto toast-title"></strong>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+             </div>
+             <div class="toast-body"></div>
+        </div>
+    </div>
+{% endblock %}

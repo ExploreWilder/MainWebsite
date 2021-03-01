@@ -107,6 +107,9 @@ def add_audit_log(
             * password_changed: The member successfully changed his password,
             * password_reset: The member successfully reset or created his password,
             * email_changed: The member successfully changed his email address,
+            * app_token_generated: The member successfully generated an app token (QMapShack),
+            * app_token_deleted: The member successfully deleted an app token (QMapShack),
+            * app_token_used: The member successfully checked an app token and generated a UUID (QMapShack),
             * 2fa_enabled: The member successfully enabled the 2-factor authentication,
             * 2fa_disabled: The member successfully disabled the 2-factor authentication.
     """

@@ -13,7 +13,7 @@
                 </thead>
                 <tbody>
                     {% for entry in full_audit_log %}
-                        <tr class="{% if entry[2] != 'logged_in' %}table-warning{% endif %}">
+                        <tr class="{% if entry[2] != 'logged_in' and entry[2] != 'app_token_used' %}table-warning{% endif %}">
                             <td>{{ entry[0] }}</td>
                             <td>
                                 {% if entry[2] == 'logged_in' %}
@@ -24,6 +24,12 @@
                                     Password reset
                                 {% elif entry[2] == 'email_changed' %}
                                     Email changed
+                                {% elif entry[2] == 'app_token_generated' %}
+                                    App token generated
+                                {% elif entry[2] == 'app_token_deleted' %}
+                                    App token deleted
+                                {% elif entry[2] == 'app_token_used' %}
+                                    App token used
                                 {% elif entry[2] == '2fa_enabled' %}
                                     <abbr title="2-Factor Authentication">2FA</abbr> enabled
                                 {% elif entry[2] == '2fa_disabled' %}

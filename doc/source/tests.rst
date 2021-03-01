@@ -152,3 +152,11 @@ Visitor Space
     :members:
     :undoc-members:
     :show-inheritance:
+
+QMapShack API
+-------------
+
+.. automodule:: tests.test_qmapshack
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -261,3 +261,15 @@ const mastodon_name = "ExploreWilder";
  * Link to my GitHub repository.
  */
 const my_github = "https://github.com/ExploreWilder/MainWebsite";
+
+/**
+ * URL to which the app token would be generated.
+ * Default value is "/qmapshack/token/generate" according to `flaskr.qmapshack`.
+ */
+const url_generate_app_token = "/qmapshack/token/generate";
+
+/**
+ * URL to which the app token would be deleted.
+ * Default value is "/qmapshack/token/delete" according to `flaskr.qmapshack`.
+ */
+const url_delete_app_token = "/qmapshack/token/delete";

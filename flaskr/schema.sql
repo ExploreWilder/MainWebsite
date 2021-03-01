@@ -48,7 +48,7 @@ DROP TABLE IF EXISTS `members_audit_log`;
 CREATE TABLE `members_audit_log` (
   `members_audit_log_id` int NOT NULL AUTO_INCREMENT,
   `member_id` int NOT NULL,
-  `event_description` enum('logged_in','password_changed','password_reset','email_changed','2fa_enabled','2fa_disabled') COLLATE utf8mb4_unicode_ci DEFAULT 'logged_in',
+  `event_description` enum('logged_in','password_changed','password_reset','email_changed','app_token_generated','app_token_deleted','app_token_used','2fa_enabled','2fa_disabled') COLLATE utf8mb4_unicode_ci DEFAULT 'logged_in',
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `ip` varbinary(16) DEFAULT NULL,
   PRIMARY KEY (`members_audit_log_id`)
@@ -65,6 +65,9 @@ CREATE TABLE `members` (
   `access_level` tinyint unsigned NOT NULL DEFAULT '0',
   `date_added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `future_email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `app_token` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `app_hashed_token` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `app_uuid` binary(16) DEFAULT NULL,
   PRIMARY KEY (`member_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

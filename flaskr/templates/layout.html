@@ -138,8 +138,11 @@
                                <a class="dropdown-item"
                                   href="{{ app[2] }}"
                                   title="{{ app[1] }}"
-                                  rel="noopener noreferrer"
-                                  target="_blank">
+                                  {% if "//" in app[2] %}
+                                      rel="noopener noreferrer"
+                                      target="_blank"
+                                  {% endif %}
+                               >
                                    {{ app[0] }}
                                </a>
                            {% endfor %}

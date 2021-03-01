@@ -1241,6 +1241,93 @@ function book_zoom_images() {
 }
 
 /**
+ * Show a toast with the given information (success status and brief info message).
+ */
+function show_live_toast(result) {
+    let liveToast = $("#liveToast");
+    liveToast.toast("hide"); // reset
+    liveToast.find(".toast-title").text(result.success ? "Yeah!" : "Oh no!");
+    liveToast.find(".toast-body").text(result.info);
+    liveToast.toast("show");
+}
+
+/**
+ * Generate the app token (for QMapShack).
+ */
+function generate_app_token() {
+    let clicked_link = this;
+    if ($(clicked_link).hasClass("disabled")) {
+        return false;
+    }
+    $(clicked_link).addClass("disabled");
+    $.ajax({
+        url: url_generate_app_token,
+        async: true,
+        method: "POST",
+        dataType: "json",
+        success: function (result) {
+            if (result.success) {
+                $("#token-output").val(result.info);
+                $("#onclick-generate-token")
+                    .parent("span")
+                    .removeClass("rounded-right")
+                    .show();
+                $("#onclick-copy-token, #onclick-delete-token")
+                    .parent("span")
+                    .show();
+                copy_app_token();
+                result.info = "Token generated and copied.";
+            }
+            $(clicked_link).removeClass("disabled");
+            show_live_toast(result);
+        },
+    });
+    return false;
+}
+
+/**
+ * Delete the app token (for QMapShack).
+ */
+function delete_app_token() {
+    let clicked_link = this;
+    if ($(clicked_link).hasClass("disabled")) {
+        return false;
+    }
+    $(clicked_link).addClass("disabled");
+    $.ajax({
+        url: url_delete_app_token,
+        async: true,
+        method: "POST",
+        dataType: "json",
+        success: function (result) {
+            if (result.success) {
+                $("#token-output").val("");
+                $("#onclick-copy-token, #onclick-delete-token")
+                    .parent("span")
+                    .hide();
+                $("#onclick-generate-token")
+                    .parent("span")
+                    .addClass("rounded-right")
+                    .show();
+            }
+            $(clicked_link).removeClass("disabled");
+            show_live_toast(result);
+        },
+    });
+    return false;
+}
+
+/**
+ * Copy the app token to the clipboard.
+ */
+function copy_app_token() {
+    $("#token-output").select();
+    document.execCommand("copy");
+    show_live_toast({ success: true, info: "Token copied to clipboard." });
+    return false;
+}
+
+/**
  * Open the copyright notice.
  */
 function open_modal_copyright() {
@@ -1792,6 +1879,13 @@ $(function () {
         trigger: "hover",
     });
 
+    $('.form-token a[data-toggle="tooltip"]').tooltip({
+        animation: true,
+        offset: "left: 20px",
+        placement: "right",
+        trigger: "hover",
+    });
+
     $(".tweetable-button").each(function () {
         // by button event to not propagate the change to other buttons
         $(this).click(function () {
@@ -1820,6 +1914,9 @@ $(function () {
         url_anchor_to_this_id
     );
     $("#onclick-password-reset").click(login_to_password_reset_form);
+    $("#onclick-generate-token").click(generate_app_token);
+    $("#onclick-delete-token").click(delete_app_token);
+    $("#onclick-copy-token").click(copy_app_token);
     cookie_policy_consent();
     subscribe_newsletter();
 
