@@ -70,6 +70,8 @@ import pytest
         "/audit_log",  # restricted to members
         "/social_networks/twitter/my_timeline",  # POST only
         "/social_networks/mastodon/my_timeline",  # POST only
+        "/qmapshack/token/generate",  # POST only
+        "/qmapshack/token/delete",  # POST only
     ),
 )
 def test_restricted_access_denied(files, client, path):

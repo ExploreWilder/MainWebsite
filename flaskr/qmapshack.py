@@ -29,13 +29,28 @@
 #
 
 """
-Server app for handling data for the customized QMapShack software.
+App handling the member token for the customized QMapShack software.
+The app also forwards map tiles requiring a registered account to third parties
+including Thunderforest, Microsoft Bing, LINZ (New Zealand), and IGN (France).
 """
+
+# pylint: disable=invalid-name; allow one letter variables (f.i. x, y, z)
+# pylint: disable=line-too-long; allow long URLs
 
 from .db import get_db
 from .utils import *
 from .visitor_space import add_audit_log
 from .vts_proxy import download_bing_metadata
+
+#: IGN parameters used for all IGN layers.
+IGN_COMMON_PARAMS = {
+    "style": "normal",
+    "tilematrixset": "PM",
+    "Service": "WMTS",
+    "Request": "GetTile",
+    "Version": "1.0.0",
+    "Format": "image/jpeg",
+}
 
 qmapshack_app = Blueprint("qmapshack_app", __name__)
 mysql = LocalProxy(get_db)
@@ -176,3 +191,160 @@ def delete_token() -> FlaskResponse:
     mysql.commit()
     add_audit_log(member_id, request.remote_addr, "app_token_deleted")
     return basic_json(True, "Token successfully deleted.")
+
+
+def valid_app_uuid(view: Any) -> Any:
+    """ Check that the UUID is registered. """
+
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if request.headers.get("User-Agent") != "QMapShack":
+            return "Bad Request", 400
+        try:
+            http_authorization = request.headers.get("Authorization").split(" ")
+            if http_authorization[0] != "Basic":
+                return "Bad Request", 400
+            _, uuid = base64.b64decode(http_authorization[1]).decode().split(":")
+        except Exception:  # pylint: disable=broad-except
+            return "Bad Request", 400
+        try:
+            cursor = mysql.cursor()
+            cursor.execute(
+                """SELECT member_id
+                FROM members
+                WHERE app_uuid=UNHEX('{tmp_uuid}')
+                AND access_level>0
+                AND app_token IS NOT NULL
+                AND app_hashed_token IS NOT NULL""".format(
+                    tmp_uuid=escape(uuid),
+                )
+            )
+        except pymysql.err.OperationalError:  # pragma: no cover
+            return "Bad UUID", 400
+        member_data = cursor.fetchone()
+        if cursor.rowcount == 0 or not member_data:
+            return "Bad UUID", 400
+        return view(**kwargs)
+
+    return wrapped_view
+
+
+@qmapshack_app.route(
+    "/map/thunderforest/<string:layer>/<int:z>/<int:x>/<int:y>.png",
+    methods=("GET",),
+)
+@valid_app_uuid
+def proxy_thunderforest(layer: str, z: int, x: int, y: int) -> FlaskResponse:
+    """
+    Tunneling map requests to the Thunderforest servers in order to hide the API key.
+    Other tile layer URLs: https://manage.thunderforest.com/dashboard
+
+    Args:
+        layer (str): Tile layer.
+        z (int): Z parameter of the XYZ request.
+        x (int): X parameter of the XYZ request.
+        y (int): Y parameter of the XYZ request.
+    """
+    mimetype = "image/png"
+    layer = escape(layer)
+    if layer not in (
+        "cycle",
+        "transport",
+        "landscape",
+        "outdoors",
+    ):
+        return tile_not_found(mimetype)  # pragma: no cover
+    url = "https://tile.thunderforest.com/{}/{}/{}/{}.png?apikey={}".format(
+        layer, z, x, y, current_app.config["THUNDERFOREST_API_KEY"]
+    )
+    try:
+        r = requests.get(url)
+        r.raise_for_status()  # raise for not found tiles
+    except requests.exceptions.HTTPError:  # pragma: no cover
+        return tile_not_found(mimetype)
+    return Response(r.content, mimetype=mimetype)
+
+
+@qmapshack_app.route(
+    "/map/fr/<string:layer>/<int:z>/<int:x>/<int:y>.jpg",
+    methods=("GET",),
+)
+@valid_app_uuid
+def proxy_ign(layer: str, z: int, x: int, y: int) -> FlaskResponse:
+    """
+    Tunneling map requests to the IGN servers in order to hide the API key.
+    """
+    layer = escape(layer)
+    mimetype = "image/jpeg"
+    if layer == "satellite":
+        layer = "ORTHOIMAGERY.ORTHOPHOTOS"
+    elif layer == "topo":
+        layer = "GEOGRAPHICALGRIDSYSTEMS.MAPS"
+    else:
+        return tile_not_found(mimetype)  # pragma: no cover
+
+    url = "https://{}:{}@wxs.ign.fr/{}/geoportail/wmts?layer={}&{}&TileMatrix={}&TileCol={}&TileRow={}".format(
+        current_app.config["IGN"]["username"],
+        current_app.config["IGN"]["password"],
+        current_app.config["IGN"]["app"],
+        layer,
+        params_urlencode(IGN_COMMON_PARAMS),
+        z,
+        x,
+        y,
+    )
+
+    try:
+        # timeout to avoid freezing the map, 12 seconds is sometimes not enough!
+        r = requests.get(url, timeout=12)
+        # raise for not found tiles
+        r.raise_for_status()
+    except requests.exceptions.HTTPError:  # pragma: no cover
+        return tile_not_found(mimetype)
+    return Response(r.content, mimetype=mimetype)
+
+
+@qmapshack_app.route(
+    "/map/nz/<string:layer>/<int:z>/<int:x>/<int:y>.<string:file_format>",
+    methods=("GET",),
+)
+@valid_app_uuid
+def proxy_lds(layer: str, z: int, x: int, y: int, file_format: str) -> FlaskResponse:
+    """
+    Tunneling map requests to the LINZ servers in order to hide the API key.
+    Help using LINZ with OpenLayers:
+    https://www.linz.govt.nz/data/linz-data-service/guides-and-documentation/using-lds-xyz-services-in-openlayers
+
+    Notes:
+        WebP format currently not handled by QMapShack.
+
+    Args:
+        layer (str): satellite or topo. The layer type is replaced to the actual tile name.
+        z (int): Z parameter of the XYZ request.
+        x (int): X parameter of the XYZ request.
+        y (int): Y parameter of the XYZ request.
+        file_format (str): The file format to receive (supported: WebP and PNG).
+    """
+    mimetype = "image/" + escape(file_format)
+    if layer == "satellite" and file_format == "webp":
+        url = "https://basemaps.linz.govt.nz/v1/tiles/aerial/EPSG:3857/{}/{}/{}.webp?api={}".format(
+            z, x, y, current_app.config["LINZ_API_KEYS"]["basemaps"]
+        )
+    elif layer == "topo" and file_format == "png":
+        url = "https://tiles-{}.data-cdn.linz.govt.nz/services;key={}/tiles/v4/{}/EPSG:3857/{}/{}/{}.png".format(
+            "d",
+            current_app.config["LINZ_API_KEYS"]["lds"],
+            "layer=767",
+            z,
+            x,
+            y,
+        )
+    else:
+        return tile_not_found(mimetype)  # pragma: no cover
+
+    try:
+        r = requests.get(url)
+        r.raise_for_status()  # raise for not found tiles
+    except requests.exceptions.HTTPError:  # pragma: no cover
+        return tile_not_found(mimetype)
+    return Response(r.content, mimetype=mimetype)

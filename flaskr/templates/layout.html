@@ -252,6 +252,11 @@
                                    <i class="far fa-eye"></i> Audit Log
                                     {% if request.path == "/audit_log" %}<span class="sr-only">(current)</span>{% endif %}
                                 </a>
+                                <a class="dropdown-item{% if "qmapshack" in request.path %} active{% endif %}"
+                                   href="/qmapshack/#token">
+                                   <i class="fab fa-keycdn"></i> App Token
+                                    {% if "qmapshack" in request.path %}<span class="sr-only">(current)</span>{% endif %}
+                                </a>
                             </div>
                         </li>
                     {% endif %}

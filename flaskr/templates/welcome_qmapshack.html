@@ -13,11 +13,50 @@
                     <p class="text-justify">
                         If you like the <a href="https://github.com/Maproom/qmapshack/wiki" rel="noopener noreferrer" target="_blank">QMapShack</a> desktop application, and the 3D map player available in my stories, then you would also like <a href="https://github.com/ExploreWilder/qmapshack/tree/3D" rel="noopener noreferrer" target="_blank"><em>QMapShack by ExploreWilder</em></a> combining both! Notice that my implementation of QMapShack is only available on a GNU/Linux-based operating system such as Ubuntu. Only the source code of the application is currently available, so you will have to compile the project by yourself. Good luck and have a great experience!
                     </p>
-                    <hr class="my-4">
-                    <h1 class="text-center">Token</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row mt-4">
+            <div class="col mx-4">
+                <img src="/static/images/qmapshack/overview.webp" alt="Screenshot" class="img-fluid rounded shadow mx-auto d-block" />
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-lg-8 offset-xl-2">
+                <div class="my-4 shadow p-3 bg-light rounded">
+                    <h1 class="text-center">Play Now</h1>
                     <h5 class="text-center my-3">
                         Access to commercial-grade and government maps and data.
                     </h5>
+                    {% if not is_logged %}
+                        <p class="text-justify">
+                            If you want access to commercial-grade and government maps and data, please sign in. You can either spend time looking for good maps and digital elevation models, and register to data suppliers one by one, and connect them to the software, or simply use an ExploreWilder account to have one token to bring them all and in the application bind them. With this account, the application is ready to use. Configuration will be required otherwise. Don't get too excited just yet since this software version might be unstable with great but incomplete datasets depending on your country.
+                        </p>
+                        <h5 class="text-center my-3">
+                            Ready to use maps:
+                        </h5>
+                    {% endif %}
+                    <p>2D maps:</p>
+                    <ul>
+                        <li>OpenTopoMap + Waymarked Trails Hiking</li>
+                        <li>Thunderforest Outdoors / Landscape / Cycle / Transport</li>
+                        <li>New Zealand Topo50 (LINZ)</li>
+                        <li>France Topo25 (IGN)</li>
+                        <li>France Aerial Imagery (IGN)</li>
+                        <li>Norway Topo (Kartverket)</li>
+                        <li>ArcGIS World Imagery</li>
+                    </ul>
+                    <p>3D maps:</p>
+                    <ul>
+                        <li>Aerial Imagery: Microsoft Bing</li>
+                        <li>Digital Elevation Model: Jonathan de Ferranti</li>
+                        <li>Geodata: OpenStreetMap + Peaklist + MapTiler</li>
+                    </ul>
+                    <hr class="my-4">
                     {% if is_logged %}
                         <form class="mx-auto form-token" style="max-width: 450px;">
                             <div class="input-group mb-3">
@@ -66,19 +105,19 @@
                                 </div>
                             </div>
                         </form>
-                    {% else %}
-                        <p class="text-justify">
-                            If you want access to commercial-grade and government maps and data, please sign in. You can either spend time looking for good maps and digital elevation models, and register to data suppliers one by one, and connect them to the software, or simply use an ExploreWilder account to have one token to bring them all and in the application bind them. With this account, the application is ready to use. Configuration will be required otherwise. Don't get too excited just yet since this software version might be unstable with great but incomplete datasets depending on your country.
+                        <p class="text-center small">
+                            (<a href="#" class="onclick-open-modal-copyright">keep this token to yourself</a>)
                         </p>
+                    {% else %}
                         <div class="text-center mb-3">
                             <a href="/login"
-                               class="btn btn-success mt-1"
+                               class="btn btn-success mt-1 trigger-bg-colors"
                                role="button">
                                 <i class="fas fa-sign-in-alt"></i>
                                 Login
                             </a>
                             <a href="/about"
-                               class="btn btn-success mt-1"
+                               class="btn btn-success mt-1 trigger-bg-colors"
                                role="button">
                                 <i class="far fa-envelope"></i>
                                 Contact me
@@ -100,4 +139,5 @@
              <div class="toast-body"></div>
         </div>
     </div>
+    {% include "copyright_notice.html" %}
 {% endblock %}

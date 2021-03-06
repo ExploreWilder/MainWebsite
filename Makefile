@@ -152,8 +152,8 @@ ssh:
 	@ssh -p ${SERVER_PORT} ${SERVER_ADDR}
 
 py-update: venv
-	@pip install --upgrade pip && \
-	${foreach file, ${PY_REQ}, pip install -r ${file} -U}
+	pip3 install --upgrade pip \
+	${foreach file, ${PY_REQ}, && pip3 install -r ${file} -U}
 
 js-update:
 	@cd flaskr/static && \

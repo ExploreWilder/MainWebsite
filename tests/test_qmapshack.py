@@ -28,6 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+import base64
 import hashlib
 
 import pytest
@@ -113,3 +114,65 @@ def test_generate_check_delete_token(client, auth, app):
         )
         entry = cursor.fetchone()
         assert entry[0] == 2
+
+
+@pytest.mark.parametrize(
+    "path",
+    (
+        "token/generate",
+        "token/delete",
+    ),
+)
+def test_restricted_access_denied(client, path):
+    """
+    Visitors not logged, XHR request denied.
+    """
+    rv = client.post("/qmapshack/" + path, follow_redirects=True)
+    assert rv.status_code == 404 or b"Password required" in rv.data
+
+
+def test_uuid_restricted_requests(client, auth):
+    """ Check data access and availability. """
+
+    auth.login()
+    rv = client.post("/qmapshack/token/generate")
+    returned_json = json.loads(rv.data)
+    token = returned_json["info"]
+    hashed_token = hashlib.sha512(token.encode()).hexdigest()
+    app_uuid = b"13106ad0d0654eef821dfa436a656853"
+    bad_app_uuid = b"03106ad0d0654eef821dfa436a656853"
+    rv = client.post(
+        "/qmapshack/token/check", data=dict(hashed_token=hashed_token, uuid=app_uuid)
+    )
+    all_links = (
+        "thunderforest/outdoors/1/0/0.png",
+        "thunderforest/landscape/1/0/0.png",
+        "thunderforest/cycle/1/0/0.png",
+        "thunderforest/transport/1/0/0.png",
+        "nz/satellite/1/0/0.webp",
+        "nz/topo/1/0/0.png",
+        "fr/satellite/1/0/0.jpg",
+        "fr/topo/1/0/0.jpg",
+    )
+    for link in all_links:
+        full_path = "/qmapshack/map/" + link
+        rv = client.get(full_path)
+        assert rv.status_code == 400 and b"Bad Request" in rv.data
+        encoded_authorization = base64.b64encode((b"ExploreWilder:" + bad_app_uuid))
+        rv = client.get(
+            full_path,
+            headers=[
+                ("Authorization", b"Basic " + encoded_authorization),
+                ("User-Agent", "QMapShack"),
+            ],
+        )
+        assert rv.status_code == 400 and b"Bad UUID" in rv.data
+        encoded_authorization = base64.b64encode((b"ExploreWilder:" + app_uuid))
+        rv = client.get(
+            full_path,
+            headers=[
+                ("Authorization", b"Basic " + encoded_authorization),
+                ("User-Agent", "QMapShack"),
+            ],
+        )
+        assert rv.status_code == 200
