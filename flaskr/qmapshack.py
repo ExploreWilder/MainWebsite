@@ -137,6 +137,7 @@ def check_token() -> FlaskResponse:
         "success": True,
         "member_id": member_id,
         "username": member_data[1],
+        "mapbox_token": current_app.config["MAPBOX_PUB_KEY"],
         "bing_url": url.format(
             subdomain="{alt(" + ",".join(subdomains) + ")}",
             quadkey="{quad(loclod,locx,locy)}",
@@ -193,8 +194,35 @@ def delete_token() -> FlaskResponse:
     return basic_json(True, "Token successfully deleted.")
 
 
-def valid_app_uuid(view: Any) -> Any:
+def is_valid_uuid(uuid: str) -> bool:
     """ Check that the UUID is registered. """
+    if not uuid:
+        return False
+    try:
+        cursor = mysql.cursor()
+        cursor.execute(
+            """SELECT member_id
+            FROM members
+            WHERE app_uuid=UNHEX('{tmp_uuid}')
+            AND access_level>0
+            AND app_token IS NOT NULL
+            AND app_hashed_token IS NOT NULL""".format(
+                tmp_uuid=escape(uuid),
+            )
+        )
+    except pymysql.err.OperationalError:  # pragma: no cover
+        return False
+    member_data = cursor.fetchone()
+    if cursor.rowcount == 0 or not member_data:
+        return False
+    return True
+
+
+def valid_app_uuid(view: Any) -> Any:
+    """
+    Wrapper checking the User Agent and the UUID in the Authorization (Basic) HTTP Raw Header.
+    This is used for the QMapShack 2D maps.
+    """
 
     @functools.wraps(view)
     def wrapped_view(**kwargs):
@@ -207,22 +235,7 @@ def valid_app_uuid(view: Any) -> Any:
             _, uuid = base64.b64decode(http_authorization[1]).decode().split(":")
         except Exception:  # pylint: disable=broad-except
             return "Bad Request", 400
-        try:
-            cursor = mysql.cursor()
-            cursor.execute(
-                """SELECT member_id
-                FROM members
-                WHERE app_uuid=UNHEX('{tmp_uuid}')
-                AND access_level>0
-                AND app_token IS NOT NULL
-                AND app_hashed_token IS NOT NULL""".format(
-                    tmp_uuid=escape(uuid),
-                )
-            )
-        except pymysql.err.OperationalError:  # pragma: no cover
-            return "Bad UUID", 400
-        member_data = cursor.fetchone()
-        if cursor.rowcount == 0 or not member_data:
+        if not is_valid_uuid(uuid):
             return "Bad UUID", 400
         return view(**kwargs)
 
@@ -270,9 +283,10 @@ def proxy_thunderforest(layer: str, z: int, x: int, y: int) -> FlaskResponse:
     methods=("GET",),
 )
 @valid_app_uuid
-def proxy_ign(layer: str, z: int, x: int, y: int) -> FlaskResponse:
+def proxy_ign_auth_http_header(layer: str, z: int, x: int, y: int) -> FlaskResponse:
     """
     Tunneling map requests to the IGN servers in order to hide the API key.
+    The QMapShack map (2D) is configurable with the HTTP Raw Header (Authorization).
     """
     layer = escape(layer)
     mimetype = "image/jpeg"
@@ -305,6 +319,40 @@ def proxy_ign(layer: str, z: int, x: int, y: int) -> FlaskResponse:
 
 
 @qmapshack_app.route(
+    "/3d/map/fr/satellite/<int:z>/<int:x>/<int:y>.jpg",
+    methods=("GET",),
+)
+def proxy_ign_auth_url(z: int, x: int, y: int) -> FlaskResponse:
+    """
+    Tunneling map requests to the IGN servers in order to hide the API key.
+    The VTS Browser CPP (3D) is configurable with the URL in the mapConfig.
+    The 3D map is used for terrain analysis, so only the satellite layer is displayed.
+    """
+    mimetype = "image/jpeg"
+    uuid = request.args.get("access_token", "")
+    if not uuid:
+        return "Bad Request", 400
+    if not is_valid_uuid(uuid):
+        return "Bad UUID", 400
+    url = "https://{}:{}@wxs.ign.fr/{}/geoportail/wmts?layer={}&{}&TileMatrix={}&TileCol={}&TileRow={}".format(
+        current_app.config["IGN"]["username"],
+        current_app.config["IGN"]["password"],
+        current_app.config["IGN"]["app"],
+        "ORTHOIMAGERY.ORTHOPHOTOS",
+        params_urlencode(IGN_COMMON_PARAMS),
+        z,
+        x,
+        y,
+    )
+    try:
+        r = requests.get(url, timeout=12)
+        r.raise_for_status()
+    except requests.exceptions.HTTPError:  # pragma: no cover
+        return tile_not_found(mimetype)
+    return Response(r.content, mimetype=mimetype)
+
+
+@qmapshack_app.route(
     "/map/nz/<string:layer>/<int:z>/<int:x>/<int:y>.<string:file_format>",
     methods=("GET",),
 )
@@ -316,7 +364,7 @@ def proxy_lds(layer: str, z: int, x: int, y: int, file_format: str) -> FlaskResp
     https://www.linz.govt.nz/data/linz-data-service/guides-and-documentation/using-lds-xyz-services-in-openlayers
 
     Notes:
-        WebP format currently not handled by QMapShack.
+        WebP format currently not handled by the software.
 
     Args:
         layer (str): satellite or topo. The layer type is replaced to the actual tile name.

@@ -144,6 +144,7 @@ def test_uuid_restricted_requests(client, auth):
     rv = client.post(
         "/qmapshack/token/check", data=dict(hashed_token=hashed_token, uuid=app_uuid)
     )
+
     all_links = (
         "thunderforest/outdoors/1/0/0.png",
         "thunderforest/landscape/1/0/0.png",
@@ -175,4 +176,14 @@ def test_uuid_restricted_requests(client, auth):
                 ("User-Agent", "QMapShack"),
             ],
         )
+        assert rv.status_code == 200
+
+    all_links = ("3d/map/fr/satellite/1/0/0.jpg",)
+    for link in all_links:
+        full_path = "/qmapshack/" + link
+        rv = client.get(full_path)
+        assert rv.status_code == 400 and b"Bad Request" in rv.data
+        rv = client.get(full_path + "?access_token=" + bad_app_uuid.decode())
+        assert rv.status_code == 400 and b"Bad UUID" in rv.data
+        rv = client.get(full_path + "?access_token=" + app_uuid.decode())
         assert rv.status_code == 200

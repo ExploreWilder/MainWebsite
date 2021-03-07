@@ -1886,6 +1886,12 @@ $(function () {
         trigger: "hover",
     });
 
+    $('span.qmapshack-copyright-top[data-toggle="tooltip"]').tooltip({
+        animation: true,
+        placement: "top",
+        trigger: "hover",
+    });
+
     $(".tweetable-button").each(function () {
         // by button event to not propagate the change to other buttons
         $(this).click(function () {
