@@ -1,7 +1,7 @@
 {
     "name": "ExploreWilder.com",
     "private": true,
-    "version": "0.2.2",
+    "version": "0.2.3",
     "description": "The website for my photos and stories. Focus on simplicity, security, privacy, and a nice user experience!",
     "main": "main.js",
     "scripts": {
@@ -11,10 +11,10 @@
     "author": "Clement",
     "license": "BSD-3-Clause",
     "devDependencies": {
-        "@babel/core": "^7.12.10",
-        "@babel/plugin-proposal-class-properties": "^7.12.1",
-        "@babel/preset-env": "^7.12.11",
-        "@sentry/cli": "^1.61.0",
+        "@babel/core": "^7.13.10",
+        "@babel/plugin-proposal-class-properties": "^7.13.0",
+        "@babel/preset-env": "^7.13.10",
+        "@sentry/cli": "^1.63.1",
         "gulp": "^4.0.2",
         "gulp-babel": "^8.0.0",
         "gulp-changed": "^4.0.2",
@@ -26,22 +26,22 @@
         "gulp-sourcemaps": "^2.6.5",
         "gulp-terser": "^2.0.1",
         "gulp-uglify": "^3.0.2",
-        "jquery": "^3.5.1",
+        "jquery": "^3.6.0",
         "less-plugin-autoprefix": "^2.0.0",
         "popper.js": "^1.16.1",
         "prettier": "^2.2.1"
     },
     "dependencies": {
-        "@fortawesome/fontawesome-free": "^5.15.1",
-        "@sentry/browser": "^5.29.2",
-        "@sentry/tracing": "^5.29.2",
-        "bootstrap": "^4.5.3",
+        "@fortawesome/fontawesome-free": "^5.15.2",
+        "@sentry/browser": "^5.30.0",
+        "@sentry/tracing": "^5.30.0",
+        "bootstrap": "^4.6.0",
         "chart.js": "^2.9.4",
         "intersection-observer": "^0.11.0",
         "jquery-zoom": "^1.7.21",
         "lz-string": "^1.4.4",
-        "mapbox-gl": "^1.13.0",
-        "marked": "^1.2.7",
+        "mapbox-gl": "^1.13.1",
+        "marked": "^1.2.9",
         "scrollama": "^2.2.1",
         "tiff.js": "^1.0.0"
     }

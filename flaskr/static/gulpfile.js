@@ -30,18 +30,21 @@ const vts_config = "./app/scripts/map_player_config/*";
 const vts_style = "./vendor/vts-browser.min.css";
 
 /** Bootstrap version to deploy. */
-const bootstrap_version = "4.5.3";
+const bootstrap_version = "4.6.0";
 
 /** OpenLayers version to deploy.
  * NOTE: If changed, update ``app/styles/map_viewer.less`` consequently.
  */
 const openlayers_version = "6.5.0";
 
+/** jQuery version to deploy. */
+const jquery_version = "3.6.0";
+
 var vendor_scripts = [
     {
         name: "visitor_space",
         scripts: [
-            "./vendor/jquery-3.5.1.min.js",
+            `./vendor/jquery-${jquery_version}.min.js`,
             "./vendor/popper.min.js",
             `./vendor/bootstrap-${bootstrap_version}/js/bootstrap.min.js`,
             "./node_modules/jquery-zoom/jquery.zoom.min.js",
@@ -52,7 +55,7 @@ var vendor_scripts = [
     {
         name: "admin_space",
         scripts: [
-            "./vendor/jquery-3.5.1.min.js",
+            `./vendor/jquery-${jquery_version}.min.js`,
             "./vendor/jquery-ui-1.12.1/jquery-ui.min.js",
             "./vendor/popper.min.js",
             `./vendor/bootstrap-${bootstrap_version}/js/bootstrap.min.js`,
