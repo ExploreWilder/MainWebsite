@@ -144,6 +144,9 @@
                                   {% endif %}
                                >
                                    {{ app[0] }}
+                                   {% if app[3] == "new" %}
+                                      <span class="badge badge-warning">New</span>
+                                   {% endif %}
                                </a>
                            {% endfor %}
                        </div>

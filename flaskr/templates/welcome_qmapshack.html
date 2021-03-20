@@ -6,26 +6,10 @@
         <div class="row my-4">
             <div class="col-lg-8 offset-xl-2">
                 <div class="my-4 shadow p-3 bg-light rounded">
-                    <h1 class="text-center">QMapShack</h1>
+                    <h1 class="text-center">QMapShack3D</h1>
                     <h5 class="text-center my-3">
                         Plan, edit, and share tracks on interactive and immersive maps.
                     </h5>
-                    <p class="text-justify">
-                        If you like the <a href="https://github.com/Maproom/qmapshack/wiki" rel="noopener noreferrer" target="_blank">QMapShack</a> desktop application, and the 3D map player available in my stories, then you would also like <a href="https://github.com/ExploreWilder/qmapshack/tree/3D" rel="noopener noreferrer" target="_blank"><em>QMapShack by ExploreWilder</em></a> combining both! Notice that my implementation of QMapShack is only available on a GNU/Linux-based operating system such as Ubuntu. Only the source code of the application is currently available, so you will have to compile the project by yourself. Good luck and have a great experience!
-                    </p>
-                    <p class="text-center mt-4">Currently supported operating systems:</p>
-                    <div class="container">
-                        <div class="row text-center">
-                            <div class="col-4 offset-2">
-                                <img src="/static/images/qmapshack/UbuntuLogo.png" alt=" " class="mb-2" /><br />
-                                <strong>Ubuntu</strong>
-                            </div>
-                            <div class="col-4">
-                                <img src="/static/images/qmapshack/DebianLogo.png" alt=" " class="mb-2" /><br />
-                                <strong>Debian</strong>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -367,6 +351,100 @@
                             </a>
                         </div>
                     {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-lg-8 offset-xl-2">
+                <div class="mb-4 shadow p-3 bg-light rounded">
+                    <h1 class="text-center">Download For Linux</h1>
+                    {% set appimage_filename = 'QMapShack_1.15.2~1-1_amd64.AppImage' %}
+                    {% set deb_filename = 'qmapshack3d_1.15.2~1-1_amd64.deb' %}
+                    {% set pgp_short_id = '75CE8AD0' %}
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" id="install-appimage-tab" data-toggle="tab" href="#install-appimage" role="tab" aria-controls="install-appimage" aria-selected="true">AppImage</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="install-deb-tab" data-toggle="tab" href="#install-deb" role="tab" aria-controls="install-deb" aria-selected="false">DEB Package</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="install-appimage" role="tabpanel" aria-labelledby="install-appimage-tab">
+                            <p class="mt-4">
+                                <a href="https://appimage.org/"
+                                   rel="noopener noreferrer"
+                                   target="_blank">What is an AppImage?</a>
+                            </p>
+                            <h5 class="my-3">
+                                Requirements:
+                            </h5>
+                            <ul>
+                              <li>Your system architecture is <strong>amd64</strong></li>
+                              <li>Your system is up to date</li>
+                            </ul>
+
+                            <h5 class="my-3">
+                                Download:
+                            </h5>
+                            <p class="small text-muted mb-2">Download Size: 174 MiB</p>
+                            <kbd>wget <span class="select-all">https://explorewilder.com/download/{{ appimage_filename }}</span></kbd>
+                            <p class="small mt-2">
+                                <a href="/download/{{ appimage_filename }}.asc"
+                                   rel="noopener noreferrer"
+                                   target="_blank">PGP Signature</a> / 
+                                <a href="https://raw.githubusercontent.com/ExploreWilder/MainWebsite/master/public.gpg"
+                                   rel="noopener noreferrer"
+                                   target="_blank">My PGP Public Key</a> ({{ pgp_short_id }}) /
+                                <a href="https://github.com/ExploreWilder/qmapshack/tree/3D"
+                                   rel="noopener noreferrer"
+                                   target="_blank">Source on GitHub</a>
+                            </p>
+
+                            <h5 class="my-3">
+                                Install &amp; Run:
+                            </h5>
+                            <p>
+                                <kbd class="select-all">chmod a+x QMapShack_*.AppImage</kbd> then 
+                                <kbd class="select-all">./QMapShack_*.AppImage</kbd>
+                            </p>
+                        </div>
+                        <div class="tab-pane fade" id="install-deb" role="tabpanel" aria-labelledby="install-deb-tab">
+                            <h5 class="my-3">
+                                Requirements:
+                            </h5>
+                            <ul>
+                              <li>Your operating system is <strong>Ubuntu</strong> or <strong>Debian</strong></li>
+                              <li>Your system architecture is <strong>amd64</strong></li>
+                              <li>Your system is up to date</li>
+                              <li>You have admin rights</li>
+                            </ul>
+
+                            <h5 class="my-3">
+                                Download:
+                            </h5>
+                            <p class="small text-muted mb-2">Download Size: 36 MiB</p>
+                            <kbd>wget <span class="select-all">https://explorewilder.com/download/{{ deb_filename }}</span></kbd>
+                            <p class="small mt-2">
+                                <a href="/download/{{ deb_filename }}.asc"
+                                   rel="noopener noreferrer"
+                                   target="_blank">PGP Signature</a> / 
+                                <a href="https://raw.githubusercontent.com/ExploreWilder/MainWebsite/master/public.gpg"
+                                   rel="noopener noreferrer"
+                                   target="_blank">My PGP Public Key</a> ({{ pgp_short_id }}) /
+                                <a href="https://github.com/ExploreWilder/qmapshack/tree/3D"
+                                   rel="noopener noreferrer"
+                                   target="_blank">Source on GitHub</a>
+                            </p>
+
+                            <h5 class="my-3">
+                                Install:
+                            </h5>
+                            <p><kbd class="select-all">sudo apt install ./qmapshack3d_1.15.2~1-1_amd64.deb</kbd></p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
