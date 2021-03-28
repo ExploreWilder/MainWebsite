@@ -78,6 +78,7 @@ def welcome_page() -> Any:
         "welcome_qmapshack.html",
         is_logged="access_level" in session,
         token=token,
+        thumbnail_networks=request.url_root + "static/images/qmapshack/overview.png"
     )
 
 

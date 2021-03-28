@@ -1,15 +1,52 @@
 {% extends "layout.html" %}
-{% block title %}QMapShack{% endblock %}
+{% block title %}QMapShack3D{% endblock %}
 {% block body %}
     <div id="outer-bg-body" data-bgsrc="/static/images/backgrounds/login.jpg"><div id="inner-bg-body"></div></div>
     <div class="container">
         <div class="row my-4">
             <div class="col-lg-8 offset-xl-2">
                 <div class="my-4 shadow p-3 bg-light rounded">
-                    <h1 class="text-center">QMapShack3D</h1>
-                    <h5 class="text-center my-3">
-                        Plan, edit, and share tracks on interactive and immersive maps.
-                    </h5>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-2 p-0">
+                                <img src="/static/images/qmapshack/QMapShack.png" alt=" " class="rounded" />
+                            </div>
+                            <div class="col-lg-10 p-0">
+                                <h1 class="text-center mt-3">QMapShack3D</h1>
+                                <h5 class="text-center my-3">
+                                    Plan, edit, and share tracks on interactive and immersive maps.
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <p class="text-center"><strong>Key Features:</strong></p>
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <i class="fas fa-check mr-2"></i>
+                            Load online/offline maps,
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check mr-2"></i>
+                            Commercial-grade and government maps and data ready to use,
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check mr-2"></i>
+                            Highly configurable 2D map viewer and a real 3D world,
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check mr-2"></i>
+                            Support for tracks, routes, waypoints and areas,
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check mr-2"></i>
+                            Create, edit, save GPX files and other formats.
+                        </li>
+                    </ul>
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Basically, QMapShack3D is <a href="https://github.com/Maproom/qmapshack/wiki" target="_blank" rel="noopener noreferrer" class="alert-link">QMapShack</a> plus 3D and maps.
+                    </div>
                 </div>
             </div>
         </div>
@@ -31,45 +68,70 @@
                     </h5>
                     {% if not is_logged %}
                         <p class="text-justify">
-                            If you want access to commercial-grade and government maps and data, please sign in. You can either spend time looking for good maps and digital elevation models, and register to data suppliers one by one, and connect them to the software, or simply use an ExploreWilder account to have one token to bring them all and in the application bind them. With this account, the application is ready to use. Configuration will be required otherwise. Don't get too excited just yet since this software version might be unstable with great but incomplete datasets depending on your country.
+                            If you want access to commercial-grade and government maps and data, please sign in. You can either spend time looking for good maps and digital elevation models, and register to data suppliers one by one, and connect them to the software, or simply use an ExploreWilder account to have one token to bring them all and in the application bind them. With this account, the application is ready to use. Configuration will be required otherwise.
                         </p>
                         <h5 class="text-center my-3">
-                            Ready to use maps:
+                            Available maps &amp; data:
                         </h5>
-                    {% endif %}
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-6">
-                                <h6 class="text-center mb-3">
-                                    <strong>2D maps:</strong>
-                                </h6>
-                                <ul class="list-group">
-                                    <li class="list-group-item p-1 d-flex justify-content-between align-items-center">
-                                        <span>
-                                            <img src="/static/images/qmapshack/OpenTopoMapLogo.png" alt=" " class="mx-2" />
-                                            <span class="pt-1">
-                                                <a href="https://opentopomap.org"
-                                                   target="_blank"
-                                                   rel="noopener noreferrer">OpenTopoMap</a>
-                                                +
-                                                <a href="https://hiking.waymarkedtrails.org"
-                                                   target="_blank"
-                                                   rel="noopener noreferrer">Waymarked Trails Hiking</a>
-                                            </span>
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">2D</th>
+                                    <th scope="col">3D</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Coverage</th>
+                                    <th scope="col">Integrated Map</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span data-toggle="tooltip"
+                                              title="Ready to use"
+                                              class="qmapshack-copyright-top">
+                                            <i class="fas fa-check"></i>
                                         </span>
+                                    </td>
+                                    <td></td>
+                                    <td>Topo + Geodata</td>
+                                    <td>Global</td>
+                                    <td>
+                                        <a href="https://opentopomap.org"
+                                           target="_blank"
+                                           rel="noopener noreferrer">OpenTopoMap</a>
+                                        +
+                                        <a href="https://hiking.waymarkedtrails.org"
+                                           target="_blank"
+                                           rel="noopener noreferrer">Waymarked Trails Hiking</a>
+                                    </td>
+                                    <td class="text-right">
                                         <span data-toggle="tooltip"
                                               title="© OpenStreetMap contributors, ODbL | Rendering: © OpenTopoMap, CC-BY-SA | Trails: © Waymarked Trails"
                                               class="mr-1 qmapshack-copyright-top">
                                             <i class="far fa-copyright"></i>
                                         </span>
-                                    </li>
-                                    <li class="list-group-item p-1 d-flex justify-content-between align-items-center">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span data-toggle="tooltip"
+                                              title="Ready to use"
+                                              class="qmapshack-copyright-top">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </td>
+                                    <td></td>
+                                    <td>Topo</td>
+                                    <td>Global</td>
+                                    <td>
                                         <a href="https://www.thunderforest.com/"
                                            target="_blank"
                                            rel="noopener noreferrer">
-                                            <img src="/static/images/qmapshack/ThunderforestLogo.png" alt=" " class="mx-2" />
                                             <span class="pt-1">Thunderforest</span>
                                         </a>
+                                    </td>
+                                    <td class="text-right">
                                         <span>
                                             <span data-toggle="tooltip"
                                                   title="ExploreWilder members only"
@@ -82,14 +144,27 @@
                                                 <i class="far fa-copyright"></i>
                                             </span>
                                         </span>
-                                    </li>
-                                    <li class="list-group-item p-1 d-flex justify-content-between align-items-center">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span data-toggle="tooltip"
+                                              title="Ready to use"
+                                              class="qmapshack-copyright-top">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </td>
+                                    <td></td>
+                                    <td>Topo</td>
+                                    <td>New Zealand</td>
+                                    <td>
                                         <a href="https://www.linz.govt.nz/land/maps"
                                            target="_blank"
                                            rel="noopener noreferrer">
-                                            <img src="/static/images/qmapshack/LINZLogo.png" alt=" " class="mx-2" />
                                             <span class="pt-1">New Zealand Topo50 (LINZ)</span>
                                         </a>
+                                    </td>
+                                    <td class="text-right">
                                         <span>
                                             <span data-toggle="tooltip"
                                                   title="ExploreWilder members only"
@@ -102,88 +177,157 @@
                                                 <i class="far fa-copyright"></i>
                                             </span>
                                         </span>
-                                    </li>
-                                    <li class="list-group-item p-1 d-flex justify-content-between align-items-center">
-                                        <a href="https://www.ign.fr/"
-                                           target="_blank"
-                                           rel="noopener noreferrer">
-                                            <img src="/static/images/qmapshack/IGNLogo.png" alt=" " class="mx-2" />
-                                            <span class="pt-1">France Topo25 (IGN)</span>
-                                        </a>
-                                        <span>
-                                            <span data-toggle="tooltip"
-                                                  title="ExploreWilder members only"
-                                                  class="mr-1 qmapshack-copyright-top">
-                                                <i class="fas fa-user-lock"></i>
-                                            </span>
-                                            <span data-toggle="tooltip"
-                                                  title="© IGN (Institut national de l’information géographique et forestière)"
-                                                  class="mr-1 qmapshack-copyright-top">
-                                                <i class="far fa-copyright"></i>
-                                            </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span data-toggle="tooltip"
+                                              title="Ready to use"
+                                              class="qmapshack-copyright-top">
+                                            <i class="fas fa-check"></i>
                                         </span>
-                                    </li>
-                                    <li class="list-group-item p-1 d-flex justify-content-between align-items-center">
-                                        <a href="https://www.ign.fr/"
-                                           target="_blank"
-                                           rel="noopener noreferrer">
-                                            <img src="/static/images/qmapshack/IGNLogo.png" alt=" " class="mx-2" />
-                                            <span class="pt-1">France Aerial Imagery (IGN)</span>
-                                        </a>
-                                        <span>
-                                            <span data-toggle="tooltip"
-                                                  title="ExploreWilder members only"
-                                                  class="mr-1 qmapshack-copyright-top">
-                                                <i class="fas fa-user-lock"></i>
-                                            </span>
-                                            <span data-toggle="tooltip"
-                                                  title="© IGN (Institut national de l’information géographique et forestière)"
-                                                  class="mr-1 qmapshack-copyright-top">
-                                                <i class="far fa-copyright"></i>
-                                            </span>
-                                        </span>
-                                    </li>
-                                    <li class="list-group-item p-1 d-flex justify-content-between align-items-center">
+                                    </td>
+                                    <td></td>
+                                    <td>Topo</td>
+                                    <td>Norway</td>
+                                    <td>
                                         <a href="https://www.kartverket.no/"
                                            target="_blank"
                                            rel="noopener noreferrer">
-                                            <img src="/static/images/qmapshack/KartverketLogo.png" alt=" " class="mx-2" />
                                             <span class="pt-1">Norway Topo (Kartverket)</span>
                                         </a>
+                                    </td>
+                                    <td class="text-right">
                                         <span data-toggle="tooltip"
                                               title="© Kartverket"
                                               class="mr-1 qmapshack-copyright-top">
                                             <i class="far fa-copyright"></i>
                                         </span>
-                                    </li>
-                                    <li class="list-group-item p-1 d-flex justify-content-between align-items-center">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span data-toggle="tooltip"
+                                              title="Ready to use"
+                                              class="qmapshack-copyright-top">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </td>
+                                    <td></td>
+                                    <td>Topo</td>
+                                    <td>France</td>
+                                    <td>
+                                        <a href="https://www.ign.fr/"
+                                           target="_blank"
+                                           rel="noopener noreferrer">
+                                            <span class="pt-1">France Topo25 (IGN)</span>
+                                        </a>
+                                    </td>
+                                    <td class="text-right">
+                                        <span>
+                                            <span data-toggle="tooltip"
+                                                  title="ExploreWilder members only"
+                                                  class="mr-1 qmapshack-copyright-top">
+                                                <i class="fas fa-user-lock"></i>
+                                            </span>
+                                            <span data-toggle="tooltip"
+                                                  title="© IGN (Institut national de l’information géographique et forestière)"
+                                                  class="mr-1 qmapshack-copyright-top">
+                                                <i class="far fa-copyright"></i>
+                                            </span>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span data-toggle="tooltip"
+                                              title="Ready to use"
+                                              class="qmapshack-copyright-top">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span data-toggle="tooltip"
+                                              title="Ready to use"
+                                              class="qmapshack-copyright-top">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </td>
+                                    <td>Aerial</td>
+                                    <td>France</td>
+                                    <td>
+                                        <a href="https://www.ign.fr/"
+                                           target="_blank"
+                                           rel="noopener noreferrer">
+                                            <span class="pt-1">France Aerial Imagery (IGN)</span>
+                                        </a>
+                                    </td>
+                                    <td class="text-right">
+                                        <span>
+                                            <span data-toggle="tooltip"
+                                                  title="ExploreWilder members only"
+                                                  class="mr-1 qmapshack-copyright-top">
+                                                <i class="fas fa-user-lock"></i>
+                                            </span>
+                                            <span data-toggle="tooltip"
+                                                  title="© IGN (Institut national de l’information géographique et forestière)"
+                                                  class="mr-1 qmapshack-copyright-top">
+                                                <i class="far fa-copyright"></i>
+                                            </span>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span data-toggle="tooltip"
+                                              title="Ready to use"
+                                              class="qmapshack-copyright-top">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span data-toggle="tooltip"
+                                              title="Ready to use"
+                                              class="qmapshack-copyright-top">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </td>
+                                    <td>Aerial</td>
+                                    <td>Global</td>
+                                    <td>
                                         <a href="https://doc.arcgis.com/en/data-appliance/6.4/maps/world-imagery.htm"
                                            target="_blank"
                                            rel="noopener noreferrer">
-                                            <img src="/static/images/qmapshack/ArcGISLogo.png" alt=" " class="mx-2" />
                                             <span class="pt-1">ArcGIS World Imagery</span>
                                         </a>
+                                    </td>
+                                    <td class="text-right">
                                         <span data-toggle="tooltip"
                                               title="© Esri, DigitalGlobe, i-cubed, USDA FSA, USGS, GeoEye, Getmapping, AEX, AeroGRID, IGN, IGP, swisstopo, UPR-EGP, and the GIS community"
                                               class="mr-1 qmapshack-copyright-top">
                                             <i class="far fa-copyright"></i>
                                         </span>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="col-6">
-                                <h6 class="text-center mb-3">
-                                    <strong>3D maps:</strong>
-                                </h6>
-                                <p class="text-center text-muted">Aerial Imagery:</p>
-                                <ul class="list-group mb-3">
-                                    <li class="list-group-item p-1 d-flex justify-content-between align-items-center">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <span data-toggle="tooltip"
+                                              title="Ready to use"
+                                              class="qmapshack-copyright-top">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </td>
+                                    <td>Aerial</td>
+                                    <td>Global</td>
+                                    <td>
                                         <a href="https://www.microsoft.com/en-us/maps"
                                            target="_blank"
                                            rel="noopener noreferrer">
-                                            <img src="/static/images/qmapshack/BingMapsLogo.png" alt=" " class="mx-2" />
                                             <span class="pt-1">Microsoft Bing Aerial</span>
                                         </a>
+                                    </td>
+                                    <td class="text-right">
                                         <span>
                                             <span data-toggle="tooltip"
                                                   title="ExploreWilder members only"
@@ -196,14 +340,27 @@
                                                 <i class="far fa-copyright"></i>
                                             </span>
                                         </span>
-                                    </li>
-                                    <li class="list-group-item p-1 d-flex justify-content-between align-items-center">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <span data-toggle="tooltip"
+                                              title="Ready to use"
+                                              class="qmapshack-copyright-top">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </td>
+                                    <td>Aerial</td>
+                                    <td>Global</td>
+                                    <td>
                                         <a href="https://www.mapbox.com/maps/satellite/"
                                            target="_blank"
                                            rel="noopener noreferrer">
-                                            <img src="/static/images/qmapshack/MapboxLogo.png" alt=" " class="mx-2" />
                                             <span class="pt-1">Mapbox Satellite</span>
                                         </a>
+                                    </td>
+                                    <td class="text-right">
                                         <span>
                                             <span data-toggle="tooltip"
                                                   title="ExploreWilder members only"
@@ -216,73 +373,97 @@
                                                 <i class="far fa-copyright"></i>
                                             </span>
                                         </span>
-                                    </li>
-                                    <li class="list-group-item p-1 d-flex justify-content-between align-items-center">
-                                        <a href="https://doc.arcgis.com/en/data-appliance/6.4/maps/world-imagery.htm"
-                                           target="_blank"
-                                           rel="noopener noreferrer">
-                                            <img src="/static/images/qmapshack/ArcGISLogo.png" alt=" " class="mx-2" />
-                                            <span class="pt-1">ArcGIS World Imagery</span>
-                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
                                         <span data-toggle="tooltip"
-                                              title="© Esri, DigitalGlobe, i-cubed, USDA FSA, USGS, GeoEye, Getmapping, AEX, AeroGRID, IGN, IGP, swisstopo, UPR-EGP, and the GIS community"
-                                              class="mr-1 qmapshack-copyright-top">
-                                            <i class="far fa-copyright"></i>
+                                              title="Ready to use"
+                                              class="qmapshack-copyright-top">
+                                            <i class="fas fa-check"></i>
                                         </span>
-                                    </li>
-                                    <li class="list-group-item p-1 d-flex justify-content-between align-items-center">
+                                    </td>
+                                    <td>Aerial</td>
+                                    <td>Global</td>
+                                    <td>
                                         <a href="https://eox.at/2020/03/sentinel-2-cloudless-2019/"
                                            target="_blank"
                                            rel="noopener noreferrer">
-                                            <img src="/static/images/qmapshack/EOXLogo.png" alt=" " class="mx-2" />
                                             <span class="pt-1">EOX Sentinel-2 Cloudless 2019</span>
                                         </a>
+                                    </td>
+                                    <td class="text-right">
                                         <span data-toggle="tooltip"
                                               title="© EOX IT Services GmbH"
                                               class="mr-1 qmapshack-copyright-top">
                                             <i class="far fa-copyright"></i>
                                         </span>
-                                    </li>
-                                    <li class="list-group-item p-1 d-flex justify-content-between align-items-center">
-                                        <a href="https://www.ign.fr/"
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <span data-toggle="tooltip"
+                                              title="Ready to use"
+                                              class="qmapshack-copyright-top">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </td>
+                                    <td><abbr title="Digital Elevation Model">DEM</abbr></td>
+                                    <td>Global</td>
+                                    <td>
+                                        <a href="http://viewfinderpanoramas.org/dem3.html"
                                            target="_blank"
                                            rel="noopener noreferrer">
-                                            <img src="/static/images/qmapshack/IGNLogo.png" alt=" " class="mx-2" />
-                                            <span class="pt-1">France Aerial Imagery (IGN)</span>
+                                            <span class="pt-1">Jonathan de Ferranti</span>
                                         </a>
-                                        <span>
-                                            <span data-toggle="tooltip"
-                                                  title="ExploreWilder members only"
-                                                  class="mr-1 qmapshack-copyright-top">
-                                                <i class="fas fa-user-lock"></i>
-                                            </span>
-                                            <span data-toggle="tooltip"
-                                                  title="© IGN (Institut national de l’information géographique et forestière)"
-                                                  class="mr-1 qmapshack-copyright-top">
-                                                <i class="far fa-copyright"></i>
-                                            </span>
+                                    </td>
+                                    <td class="text-right">
+                                        <span data-toggle="tooltip"
+                                              title="© Jonathan de Ferranti"
+                                              class="mr-1 qmapshack-copyright-top">
+                                            <i class="far fa-copyright"></i>
                                         </span>
-                                    </li>
-                                </ul>
-                                <p class="text-center">
-                                    <span class="text-muted">Digital Elevation Model:</span><br />
-                                    Jonathan de Ferranti
-                                </p>
-                                <p class="text-center">
-                                    <span class="text-muted">Geodata:</span><br />
-                                    <a href="https://www.openstreetmap.org/about"
-                                       target="_blank"
-                                       rel="noopener noreferrer">OpenStreetMap</a>,
-                                    <a href="http://www.peaklist.org"
-                                       target="_blank"
-                                       rel="noopener noreferrer">Peaklist</a>,
-                                    <a href="https://www.maptiler.com/"
-                                       target="_blank"
-                                       rel="noopener noreferrer">MapTiler</a>
-                                </p>
-                            </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <span data-toggle="tooltip"
+                                              title="Ready to use"
+                                              class="qmapshack-copyright-top">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </td>
+                                    <td>Geodata</td>
+                                    <td>Global</td>
+                                    <td>
+                                        <a href="https://www.openstreetmap.org/about"
+                                           target="_blank"
+                                           rel="noopener noreferrer">OpenStreetMap</a> +
+                                        <a href="http://www.peaklist.org"
+                                           target="_blank"
+                                           rel="noopener noreferrer">Peaklist</a> +
+                                        <a href="https://www.maptiler.com/"
+                                           target="_blank"
+                                           rel="noopener noreferrer">MapTiler</a>
+                                    </td>
+                                    <td class="text-right">
+                                        <span data-toggle="tooltip"
+                                              title="© OpenStreetMap under ODbL, peaklist.org, MapTiler"
+                                              class="mr-1 qmapshack-copyright-top">
+                                            <i class="far fa-copyright"></i>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="alert alert-info" role="alert">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            You can <a href="https://github.com/Maproom/qmapshack/wiki/DocBasicsMapDem" target="_blank" rel="noopener noreferrer" class="alert-link">configure the application</a> to add online/offline 2D maps. 3D maps could be added <a href="/about" class="alert-link">upon request</a>.
                         </div>
-                    </div>
+                    {% endif %}
                     <hr class="my-4">
                     {% if is_logged %}
                         <form class="mx-auto form-token" style="max-width: 450px;">
@@ -360,8 +541,8 @@
             <div class="col-lg-8 offset-xl-2">
                 <div class="mb-4 shadow p-3 bg-light rounded">
                     <h1 class="text-center">Download For Linux</h1>
-                    {% set appimage_filename = 'QMapShack_1.15.2~1-1_amd64.AppImage' %}
-                    {% set deb_filename = 'qmapshack3d_1.15.2~1-1_amd64.deb' %}
+                    {% set appimage_filename = 'QMapShack3D_2.0.0-1_amd64.AppImage' %}
+                    {% set deb_filename = 'qmapshack3d_2.0.0-1_amd64.deb' %}
                     {% set pgp_short_id = '75CE8AD0' %}
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
@@ -382,14 +563,14 @@
                                 Requirements:
                             </h5>
                             <ul>
-                              <li>Your system architecture is <strong>amd64</strong></li>
+                              <li>You have a <strong>64-bit</strong> architecture</li>
                               <li>Your system is up to date</li>
                             </ul>
 
                             <h5 class="my-3">
                                 Download:
                             </h5>
-                            <p class="small text-muted mb-2">Download Size: 174 MiB</p>
+                            <p class="small text-muted mb-2">Download Size: 173 MiB</p>
                             <kbd>wget <span class="select-all">https://explorewilder.com/download/{{ appimage_filename }}</span></kbd>
                             <p class="small mt-2">
                                 <a href="/download/{{ appimage_filename }}.asc"
@@ -407,9 +588,13 @@
                                 Install &amp; Run:
                             </h5>
                             <p>
-                                <kbd class="select-all">chmod a+x QMapShack_*.AppImage</kbd> then 
-                                <kbd class="select-all">./QMapShack_*.AppImage</kbd>
+                                <kbd class="select-all">chmod a+x QMapShack3D_*.AppImage</kbd> then 
+                                <kbd class="select-all">./QMapShack3D_*.AppImage</kbd>
                             </p>
+                            <div class="alert alert-info" role="alert">
+                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                The AppImage has only been tested on Ubuntu Focal.
+                            </div>
                         </div>
                         <div class="tab-pane fade" id="install-deb" role="tabpanel" aria-labelledby="install-deb-tab">
                             <h5 class="my-3">
@@ -417,7 +602,7 @@
                             </h5>
                             <ul>
                               <li>Your operating system is <strong>Ubuntu</strong> or <strong>Debian</strong></li>
-                              <li>Your system architecture is <strong>amd64</strong></li>
+                              <li>You have a <strong>64-bit</strong> architecture</li>
                               <li>Your system is up to date</li>
                               <li>You have admin rights</li>
                             </ul>
@@ -425,7 +610,7 @@
                             <h5 class="my-3">
                                 Download:
                             </h5>
-                            <p class="small text-muted mb-2">Download Size: 36 MiB</p>
+                            <p class="small text-muted mb-2">Download Size: 35 MiB</p>
                             <kbd>wget <span class="select-all">https://explorewilder.com/download/{{ deb_filename }}</span></kbd>
                             <p class="small mt-2">
                                 <a href="/download/{{ deb_filename }}.asc"
@@ -442,7 +627,11 @@
                             <h5 class="my-3">
                                 Install:
                             </h5>
-                            <p><kbd class="select-all">sudo apt install ./qmapshack3d_1.15.2~1-1_amd64.deb</kbd></p>
+                            <div class="alert alert-warning" role="alert">
+                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                This will overwrite the QMapShack application if already installed.
+                            </div>
+                            <p><kbd class="select-all">sudo apt install ./{{ deb_filename }}</kbd></p>
                         </div>
                     </div>
                 </div>
