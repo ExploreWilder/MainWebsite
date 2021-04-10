@@ -40,12 +40,20 @@
                         </li>
                         <li class="list-group-item">
                             <i class="fas fa-check mr-2"></i>
-                            Create, edit, save GPX files and other formats.
+                            Create, edit, save GPX files and other formats,
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check mr-2"></i>
+                            Download, view and use OpenTopoMap maps for Garmin devices,
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check mr-2"></i>
+                            Čeština, Deutsch, English, Español, Français, Italiano, Nederlands, Ру́сский язы́к.
                         </li>
                     </ul>
                     <div class="alert alert-info" role="alert">
                         <i class="fas fa-info-circle mr-2"></i>
-                        Basically, QMapShack3D is <a href="https://github.com/Maproom/qmapshack/wiki" target="_blank" rel="noopener noreferrer" class="alert-link">QMapShack</a> plus 3D and maps.
+                        Basically, QMapShack3D = <a href="https://github.com/Maproom/qmapshack/wiki" target="_blank" rel="noopener noreferrer" class="alert-link">QMapShack</a> + 3D + maps.
                     </div>
                 </div>
             </div>
@@ -85,6 +93,30 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr>
+                                    <td>
+                                        <span data-toggle="tooltip"
+                                              title="Ready to download"
+                                              class="qmapshack-copyright-top">
+                                            <i class="fas fa-download"></i>
+                                        </span>
+                                    </td>
+                                    <td></td>
+                                    <td><abbr title="Garmin image for offline use and Garmin devices">IMG</abbr> Topo</td>
+                                    <td>Global</td>
+                                    <td>
+                                        <a href="https://garmin.opentopomap.org/"
+                                           target="_blank"
+                                           rel="noopener noreferrer">OpenTopoMap for Garmin</a>
+                                    </td>
+                                    <td class="text-right">
+                                        <span data-toggle="tooltip"
+                                              title="© OpenStreetMap contributors, ODbL | Rendering: © OpenTopoMap, CC-BY-NC-SA 4.0"
+                                              class="mr-1 qmapshack-copyright-top">
+                                            <i class="far fa-copyright"></i>
+                                        </span>
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td>
                                         <span data-toggle="tooltip"
@@ -541,8 +573,8 @@
             <div class="col-lg-8 offset-xl-2">
                 <div class="mb-4 shadow p-3 bg-light rounded">
                     <h1 class="text-center">Download For Linux</h1>
-                    {% set appimage_filename = 'QMapShack3D_2.0.0-1_amd64.AppImage' %}
-                    {% set deb_filename = 'qmapshack3d_2.0.0-1_amd64.deb' %}
+                    {% set appimage_filename = 'QMapShack3D_2.0.1-1_amd64.AppImage' %}
+                    {% set deb_filename = 'qmapshack3d_2.0.1-1_amd64.deb' %}
                     {% set pgp_short_id = '75CE8AD0' %}
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
@@ -581,7 +613,10 @@
                                    target="_blank">My PGP Public Key</a> ({{ pgp_short_id }}) /
                                 <a href="https://github.com/ExploreWilder/qmapshack/tree/3D"
                                    rel="noopener noreferrer"
-                                   target="_blank">Source on GitHub</a>
+                                   target="_blank">Source on GitHub</a> /
+                                <a href="https://raw.githubusercontent.com/ExploreWilder/qmapshack/3D/DEBIAN/changelog"
+                                   rel="noopener noreferrer"
+                                   target="_blank">Changelog</a>
                             </p>
 
                             <h5 class="my-3">
@@ -621,7 +656,10 @@
                                    target="_blank">My PGP Public Key</a> ({{ pgp_short_id }}) /
                                 <a href="https://github.com/ExploreWilder/qmapshack/tree/3D"
                                    rel="noopener noreferrer"
-                                   target="_blank">Source on GitHub</a>
+                                   target="_blank">Source on GitHub</a> /
+                                <a href="https://raw.githubusercontent.com/ExploreWilder/qmapshack/3D/DEBIAN/changelog"
+                                   rel="noopener noreferrer"
+                                   target="_blank">Changelog</a>
                             </p>
 
                             <h5 class="my-3">
